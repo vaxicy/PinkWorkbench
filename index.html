@@ -13,7 +13,7 @@
 <title>工作台</title>
 <style>
   :root{
-    --bg:#fff5f7;--bg-dot:#ffe3eb;--panel:#fff9fb;--cream:#fff0f3;--surface:var(--surface);
+    --bg:#fff5f7;--bg-dot:#ffe3eb;--panel:#fff7f9;--cream:#fff0f3;--surface:#ffffff;--english-card:#fff8fa;--english-accent:var(--pink-4);
     --pink-1:#ffd6e0;--pink-2:#ffb3c6;--pink-3:#ff8fab;--pink-4:#ff7096;
     --brown:#8a6268;--brown-light:#b39299;--green:#7cc09c;--blue:#8ecae6;--purple:#c9a0dc;
     --shadow:0 6px 18px rgba(255,143,171,.15);
@@ -36,7 +36,7 @@
   .avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--pink-2),var(--pink-3));
     display:grid;place-items:center;font-size:34px;box-shadow:0 4px 12px rgba(255,143,171,.28);border:2px solid var(--surface);overflow:hidden;}
   .avatar img{width:100%;height:100%;object-fit:cover;}
-  .avatar-hint{position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:1px solid var(--pink-1);}
+  .avatar-hint{position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--pink-3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:2px solid var(--surface);transition:transform .2s,background .2s;}.avatar-hint:hover{transform:scale(1.1);background:var(--pink-4);}
   .avatar-hint svg{display:block;transform:translateY(-1px);}
   .profile .name{font-size:12px;font-weight:700;color:var(--brown);padding:4px;border-radius:8px;cursor:pointer;}
   .profile .name:hover{background:var(--pink-1);}
@@ -63,7 +63,7 @@
   .app-name{font-size:15px;font-weight:800;color:var(--pink-4);cursor:pointer;padding:5px 10px;border-radius:var(--radius-sm);transition:.2s;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis;}
   .app-name:hover{background:var(--cream);}
   .app-name-edit{font-size:15px;font-weight:800;color:var(--pink-4);border:1px solid var(--pink-2);border-radius:var(--radius-sm);padding:4px 8px;outline:none;width:140px;max-width:42vw;}
-  .topbar .title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--pink-4);}
+  .topbar .title{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:800;color:var(--pink-4);}
   .topbar .title .ico{font-size:24px;}
   .date-chip{background:var(--cream);border:1px solid var(--pink-1);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--pink-3);}
   .content{flex:1;min-height:0;overflow-y:auto;padding:18px 22px 28px;position:relative;scrollbar-width:none;-ms-overflow-style:none;}
@@ -119,12 +119,12 @@
   .btn-ghost:hover{border-color:var(--pink-3);color:var(--pink-4);}
 
   /* 英语 */
-  .word-card{padding:14px;border-radius:var(--radius-sm);background:var(--cream);margin-bottom:10px;border:1px solid transparent;transition:.2s;}
+  .word-card{padding:14px;border-radius:var(--radius-sm);background:var(--english-card);margin-bottom:10px;border:1px solid transparent;transition:.2s;}
   .word-card:hover{border-color:var(--pink-1);}
   .word-card b{font-size:16px;color:var(--brown);}
   .word-card .mean{font-size:13px;color:var(--brown-light);margin:4px 0;}
-  .word-card .eg{font-size:12px;color:var(--pink-4);font-style:italic;}
-  .sentence-card{padding:16px;border-radius:var(--radius-sm);background:var(--cream);margin-bottom:10px;border-left:4px solid var(--pink-3);}
+  .word-card .eg{font-size:12px;color:var(--english-accent);font-style:italic;}
+  .sentence-card{padding:16px;border-radius:var(--radius-sm);background:var(--english-card);margin-bottom:10px;border-left:4px solid var(--english-accent);}
   .sentence-card .en{font-size:15px;color:var(--brown);margin-bottom:6px;font-weight:700;}
   .sentence-card .cn{font-size:13px;color:var(--brown-light);}
 
@@ -141,6 +141,15 @@
   /* 记账 */
   .money-form{display:flex;flex-direction:column;gap:12px;margin:14px 0;}
   .money-form .form-row{margin-bottom:0;}
+  .money-form input[type="number"],.money-form input[type="text"],.inline-form input[type="number"],.inline-form input[type="text"]{background:var(--surface);color:var(--brown);border:1px solid var(--pink-1);}
+  .money-form input::placeholder,.inline-form input::placeholder{color:var(--brown-light);opacity:.7;}
+  .money-form input[type="number"]::-webkit-inner-spin-button,.money-form input[type="number"]::-webkit-outer-spin-button,.inline-form input[type="number"]::-webkit-inner-spin-button,.inline-form input[type="number"]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+  .money-form input[type="number"],.inline-form input[type="number"]{-moz-appearance:textfield;}
+  [data-theme="dark"] .money-form input,[data-theme="dark"] .inline-form input{background:var(--cream);color:var(--brown);border-color:var(--pink-1);}
+  [data-theme="dark"] .money-form input:focus,[data-theme="dark"] .inline-form input:focus{border-color:var(--pink-3);}
+  .inline-form{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;}
+  .inline-form input{flex:1;min-width:0;}
+
   .money-type{display:flex;gap:10px;}
   .money-type .tab{flex:1;}.money-type .tab.on{background:linear-gradient(135deg,var(--pink-3),var(--pink-4));color:var(--surface);border-color:transparent;box-shadow:var(--shadow);}
   .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
@@ -331,7 +340,7 @@
   .theme-toggle{background:transparent;border:none;font-size:20px;cursor:pointer;margin-left:8px;padding:4px 6px;transition:transform .2s;line-height:1;}
   .theme-toggle:hover{transform:scale(1.15);}
   [data-theme="dark"]{
-    --bg:#17131c;--bg-dot:#211a27;--panel:#1e1824;--cream:#2a2230;--surface:#332a3d;
+    --bg:#17131c;--bg-dot:#211a27;--panel:#1c1622;--cream:#2a2230;--surface:#332a3d;--english-card:#26202c;--english-accent:#ff9fb8;
     --pink-1:#4a2a38;--pink-2:#ff8fab;--pink-3:#ff8fab;--pink-4:#ff7096;
     --brown:#f3d9e0;--brown-light:#c9a8b3;
     --shadow:0 6px 18px rgba(0,0,0,.45);
@@ -340,7 +349,7 @@
   [data-theme="dark"] .avatar{border-color:var(--surface)!important;}
   [data-theme="dark"] .color-c.on{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--pink-2)!important;}
   [data-theme="dark"] .day.selected{box-shadow:0 0 0 2px var(--surface),0 0 0 4px var(--pink-2)!important;}
-  [data-theme="dark"] .avatar-hint,[data-theme="dark"] .avatar-menu{background:var(--surface)!important;}
+  [data-theme="dark"] .avatar-hint{background:var(--pink-3)!important;border-color:var(--surface)!important;}[data-theme="dark"] .avatar-menu{background:var(--surface)!important;}
 
   @media(max-width:680px){
     body{padding:0;}
@@ -371,7 +380,7 @@
     <div class="profile" id="profileBox">
       <div class="avatar-wrap">
         <div class="avatar" id="avatarBox">🐱</div>
-        <div class="avatar-hint" id="avatarHint" onclick="toggleAvatarMenu(event)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#ff8fab" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.4-2h7.2L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.4"/></svg></div>
+        <div class="avatar-hint" id="avatarHint" onclick="toggleAvatarMenu(event)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.4-2h7.2L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.4"/></svg></div>
         <div class="avatar-menu" id="avatarMenu">
           <button onclick="uploadAvatar()">📤 上传图片</button>
           <button onclick="emojiAvatar()">😊 用表情</button>
@@ -1111,12 +1120,12 @@ function renderEnglish(box){
     const words=pickSequential(wordsPool,'word',state.english.wordCount);
     const wrap=div('word-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     words.forEach((w,i)=>{
-      const item=div('word-card');item.style.cssText='text-align:left;padding:18px 16px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
-      item.innerHTML=`<div style="font-size:12px;color:var(--pink-3);font-weight:700;margin-bottom:6px;">#${i+1}</div>
-        <div style="font-size:24px;font-weight:800;color:var(--pink-4);margin-bottom:4px;">${esc(w.w)}</div>
+      const item=div('word-card');item.style.cssText='text-align:left;padding:18px 16px;border-radius:var(--radius-sm);background:var(--english-card);border:1px solid var(--pink-1);';
+      item.innerHTML=`<div style="font-size:12px;color:var(--english-accent);font-weight:700;margin-bottom:6px;">#${i+1}</div>
+        <div style="font-size:24px;font-weight:800;color:var(--english-accent);margin-bottom:4px;">${esc(w.w)}</div>
         <div style="font-size:14px;color:var(--brown);margin-bottom:10px;">${esc(w.m)}</div>
-        <div style="font-size:12px;color:var(--brown-light);background:#fff;border-radius:var(--radius-sm);padding:8px 10px;line-height:1.6;">
-          <div style="font-style:italic;color:var(--pink-4);">${esc(w.eg)}</div>
+        <div style="font-size:12px;color:var(--brown-light);background:var(--surface);border-radius:var(--radius-sm);padding:8px 10px;line-height:1.6;border:1px solid var(--pink-1);">
+          <div style="font-style:italic;color:var(--english-accent);">${esc(w.eg)}</div>
           <div style="margin-top:2px;">${esc(w.trans)}</div>
         </div>`;
       wrap.appendChild(item);
@@ -1126,8 +1135,8 @@ function renderEnglish(box){
     const sentences=pickSequential(sentencePool,'sentence',state.english.sentenceCount);
     const wrap=div('sentence-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     sentences.forEach((s,i)=>{
-      const item=div('sentence-card');item.style.cssText='padding:18px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
-      item.innerHTML=`<div style="font-size:12px;color:var(--pink-3);font-weight:700;margin-bottom:8px;">#${i+1}</div>
+      const item=div('sentence-card');item.style.cssText='padding:18px;border-radius:var(--radius-sm);background:var(--english-card);border:1px solid var(--pink-1);';
+      item.innerHTML=`<div style="font-size:12px;color:var(--english-accent);font-weight:700;margin-bottom:8px;">#${i+1}</div>
         <div style="font-size:16px;color:var(--brown);margin-bottom:8px;line-height:1.6;">${esc(s.en)}</div>
         <div style="font-size:13px;color:var(--brown-light);">${esc(s.cn)}</div>`;
       wrap.appendChild(item);

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pink-workbench-v4';
+const CACHE_NAME = 'pink-workbench-v5';
 const URLS = ['./', './index.html', './manifest.json', './icon.png'];
 
 self.addEventListener('install', e => {

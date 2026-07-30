@@ -1,0 +1,6 @@
+# 本地工作记忆 / 敏感数据
+.codebuddy/
+
+# 构建缓存
+.wrangler/
+node_modules/

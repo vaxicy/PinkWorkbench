@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#ff8fab" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="小美工作台" />
+<meta name="apple-mobile-web-app-title" content="工作台" />
 <link rel="manifest" href="./manifest.json" />
 <link rel="apple-touch-icon" href="./icon.png" />
-<title>小美的奶油粉工作台</title>
+<title>工作台</title>
 <style>
   :root{
     --bg:#fff5f7;--bg-dot:#ffe3eb;--panel:#fff9fb;--cream:#fff0f3;
@@ -23,8 +23,8 @@
   *::-webkit-scrollbar-button{display:none;width:0;height:0;}
   body{font-family:var(--font);color:var(--brown);background:var(--bg);
     background-image:radial-gradient(circle at 12px 12px,var(--bg-dot) 2.5px,transparent 3px);background-size:22px 22px;
-    min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:24px 16px;}
-  .app{width:100%;max-width:1080px;min-height:88vh;background:#fff;border-radius:var(--radius-lg);
+    height:100vh;overflow:hidden;display:flex;justify-content:center;align-items:flex-start;padding:24px 16px;}
+  .app{width:100%;max-width:1080px;height:calc(100vh - 48px);background:#fff;border-radius:var(--radius-lg);
     box-shadow:0 18px 50px rgba(255,143,171,.22);display:flex;overflow:hidden;border:1px solid var(--pink-1);}
 
   /* 侧边栏 */
@@ -61,7 +61,7 @@
   .topbar .title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--pink-4);}
   .topbar .title .ico{font-size:24px;}
   .date-chip{background:var(--cream);border:1px solid var(--pink-1);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--pink-3);}
-  .content{flex:1;overflow-y:auto;padding:18px 22px 28px;position:relative;scrollbar-width:none;-ms-overflow-style:none;}
+  .content{flex:1;min-height:0;overflow-y:auto;padding:18px 22px 28px;position:relative;scrollbar-width:none;-ms-overflow-style:none;}
   .content::-webkit-scrollbar{display:none;width:0;height:0;}
   .custom-scroll{position:relative;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none;}
   .custom-scroll::-webkit-scrollbar{display:none;width:0;height:0;}
@@ -312,7 +312,7 @@
 
   @media(max-width:680px){
     body{padding:0;}
-    .app{border-radius:0;max-width:100%;min-height:100vh;flex-direction:column;}
+    .app{border-radius:0;max-width:100%;height:100vh;min-height:unset;flex-direction:column;}
     .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;padding:10px;gap:4px;border-right:none;border-bottom:1px solid var(--pink-1);}
     .profile,.backup-bar{display:none;}
     .nav-item{flex-direction:row;padding:7px 8px;font-size:11px;}
@@ -330,7 +330,7 @@
     <div class="profile" id="profileBox">
       <div class="avatar-wrap">
         <div class="avatar" id="avatarBox">🐱</div>
-        <div class="avatar-hint" id="avatarHint" onclick="toggleAvatarMenu(event)">📷</div>
+        <div class="avatar-hint" id="avatarHint" onclick="toggleAvatarMenu(event)"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#ff8fab" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.4-2h7.2L19 6h0a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.4"/></svg></div>
         <div class="avatar-menu" id="avatarMenu">
           <button onclick="uploadAvatar()">📤 上传图片</button>
           <button onclick="emojiAvatar()">😊 用表情</button>
@@ -597,9 +597,9 @@ function showModal({title='提示',body='',input=false,inputValue='',placeholder
   if(input){inputEl=document.createElement('input');inputEl.value=inputValue;inputEl.placeholder=placeholder;extra.appendChild(inputEl);}
   if(render)render(bodyEl,extra);
   const okBtn=document.createElement('button');okBtn.className='ok';okBtn.textContent='确定';
-  okBtn.onclick=()=>{const val=inputEl?inputEl.value.trim():true;hideModal();if(modalResolve)modalResolve(val);};
+  okBtn.onclick=()=>{const val=inputEl?inputEl.value.trim():true;const r=modalResolve;hideModal();if(r)r(val);};
   acts.appendChild(okBtn);
-  if(!noCancel){const cBtn=document.createElement('button');cBtn.className='cancel';cBtn.textContent='取消';cBtn.onclick=()=>{hideModal();if(modalResolve)modalResolve(null);};acts.appendChild(cBtn);}
+  if(!noCancel){const cBtn=document.createElement('button');cBtn.className='cancel';cBtn.textContent='取消';cBtn.onclick=()=>{const r=modalResolve;hideModal();if(r)r(null);};acts.appendChild(cBtn);}
   ov.classList.add('show');if(inputEl)setTimeout(()=>inputEl.focus(),50);
   setTimeout(()=>initCustomScrollbars(),0);
   return new Promise(r=>modalResolve=r);
@@ -784,35 +784,63 @@ function openTimePicker(currentValue,onDone,allowEmpty=false){
 
 /* ================= 英语 ================= */
 const wordsPool=[
-  {w:'serendipity',m:'n. 意外发现珍奇事物的运气',eg:'Meeting you was pure serendipity.'},
-  {w:'blossom',m:'v./n. 开花；兴旺',eg:'The cherry trees will blossom soon.'},
-  {w:'cozy',m:'adj. 舒适温暖的',eg:'I love reading in this cozy corner.'},
-  {w:'petrichor',m:'n. 雨后泥土的清香',eg:'I enjoy the petrichor after a summer rain.'},
-  {w:'euphoria',m:'n. 极度愉悦',eg:'Winning the game filled her with euphoria.'},
-  {w:'mellifluous',m:'adj. 声音甜美的',eg:'She has a mellifluous singing voice.'},
-  {w:'luminous',m:'adj. 发光的；明亮的',eg:'The night sky was luminous with stars.'},
-  {w:'ethereal',m:'adj. 超凡脱俗的',eg:'The music had an ethereal quality.'},
-  {w:'ephemeral',m:'adj. 短暂的',eg:'Fashion trends are often ephemeral.'},
-  {w:'solitude',m:'n. 独处',eg:'She cherished her morning solitude.'},
-  {w:'resilience',m:'n. 韧性',eg:'His resilience impressed everyone.'},
-  {w:'wanderlust',m:'n. 旅行癖',eg:'Her wanderlust took her to many countries.'},
-  {w:'halcyon',m:'adj. 平静愉快的',eg:'Those halcyon days of childhood.'},
-  {w:'effervescent',m:'adj. 活泼欢快的',eg:'Her effervescent personality lit up the room.'},
-  {w:'sonder',m:'n. 意识到每个过客都有复杂人生',eg:'Sitting on the train, she was struck by sonder.'}
+  {w:'achieve',m:'实现；取得',eg:'He achieved his goal through hard work.',trans:'他通过努力实现了目标。'},
+  {w:'benefit',m:'好处；受益',eg:'Reading books benefits the mind.',trans:'阅读对心智有益。'},
+  {w:'challenge',m:'挑战',eg:'Learning a new skill is a fun challenge.',trans:'学习一项新技能是个有趣的挑战。'},
+  {w:'communicate',m:'沟通；交流',eg:'We communicate by sending messages.',trans:'我们通过发消息来沟通。'},
+  {w:'confidence',m:'自信',eg:'She spoke with great confidence.',trans:'她说话时充满自信。'},
+  {w:'create',m:'创造；创作',eg:'They created a beautiful painting.',trans:'他们创作了一幅美丽的画。'},
+  {w:'culture',m:'文化',eg:'Chinese culture is very rich.',trans:'中国文化非常丰富。'},
+  {w:'decision',m:'决定',eg:'He made a difficult decision.',trans:'他做了一个艰难的决定。'},
+  {w:'develop',m:'发展；培养',eg:'Children develop fast at this age.',trans:'孩子在这个年纪发育得很快。'},
+  {w:'discover',m:'发现',eg:'Scientists discovered a new star.',trans:'科学家发现了一颗新星。'},
+  {w:'effort',m:'努力',eg:'Success requires great effort.',trans:'成功需要巨大的努力。'},
+  {w:'encourage',m:'鼓励',eg:'My teacher encouraged me to try.',trans:'老师鼓励我去尝试。'},
+  {w:'environment',m:'环境',eg:'We must protect the environment.',trans:'我们必须保护环境。'},
+  {w:'experience',m:'经验；经历',eg:'Travel gives you new experiences.',trans:'旅行带给你新的经历。'},
+  {w:'familiar',m:'熟悉的',eg:'This song is very familiar to me.',trans:'我对这首歌很熟悉。'},
+  {w:'focus',m:'集中（注意力）',eg:'Please focus on your work.',trans:'请把注意力集中在工作上。'},
+  {w:'freedom',m:'自由',eg:'Everyone loves freedom.',trans:'每个人都热爱自由。'},
+  {w:'generous',m:'慷慨的',eg:'He is generous to his friends.',trans:'他对朋友很慷慨。'},
+  {w:'habit',m:'习惯',eg:'Reading is a good habit.',trans:'阅读是个好习惯。'},
+  {w:'honest',m:'诚实的',eg:'An honest person wins trust.',trans:'诚实的人赢得信任。'},
+  {w:'improve',m:'改善；提高',eg:'Exercise can improve your health.',trans:'运动能改善你的健康。'},
+  {w:'include',m:'包括',eg:'The price includes breakfast.',trans:'这个价格包含早餐。'},
+  {w:'increase',m:'增加',eg:'The number of users increased.',trans:'用户数量增加了。'},
+  {w:'influence',m:'影响',eg:'Music can influence our mood.',trans:'音乐能影响我们的情绪。'},
+  {w:'knowledge',m:'知识',eg:'Books bring us knowledge.',trans:'书籍带给我们知识。'},
+  {w:'limit',m:'限制；限度',eg:'There is a limit to our time.',trans:'我们的时间有限。'},
+  {w:'local',m:'当地的',eg:'We ate at a local restaurant.',trans:'我们在一家当地餐馆吃饭。'},
+  {w:'manage',m:'管理；设法',eg:'She managed to finish on time.',trans:'她设法按时完成了。'},
+  {w:'memory',m:'记忆',eg:'I have a good memory of childhood.',trans:'我对童年有很好的记忆。'},
+  {w:'natural',m:'自然的',eg:'She has a natural smile.',trans:'她有着自然的微笑。'},
+  {w:'observe',m:'观察',eg:'We observed the stars at night.',trans:'我们夜晚观察星星。'},
+  {w:'opportunity',m:'机会',eg:'This is a great opportunity.',trans:'这是个很好的机会。'},
+  {w:'patient',m:'耐心的',eg:'Be patient with yourself.',trans:'对自己要有耐心。'},
+  {w:'physical',m:'身体的',eg:'Physical exercise keeps you fit.',trans:'体育锻炼让你保持健康。'},
+  {w:'protect',m:'保护',eg:'We should protect small animals.',trans:'我们应该保护小动物。'},
+  {w:'realize',m:'意识到；实现',eg:'He realized his mistake.',trans:'他意识到了自己的错误。'},
+  {w:'recognize',m:'认出',eg:'I didn\'t recognize her at first.',trans:'我起初没认出她。'},
+  {w:'reduce',m:'减少',eg:'We should reduce waste.',trans:'我们应该减少浪费。'},
+  {w:'responsible',m:'负责任的',eg:'He is responsible for the project.',trans:'他负责这个项目。'},
+  {w:'suggest',m:'建议',eg:'I suggest taking a break.',trans:'我建议休息一下。'},
+  {w:'support',m:'支持',eg:'My family supports my dream.',trans:'家人支持我的梦想。'},
+  {w:'tradition',m:'传统',eg:'Spring Festival is a Chinese tradition.',trans:'春节是中国的传统。'},
+  {w:'waste',m:'浪费',eg:'Don\'t waste your time.',trans:'别浪费你的时间。'}
 ];
 const sentencePool=[
-  {en:'The best way to predict the future is to create it.',cn:'预测未来的最好方式是创造未来。'},
-  {en:'Small steps every day lead to big changes over time.',cn:'每天迈出一小步，终将带来巨大改变。'},
-  {en:'Happiness depends upon ourselves.',cn:'幸福取决于我们自己。'},
-  {en:'Every moment is a fresh beginning.',cn:'每一刻都是全新的开始。'},
-  {en:'Believe you can and you are halfway there.',cn:'相信你自己，你就已经成功了一半。'},
-  {en:'Kindness is the language which the deaf can hear and the blind can see.',cn:'善良是聋人能听见、盲人能看见的语言。'},
-  {en:'Stay close to anything that makes you glad you are alive.',cn:'靠近任何让你庆幸自己活着的事物。'},
-  {en:'You are never too old to set another goal or to dream a new dream.',cn:'你永远不会老到无法设定新目标或拥有新梦想。'},
-  {en:'Turn your wounds into wisdom.',cn:'把你的伤口化为智慧。'},
-  {en:'Do what you can, with what you have, where you are.',cn:'在你所在的地方，用你所有的资源，做你能做的事。'},
-  {en:'It always seems impossible until it is done.',cn:'在完成之前，一切看起来都似乎不可能。'},
-  {en:'The only way to do great work is to love what you do.',cn:'做出伟大工作的唯一方法是热爱你所做的事。'}
+  {en:'I drink a cup of milk every morning.',cn:'我每天早上喝一杯牛奶。'},
+  {en:'She goes to bed before ten o\'clock.',cn:'她十点前上床睡觉。'},
+  {en:'We should eat more fresh fruit and vegetables.',cn:'我们应该多吃新鲜水果和蔬菜。'},
+  {en:'He likes walking in the park after dinner.',cn:'他喜欢晚饭后在公园散步。'},
+  {en:'Learning English takes a little time each day.',cn:'学英语每天花一点点时间就好。'},
+  {en:'My friend sent me a message this morning.',cn:'我朋友今天早上给我发了条消息。'},
+  {en:'The weather is nice, let\'s go outside.',cn:'天气真好，我们出去吧。'},
+  {en:'Please remember to drink enough water.',cn:'请记得喝足够的水。'},
+  {en:'I finished my homework and felt relaxed.',cn:'我写完了作业，感到很放松。'},
+  {en:'She smiled and said hello to me.',cn:'她微笑着跟我打招呼。'},
+  {en:'Reading a book before sleep helps you rest.',cn:'睡前读会儿书能帮你放松。'},
+  {en:'We can learn something new every day.',cn:'我们每天都能学到新东西。'}
 ];
 function renderEnglish(box){
   const tabs=div('tabs');
@@ -829,11 +857,14 @@ function renderEnglish(box){
     const words=pickByDate(wordsPool,state.english.count,0);
     const wrap=div('word-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     words.forEach((w,i)=>{
-      const item=div('word-card');item.style.cssText='text-align:center;padding:20px 16px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
+      const item=div('word-card');item.style.cssText='text-align:left;padding:18px 16px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
       item.innerHTML=`<div style="font-size:12px;color:var(--pink-3);font-weight:700;margin-bottom:6px;">#${i+1}</div>
-        <div style="font-size:24px;font-weight:800;color:var(--pink-4);margin-bottom:6px;">${esc(w.w)}</div>
-        <div style="font-size:13px;color:var(--brown-light);margin-bottom:10px;">${esc(w.m)}</div>
-        <div style="font-size:12px;color:var(--pink-3);font-style:italic;background:#fff;border-radius:var(--radius-sm);padding:8px 10px;display:inline-block;">${esc(w.eg)}</div>`;
+        <div style="font-size:24px;font-weight:800;color:var(--pink-4);margin-bottom:4px;">${esc(w.w)}</div>
+        <div style="font-size:14px;color:var(--brown);margin-bottom:10px;">${esc(w.m)}</div>
+        <div style="font-size:12px;color:var(--brown-light);background:#fff;border-radius:var(--radius-sm);padding:8px 10px;line-height:1.6;">
+          <div style="font-style:italic;color:var(--pink-4);">${esc(w.eg)}</div>
+          <div style="margin-top:2px;">${esc(w.trans)}</div>
+        </div>`;
       wrap.appendChild(item);
     });
     card.appendChild(wrap);

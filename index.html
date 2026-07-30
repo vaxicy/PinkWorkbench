@@ -901,8 +901,8 @@ function renderPlan(box){
       <div class="form-row" id="todoCatBox"></div>
       <button class="btn-pink" onclick="addTodo()">➕ 添加任务</button>`;
     card.appendChild(add);
-    renderTodoCategorySelect();
     box.appendChild(card);
+    renderTodoCategorySelect();
   }else if(state.plan.tab==='schedule'){
     const card=div('card');
     card.innerHTML=`<div class="card-title">📅 日程规划</div><div class="card-sub">按时间线安排今天的行程</div>`;
@@ -1059,7 +1059,7 @@ function renderHabit(){
     s.onclick=()=>{window.habitIconVal=em;Array.from(grid.children).forEach(c=>c.style.background='');s.style.background='var(--cream)';};
     grid.appendChild(s);
   });
-  renderCustomSelect(document.getElementById('habitCatBox'),HABIT_CATS.map(c=>({value:c.id,label:`${c.icon} ${c.name}`})),'health','选择分类');
+  renderCustomSelect(form.querySelector('#habitCatBox'),HABIT_CATS.map(c=>({value:c.id,label:`${c.icon} ${c.name}`})),'health','选择分类');
   return card;
 }
 function setHabitType(t){
@@ -1653,7 +1653,8 @@ function renderMoneyShopping(){
     <div class="form-row" id="shopCatBox"></div>
     <button class="btn-pink" onclick="addShop()">➕ 加入清单</button>`;
   card.appendChild(form);
-  renderShopCategorySelect();
+  const shopCatBox=form.querySelector('#shopCatBox');
+  if(shopCatBox)renderCustomSelect(shopCatBox,moneyCats.map(c=>({value:c,label:c})),moneyCats[0],'选择分类');
   const bought=state.money.shopping.bought;
   const bwrap=div('shop-bought');bwrap.style.marginTop='16px';
   bwrap.innerHTML='<div class="card-title" style="margin-top:8px;">✅ 已买清单</div>';

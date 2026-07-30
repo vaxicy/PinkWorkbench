@@ -29,7 +29,7 @@
     box-shadow:0 18px 50px rgba(255,143,171,.22);display:flex;overflow:hidden;border:1px solid var(--pink-1);}
 
   /* 侧边栏 */
-  .sidebar{width:130px;flex-shrink:0;background:linear-gradient(180deg,var(--cream) 0%,var(--surface) 100%);
+  .sidebar{width:130px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--pink-1);box-shadow:2px 0 12px rgba(255,143,171,.12);
     border-right:1px solid var(--pink-1);padding:18px 10px;display:flex;flex-direction:column;gap:14px;}
   .profile{text-align:center;position:relative;}
   .avatar-wrap{position:relative;width:64px;height:64px;margin:0 auto 8px;}
@@ -60,6 +60,9 @@
   /* 主内容 */
   .main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg);}
   .topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--pink-1);display:flex;align-items:center;justify-content:space-between;padding:0 22px;}
+  .app-name{font-size:15px;font-weight:800;color:var(--pink-4);cursor:pointer;padding:5px 10px;border-radius:var(--radius-sm);transition:.2s;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis;}
+  .app-name:hover{background:var(--cream);}
+  .app-name-edit{font-size:15px;font-weight:800;color:var(--pink-4);border:1px solid var(--pink-2);border-radius:var(--radius-sm);padding:4px 8px;outline:none;width:140px;max-width:42vw;}
   .topbar .title{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:var(--pink-4);}
   .topbar .title .ico{font-size:24px;}
   .date-chip{background:var(--cream);border:1px solid var(--pink-1);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--pink-3);}
@@ -325,8 +328,8 @@
     .sport-chart-wrap{grid-template-columns:1fr;}
   }
 
-  .theme-toggle{background:transparent;border:none;font-size:20px;cursor:pointer;margin-left:8px;padding:4px 6px;border-radius:50%;transition:.2s;line-height:1;}
-  .theme-toggle:hover{background:var(--cream);}
+  .theme-toggle{background:transparent;border:none;font-size:20px;cursor:pointer;margin-left:8px;padding:4px 6px;transition:transform .2s;line-height:1;}
+  .theme-toggle:hover{transform:scale(1.15);}
   [data-theme="dark"]{
     --bg:#17131c;--bg-dot:#211a27;--panel:#1e1824;--cream:#2a2230;--surface:#332a3d;
     --pink-1:#4a2a38;--pink-2:#ff8fab;--pink-3:#ff8fab;--pink-4:#ff7096;
@@ -342,13 +345,14 @@
   @media(max-width:680px){
     body{padding:0;}
     .app{border-radius:0;max-width:100%;height:100vh;min-height:unset;flex-direction:column;}
-    .sidebar{order:2;width:100%;flex-direction:row;flex-wrap:nowrap;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px;border-right:none;border-top:1px solid var(--pink-1);border-bottom:none;position:fixed;bottom:0;left:0;background:linear-gradient(180deg,var(--panel) 0%,var(--cream) 100%);z-index:50;}
+    .sidebar{order:2;width:100%;flex-direction:row;flex-wrap:nowrap;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px;border-right:none;border-top:1px solid var(--pink-1);border-bottom:none;position:fixed;bottom:0;left:0;background:var(--panel);z-index:50;}
     .profile,.backup-bar{display:none;}
     .nav-item{flex-direction:column;padding:5px 2px;font-size:10px;gap:2px;flex:1;min-width:0;}
     .nav-item .ico{font-size:20px;}
     .main{order:1;padding-bottom:calc(70px + env(safe-area-inset-bottom));}
     .topbar{padding:0 12px;height:54px;}
-    .topbar .title{font-size:16px;}
+    .topbar .title{font-size:15px;}
+    .app-name{font-size:13px;padding:4px 8px;}
     .date-chip{font-size:11px;padding:4px 9px;}
     .theme-toggle{font-size:18px;}
     .content{padding:14px;}
@@ -395,9 +399,10 @@
 
   <main class="main">
     <header class="topbar">
+      <div class="app-name" id="appName" title="点击修改应用名称">工作台</div>
       <div class="title" id="pageTitle"><span class="ico">📅</span> 每日计划</div>
       <div class="date-chip" id="dateChip">07-30</div>
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="切换主题">☀️</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀️</button>
     </header>
     <div class="content custom-scroll" id="contentBox"></div>
   </main>
@@ -446,7 +451,7 @@ function defaultState(){
       {id:'supplement',icon:'💊',name:'补品类'},{id:'food',icon:'🍽️',name:'饮食'},
       {id:'work',icon:'💻',name:'工作'},{id:'study',icon:'📖',name:'学习'},{id:'life',icon:'🌸',name:'生活'}
     ],todos:[],schedule:[]},
-    english:{tab:'words',linked:true,wordCount:3,sentenceCount:3},
+    english:{tab:'words',linked:true,wordCount:3,sentenceCount:3,usedWordIdx:[],usedSentenceIdx:[],wordDate:'',sentenceDate:'',wordToday:[],sentenceToday:[]},
     sport:{tab:'today',items:[],week:[0,0,0,0,0,0,0]},
     money:{tab:'today',records:[]},
     period:{tab:'calendar',viewDate:today,currentStart:null,records:[],feelings:{}},
@@ -569,6 +574,37 @@ function render(){
 }
 
 /* ================= 个人资料 ================= */
+function updateAppNameUI(){
+  const an=document.getElementById('appName');if(an)an.textContent=state.profile.name;
+  document.title=state.profile.name;
+  const meta=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(meta)meta.setAttribute('content',state.profile.name);
+  updateManifest();
+}
+function updateManifest(){
+  try{
+    if(window.__manifestUrl)URL.revokeObjectURL(window.__manifestUrl);
+    const m={name:state.profile.name,short_name:state.profile.name,start_url:'./index.html',display:'standalone',background_color:'#fff5f7',theme_color:'#ff8fab',orientation:'portrait-primary',icons:[{src:'./icon.png?v=4',sizes:'192x192',type:'image/png'},{src:'./icon.png?v=4',sizes:'512x512',type:'image/png'}]};
+    const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
+    window.__manifestUrl=URL.createObjectURL(blob);
+    let link=document.querySelector('link[rel="manifest"]');if(!link){link=document.createElement('link');link.rel='manifest';document.head.appendChild(link);}
+    link.href=window.__manifestUrl;
+  }catch(e){}
+}
+function saveAppName(name){
+  state.profile.name=name||'小美的工作台';saveState();
+  const pn=document.getElementById('profileName');if(pn)pn.textContent=state.profile.name;
+  updateAppNameUI();
+}
+function bindAppNameEdit(){
+  const an=document.getElementById('appName');if(!an)return;
+  an.onclick=()=>{
+    if(an.tagName.toLowerCase()==='input')return;
+    const input=document.createElement('input');input.value=state.profile.name;input.className='app-name-edit';
+    input.onblur=()=>{saveAppName(input.value);renderProfile();};
+    input.onkeydown=e=>{if(e.key==='Enter')input.blur();};
+    an.replaceWith(input);input.focus();input.select();
+  };
+}
 function renderProfile(){
   const box=document.getElementById('avatarBox');
   if(!box)return;
@@ -576,6 +612,8 @@ function renderProfile(){
   const nameEl=document.getElementById('profileName');
   if(!nameEl)return;
   if(nameEl.tagName.toLowerCase()!=='input')nameEl.textContent=state.profile.name;
+  updateAppNameUI();
+  bindAppNameEdit();
 }
 const profileBox=document.getElementById('profileBox');
 profileBox.onclick=e=>{
@@ -584,9 +622,7 @@ profileBox.onclick=e=>{
   if(!nameEl||nameEl.tagName.toLowerCase()==='input')return;
   const input=document.createElement('input');input.value=state.profile.name;
   input.onblur=()=>{
-    state.profile.name=input.value||'小美的工作台';saveState();
-    const span=document.createElement('div');span.className='name';span.id='profileName';span.textContent=state.profile.name;
-    input.replaceWith(span);render();
+    saveAppName(input.value);render();
   };
   input.onkeydown=e=>{if(e.key==='Enter')input.blur();};
   nameEl.replaceWith(input);input.focus();input.select();
@@ -875,7 +911,64 @@ const wordsPool=[
   {w:'suggest',m:'建议',eg:'I suggest taking a break.',trans:'我建议休息一下。'},
   {w:'support',m:'支持',eg:'My family supports my dream.',trans:'家人支持我的梦想。'},
   {w:'tradition',m:'传统',eg:'Spring Festival is a Chinese tradition.',trans:'春节是中国的传统。'},
-  {w:'waste',m:'浪费',eg:'Don\'t waste your time.',trans:'别浪费你的时间。'}
+  {w:'waste',m:'浪费',eg:'Don\'t waste your time.',trans:'别浪费你的时间。'},
+  {w:'ability',m:'能力',eg:'Everyone has the ability to learn.',trans:'每个人都有学习的能力。'},
+  {w:'accept',m:'接受',eg:'She accepted the gift happily.',trans:'她开心地收下了礼物。'},
+  {w:'advice',m:'建议',eg:'He gave me good advice.',trans:'他给了我好建议。'},
+  {w:'afford',m:'负担得起',eg:'We can\'t afford a new car.',trans:'我们买不起一辆新车。'},
+  {w:'although',m:'虽然',eg:'Although it rained, we went out.',trans:'虽然下雨了，我们还是出门了。'},
+  {w:'appear',m:'出现',eg:'The sun appeared after the rain.',trans:'雨后太阳出来了。'},
+  {w:'avoid',m:'避免',eg:'We should avoid junk food.',trans:'我们应该避免垃圾食品。'},
+  {w:'balance',m:'平衡',eg:'Try to keep a balance in life.',trans:'试着在生活中保持平衡。'},
+  {w:'believe',m:'相信',eg:'I believe you can do it.',trans:'我相信你能做到。'},
+  {w:'brave',m:'勇敢的',eg:'The brave girl saved the cat.',trans:'那个勇敢的女孩救了猫。'},
+  {w:'calm',m:'冷静的',eg:'Stay calm when problems come.',trans:'遇到问题时要保持冷静。'},
+  {w:'celebrate',m:'庆祝',eg:'We celebrated her birthday.',trans:'我们庆祝了她的生日。'},
+  {w:'choose',m:'选择',eg:'Choose the one you like.',trans:'选一个你喜欢的。'},
+  {w:'comfort',m:'安慰',eg:'Her words comforted me.',trans:'她的话安慰了我。'},
+  {w:'consider',m:'考虑',eg:'Please consider my suggestion.',trans:'请考虑我的建议。'},
+  {w:'continue',m:'继续',eg:'Let\'s continue our work.',trans:'我们继续工作吧。'},
+  {w:'convenient',m:'方便的',eg:'Online shopping is convenient.',trans:'网购很方便。'},
+  {w:'courage',m:'勇气',eg:'It takes courage to say sorry.',trans:'说抱歉需要勇气。'},
+  {w:'curious',m:'好奇的',eg:'The child is curious about stars.',trans:'那个孩子对流星很好奇。'},
+  {w:'decide',m:'决定',eg:'We decided to walk home.',trans:'我们决定走回家。'},
+  {w:'depend',m:'依赖',eg:'Don\'t depend on luck.',trans:'不要依赖运气。'},
+  {w:'describe',m:'描述',eg:'Can you describe the place?',trans:'你能描述一下那个地方吗？'},
+  {w:'differ',m:'不同',eg:'Opinions differ from person to person.',trans:'每个人的看法都不同。'},
+  {w:'discuss',m:'讨论',eg:'We discussed the plan.',trans:'我们讨论了那个计划。'},
+  {w:'educate',m:'教育',eg:'Schools educate the young.',trans:'学校教育年轻人。'},
+  {w:'enjoy',m:'享受',eg:'I enjoy reading at night.',trans:'我喜欢夜晚读书。'},
+  {w:'explain',m:'解释',eg:'Please explain it again.',trans:'请再解释一遍。'},
+  {w:'forgive',m:'原谅',eg:'I forgave his small mistake.',trans:'我原谅了他的小错误。'},
+  {w:'grateful',m:'感激的',eg:'I\'m grateful for your help.',trans:'我很感激你的帮助。'},
+  {w:'guess',m:'猜测',eg:'I guess he is tired.',trans:'我猜他累了。'},
+  {w:'healthy',m:'健康的',eg:'Eat well to stay healthy.',trans:'吃好才能保持健康。'},
+  {w:'hope',m:'希望',eg:'I hope to see you soon.',trans:'我希望很快见到你。'},
+  {w:'imagine',m:'想象',eg:'Imagine a world without war.',trans:'想象一个没有战争的世界。'},
+  {w:'important',m:'重要的',eg:'Sleep is important for health.',trans:'睡眠对健康很重要。'},
+  {w:'join',m:'加入',eg:'Can I join your team?',trans:'我能加入你们团队吗？'},
+  {w:'kind',m:'善良的',eg:'She is a kind person.',trans:'她是个善良的人。'},
+  {w:'learn',m:'学习',eg:'We learn from mistakes.',trans:'我们从错误中学习。'},
+  {w:'listen',m:'倾听',eg:'Listen to your heart.',trans:'倾听你的内心。'},
+  {w:'mean',m:'意思是',eg:'What does this word mean?',trans:'这个单词是什么意思？'},
+  {w:'need',m:'需要',eg:'Plants need water and sun.',trans:'植物需要水和阳光。'},
+  {w:'notice',m:'注意到',eg:'I noticed a small change.',trans:'我注意到了一个小变化。'},
+  {w:'offer',m:'提供',eg:'They offered me a job.',trans:'他们给我提供了一份工作。'},
+  {w:'peace',m:'平静',eg:'She found peace in the garden.',trans:'她在花园里找到了平静。'},
+  {w:'plan',m:'计划',eg:'We plan to travel in summer.',trans:'我们计划夏天去旅行。'},
+  {w:'prepare',m:'准备',eg:'Prepare for the exam early.',trans:'早点备考。'},
+  {w:'promise',m:'承诺',eg:'He promised to come back.',trans:'他承诺会回来。'},
+  {w:'quiet',m:'安静的',eg:'The library is very quiet.',trans:'图书馆很安静。'},
+  {w:'relax',m:'放松',eg:'Music helps me relax.',trans:'音乐帮我放松。'},
+  {w:'remember',m:'记得',eg:'Remember to lock the door.',trans:'记得锁门。'},
+  {w:'share',m:'分享',eg:'Share your happiness with friends.',trans:'和朋友分享快乐。'},
+  {w:'succeed',m:'成功',eg:'Hard work helps you succeed.',trans:'努力让你成功。'},
+  {w:'trust',m:'信任',eg:'Trust takes time to build.',trans:'信任需要时间建立。'},
+  {w:'understand',m:'理解',eg:'I understand your feeling.',trans:'我理解你的感受。'},
+  {w:'value',m:'重视',eg:'We value honest friends.',trans:'我们重视真诚的朋友。'},
+  {w:'welcome',m:'欢迎',eg:'You are welcome here.',trans:'这里欢迎你。'},
+  {w:'wonder',m:'想知道',eg:'I wonder what happened.',trans:'我想知道发生了什么。'},
+  {w:'young',m:'年轻的',eg:'The young man loves music.',trans:'那个年轻人喜欢音乐。'}
 ];
 const sentencePool=[
   {en:'I drink a cup of milk every morning.',cn:'我每天早上喝一杯牛奶。'},
@@ -889,8 +982,114 @@ const sentencePool=[
   {en:'I finished my homework and felt relaxed.',cn:'我写完了作业，感到很放松。'},
   {en:'She smiled and said hello to me.',cn:'她微笑着跟我打招呼。'},
   {en:'Reading a book before sleep helps you rest.',cn:'睡前读会儿书能帮你放松。'},
-  {en:'We can learn something new every day.',cn:'我们每天都能学到新东西。'}
+  {en:'We can learn something new every day.',cn:'我们每天都能学到新东西。'},
+  {en:'A good breakfast gives you energy for the day.',cn:'一顿好早餐给你一天的能量。'},
+  {en:'He spends an hour reading before bed.',cn:'他睡前花一小时阅读。'},
+  {en:'She keeps a small plant on her desk.',cn:'她在桌上养了一盆小植物。'},
+  {en:'Walking after meals is good for health.',cn:'饭后散步对健康有好处。'},
+  {en:'I like to write down three things I\'m thankful for.',cn:'我喜欢写下三件让我感恩的事。'},
+  {en:'He made tea for the whole family.',cn:'他给全家人泡了茶。'},
+  {en:'The cat slept on the warm windowsill.',cn:'猫睡在温暖的窗台上。'},
+  {en:'We watched the sunset by the lake.',cn:'我们在湖边看了日落。'},
+  {en:'She sang a song while cooking dinner.',cn:'她一边做饭一边唱歌。'},
+  {en:'Don\'t forget to call your parents today.',cn:'今天别忘了给父母打个电话。'},
+  {en:'A short nap can refresh your mind.',cn:'小睡一会儿能让你头脑清醒。'},
+  {en:'He learned to cook a simple meal.',cn:'他学会了做一道简单的菜。'},
+  {en:'The library is a quiet place to study.',cn:'图书馆是安静的学习场所。'},
+  {en:'She bought fresh flowers for the living room.',cn:'她给客厅买了鲜花。'},
+  {en:'We should save some money each month.',cn:'我们每个月都应该存点钱。'},
+  {en:'Listening to music makes chores easier.',cn:'听音乐让家务变轻松。'},
+  {en:'He fixed the broken chair by himself.',cn:'他自己修好了坏掉的椅子。'},
+  {en:'The children laughed while playing in the snow.',cn:'孩子们在雪地里玩得哈哈大笑。'},
+  {en:'I keep a journal to record my mood.',cn:'我写日记来记录心情。'},
+  {en:'She always arrives ten minutes early.',cn:'她总是提前十分钟到。'},
+  {en:'Drinking warm water in the morning feels nice.',cn:'早上喝温水感觉很舒服。'},
+  {en:'We took the train to the seaside.',cn:'我们坐火车去了海边。'},
+  {en:'He watered the plants every evening.',cn:'他每天傍晚给植物浇水。'},
+  {en:'A tidy room helps you think clearly.',cn:'整洁的房间帮你思路清晰。'},
+  {en:'She painted a picture of her cat.',cn:'她画了一幅猫的画。'},
+  {en:'Let\'s meet at the coffee shop after work.',cn:'下班后我们在咖啡店见吧。'},
+  {en:'He reads the news while having breakfast.',cn:'他吃早餐时看新闻。'},
+  {en:'The old man feeds the stray cats daily.',cn:'老人每天喂流浪猫。'},
+  {en:'We made dumplings together for the festival.',cn:'我们一起包饺子过节。'},
+  {en:'She smiled when she opened the gift.',cn:'她拆开礼物时笑了。'},
+  {en:'Try to stand up and stretch every hour.',cn:'试着每小时站起来伸展一下。'},
+  {en:'He enjoys biking to work on sunny days.',cn:'晴天他喜欢骑车上班。'},
+  {en:'The baby fell asleep in her arms.',cn:'宝宝在她怀里睡着了。'},
+  {en:'We planted tomatoes in the garden.',cn:'我们在花园里种了番茄。'},
+  {en:'She writes a letter to her grandmother.',cn:'她给奶奶写了一封信。'},
+  {en:'A warm hug can make a bad day better.',cn:'一个温暖的拥抱能让糟糕的一天变好。'},
+  {en:'He practiced the piano for thirty minutes.',cn:'他练了三十分钟钢琴。'},
+  {en:'The rain stopped and the birds began to sing.',cn:'雨停了，鸟儿开始歌唱。'},
+  {en:'We cooked a big meal to celebrate.',cn:'我们做了一顿大餐来庆祝。'},
+  {en:'She keeps all her books on one shelf.',cn:'她把书都放在一个书架上。'},
+  {en:'He took a deep breath and stayed calm.',cn:'他深吸一口气，保持冷静。'},
+  {en:'The smell of bread filled the kitchen.',cn:'厨房里飘满了面包的香味。'},
+  {en:'We watched a movie and ate popcorn.',cn:'我们看了电影，吃了爆米花。'},
+  {en:'She folded the clothes neatly.',cn:'她把衣服叠得整整齐齐。'},
+  {en:'He helped an old lady cross the street.',cn:'他帮一位老奶奶过马路。'},
+  {en:'The puppy wagged its tail happily.',cn:'小狗开心地摇着尾巴。'},
+  {en:'I like to watch the stars at night.',cn:'我喜欢夜晚看星星。'},
+  {en:'She prepared a healthy lunch box.',cn:'她准备了一个健康的便当。'},
+  {en:'We discussed our plans for the weekend.',cn:'我们讨论了周末的计划。'},
+  {en:'He cleaned his desk before starting work.',cn:'他开始工作前先清理了书桌。'},
+  {en:'The children built a sandcastle on the beach.',cn:'孩子们在沙滩上堆了一座沙堡。'},
+  {en:'She drank a glass of juice after running.',cn:'跑步后她喝了一杯果汁。'},
+  {en:'We should spend less time on the phone.',cn:'我们应该少花点时间看手机。'},
+  {en:'He gave up his seat to a pregnant woman.',cn:'他给一位孕妇让了座。'},
+  {en:'The wind blew the leaves across the path.',cn:'风吹着叶子飘过小路。'},
+  {en:'She learned a new recipe this week.',cn:'她这周学了一道新菜。'},
+  {en:'We took photos to remember the trip.',cn:'我们拍照留住旅行回忆。'},
+  {en:'He whistled a happy tune while walking.',cn:'他走路时吹着欢快的口哨。'},
+  {en:'The kitten played with a ball of yarn.',cn:'小猫玩着一团毛线。'},
+  {en:'She keeps a bottle of water on her desk.',cn:'她在桌上放了一瓶水。'},
+  {en:'We enjoyed a quiet evening at home.',cn:'我们在家享受了一个安静的夜晚。'},
+  {en:'He sent a postcard from his trip.',cn:'他从旅途中寄了一张明信片。'},
+  {en:'The teacher praised the student\'s effort.',cn:'老师表扬了学生的努力。'},
+  {en:'She rearranged her room for a fresh look.',cn:'她重新布置了房间，焕然一新。'},
+  {en:'We shared an umbrella in the rain.',cn:'我们在雨里共撑一把伞。'},
+  {en:'He fixed a simple breakfast for himself.',cn:'他给自己做了顿简单的早餐。'},
+  {en:'The garden smells sweet in spring.',cn:'春天花园里飘着清香。'},
+  {en:'She knitted a scarf for winter.',cn:'她织了一条过冬的围巾。'},
+  {en:'We laughed at the funny video together.',cn:'我们一起看搞笑视频大笑。'},
+  {en:'He wrote down his goals for the year.',cn:'他写下来今年的目标。'},
+  {en:'The moon was bright above the hills.',cn:'月亮在山顶上方很明亮。'},
+  {en:'She watered the flowers with care.',cn:'她细心地给花浇水。'},
+  {en:'We took a slow walk after dinner.',cn:'我们晚饭后慢慢散了步。'},
+  {en:'He cheered when his team scored.',cn:'他球队进球时他欢呼起来。'},
+  {en:'The little girl drew a picture for her mom.',cn:'小女孩给妈妈画了一幅画。'},
+  {en:'She keeps a candle on the dinner table.',cn:'她在餐桌上放了一支蜡烛。'},
+  {en:'We should be kind to one another.',cn:'我们应该彼此友善。'},
+  {en:'He found a quiet spot to read.',cn:'他找了个安静角落读书。'},
+  {en:'The smell of coffee woke me up.',cn:'咖啡的香味把我唤醒了。'},
+  {en:'She thanked the waiter with a smile.',cn:'她微笑着谢谢服务员。'},
+  {en:'We built a fort with blankets and pillows.',cn:'我们用毯子和枕头搭了个堡垒。'},
+  {en:'He watched the clouds change shapes.',cn:'他看云朵变换形状。'},
+  {en:'The fish swam happily in the tank.',cn:'鱼在缸里欢快地游着。'},
+  {en:'She sang lullabies to help him sleep.',cn:'她唱摇篮曲哄他入睡。'},
+  {en:'We picked apples at the orchard.',cn:'我们在果园里摘苹果。'},
+  {en:'He tied his shoelaces before running.',cn:'跑步前他系好了鞋带。'},
+  {en:'The snow made the world look quiet.',cn:'雪让世界显得安静。'},
+  {en:'She baked cookies for her friends.',cn:'她给朋友们烤了饼干。'}
 ];
+function pickSequential(pool,key,n){
+  const usedKey=key==='word'?'usedWordIdx':'usedSentenceIdx';
+  const dateKey=key==='word'?'wordDate':'sentenceDate';
+  const today=todayKey();
+  if(!Array.isArray(state.english[usedKey]))state.english[usedKey]=[];
+  if(state.english[dateKey]!==today || !Array.isArray(state.english[key+'Today']) || !state.english[key+'Today'].length){
+    let used=state.english[usedKey];
+    if(used.length+n>pool.length)used=state.english[usedKey]=[]; // 全部用完后开启新一轮
+    const batch=[];
+    for(let i=0;i<pool.length && batch.length<n;i++){ if(!used.includes(i))batch.push(i); }
+    state.english[usedKey]=used.concat(batch);
+    state.english[dateKey]=today;
+    state.english[key+'Today']=batch;
+    saveState();
+  }
+  return state.english[key+'Today'].map(i=>pool[i]);
+}
+
 function renderEnglish(box){
   const tabs=div('tabs');
   ['words','sentences'].forEach(k=>{
@@ -909,7 +1108,7 @@ function renderEnglish(box){
   const count=isWords?state.english.wordCount:state.english.sentenceCount;
   card.innerHTML=`<div class="card-title">${isWords?'📝':'🎧'} 每日${isWords?'单词':'长句'} · <span style="font-weight:400;color:var(--brown-light)">每日 ${count} ${isWords?'个':'句'}</span></div>`;
   if(isWords){
-    const words=pickByDate(wordsPool,state.english.wordCount,0);
+    const words=pickSequential(wordsPool,'word',state.english.wordCount);
     const wrap=div('word-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     words.forEach((w,i)=>{
       const item=div('word-card');item.style.cssText='text-align:left;padding:18px 16px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
@@ -924,7 +1123,7 @@ function renderEnglish(box){
     });
     card.appendChild(wrap);
   }else{
-    const sentences=pickByDate(sentencePool,state.english.sentenceCount,200);
+    const sentences=pickSequential(sentencePool,'sentence',state.english.sentenceCount);
     const wrap=div('sentence-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     sentences.forEach((s,i)=>{
       const item=div('sentence-card');item.style.cssText='padding:18px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
@@ -1106,7 +1305,7 @@ function updateMoneyTypeUI(){document.getElementById('btnExp')?.classList.toggle
 function renderMoneyCategorySelect(){const box=document.getElementById('moneyCatBox');if(!box)return;const cats=window.moneyType==='income'?['工资','奖金','红包','兼职','投资','其他']:moneyCats;renderCustomSelect(box,cats.map(c=>({value:c,label:c})),cats[0],'选择分类');}
 function addMoney(){const amt=parseFloat(document.getElementById('moneyAmt').value);if(!amt||amt<=0)return;const cat=getCustomSelectValue(document.getElementById('moneyCatBox'))||'其他';const note=document.getElementById('moneyNote').value.trim();state.money.records.push({id:Date.now(),type:window.moneyType||'expense',cat,amt,note,date:todayKey()});saveState();render();}
 function delMoney(id,e){e.stopPropagation();showConfirm('确定删除这条记录？').then(yes=>{if(yes){state.money.records=state.money.records.filter(x=>x.id!==id);saveState();render();}});}
-function editMoney(id,e){e.stopPropagation();const item=state.money.records.find(x=>x.id===id);const row=e.target.closest('.record');row.innerHTML='';const form=div('inline-form');const aIn=document.createElement('input');aIn.type='number';aIn.value=item.amt;const nIn=document.createElement('input');nIn.value=item.note;const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.amt=parseFloat(aIn.value)||item.amt;item.note=nIn.value;saveState();render();};form.append(aIn,nIn,ok);row.appendChild(form);}
+function editMoney(id,e){e.stopPropagation();const item=state.money.records.find(x=>x.id===id);const row=e.target.closest('.record');row.innerHTML='';const form=div('inline-form');const aIn=document.createElement('input');aIn.type='number';aIn.value=item.amt;aIn.placeholder='金额';const nIn=document.createElement('input');nIn.value=item.note;nIn.placeholder='备注';const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.amt=parseFloat(aIn.value)||item.amt;item.note=nIn.value;saveState();render();};form.append(aIn,nIn,ok);row.appendChild(form);}
 function renderMoneyChart(recs){
   const wrap=div('money-chart');
   const days={};for(let i=1;i<=31;i++)days[i]=0;

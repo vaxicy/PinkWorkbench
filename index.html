@@ -2023,13 +2023,25 @@ function renderTreeGarden(box){
       </div>`;
     card.appendChild(row);
   });
-  const form=div();form.style.marginTop='14px';
-  form.innerHTML=`<div class="form-row"><input id="plantName" placeholder="给植物取个名字"/></div>
-    <div class="chip-grid" id="plantTypeGrid"></div>
-    <button class="btn-pink" onclick="addPlant()">🌱 种新植物 (-30)</button>`;
-  card.appendChild(form);
+  const emptyTip=card.querySelector('.empty-tip');
+  const addBtn=document.createElement('button');addBtn.className='btn-pink';addBtn.style.marginTop='14px';
+  addBtn.textContent='🌱 种新植物 (-30)';
+  addBtn.onclick=showAddPlantModal;
+  if(emptyTip)emptyTip.after(addBtn);else card.appendChild(addBtn);
   box.appendChild(card);
-  const grid=card.querySelector('#plantTypeGrid');grid.className='chip-grid';
+}
+function showAddPlantModal(){
+  const body=div();
+  body.innerHTML=`<div class="form-row"><input id="plantNameModal" placeholder="给植物取个名字"/></div><div class="chip-grid" id="plantTypeGridModal"></div>`;
+  const acts=div();acts.style.marginTop='14px';
+  const okBtn=document.createElement('button');okBtn.className='btn-pink';okBtn.textContent='🌱 确认种植 (-30)';
+  const enough=(state.game.energy||0)>=30;
+  if(!enough)okBtn.disabled=true;
+  okBtn.onclick=()=>{ if(addPlant())hideModal(); };
+  acts.appendChild(okBtn);body.appendChild(acts);
+  const low=(state.game.energy||0)<30;
+  showModal({title:'🌱 种新植物',body:low?'<div class="empty-tip" style="margin-bottom:10px;">爱心值不足，先去完成任务攒爱心值吧</div>':'',noCancel:true,render:m=>m.appendChild(body)});
+  const grid=body.querySelector('#plantTypeGridModal');grid.className='chip-grid';
   window.plantTypeVal='succulent';
   PLANT_TYPES.forEach(t=>{
     const s=document.createElement('span');s.innerHTML=`${t.icon} ${t.name}`;s.dataset.id=t.id;
@@ -2039,13 +2051,13 @@ function renderTreeGarden(box){
   });
 }
 function addPlant(){
-  const name=document.getElementById('plantName').value.trim();
+  const name=document.getElementById('plantNameModal')?.value.trim();
   const type=PLANT_TYPES.find(t=>t.id===(window.plantTypeVal||'succulent'));
-  if(!name)return showModal({title:'提示',body:'先给植物取个名字吧',noCancel:true});
-  if((state.game.energy||0)<30)return showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能种啦',noCancel:true});
+  if(!name){showModal({title:'提示',body:'先给植物取个名字吧',noCancel:true});return false;}
+  if((state.game.energy||0)<30){showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能种啦',noCancel:true});return false;}
   addEnergy(-30);
   state.garden.plants.push({id:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,lastWatered:Date.now(),sunLog:{}});
-  saveState();render();
+  saveState();render();return true;
 }
 function waterPlant(id,e){
   e.stopPropagation();
@@ -2092,13 +2104,25 @@ function renderTreePet(box){
       </div>`;
     card.appendChild(row);
   });
-  const form=div();form.style.marginTop='14px';
-  form.innerHTML=`<div class="form-row"><input id="petName" placeholder="给宠物取个名字"/></div>
-    <div class="chip-grid" id="petTypeGrid"></div>
-    <button class="btn-pink" onclick="addPet()">🐾 领养宠物 (-50)</button>`;
-  card.appendChild(form);
+  const emptyTip=card.querySelector('.empty-tip');
+  const addBtn=document.createElement('button');addBtn.className='btn-pink';addBtn.style.marginTop='14px';
+  addBtn.textContent='🐾 领养宠物 (-50)';
+  addBtn.onclick=showAddPetModal;
+  if(emptyTip)emptyTip.after(addBtn);else card.appendChild(addBtn);
   box.appendChild(card);
-  const grid=card.querySelector('#petTypeGrid');grid.className='chip-grid';
+}
+function showAddPetModal(){
+  const body=div();
+  body.innerHTML=`<div class="form-row"><input id="petNameModal" placeholder="给宠物取个名字"/></div><div class="chip-grid" id="petTypeGridModal"></div>`;
+  const acts=div();acts.style.marginTop='14px';
+  const okBtn=document.createElement('button');okBtn.className='btn-pink';okBtn.textContent='🐾 确认领养 (-50)';
+  const enough=(state.game.energy||0)>=50;
+  if(!enough)okBtn.disabled=true;
+  okBtn.onclick=()=>{ if(addPet())hideModal(); };
+  acts.appendChild(okBtn);body.appendChild(acts);
+  const low=(state.game.energy||0)<50;
+  showModal({title:'🐾 领养宠物',body:low?'<div class="empty-tip" style="margin-bottom:10px;">爱心值不足，先去完成任务攒爱心值吧</div>':'',noCancel:true,render:m=>m.appendChild(body)});
+  const grid=body.querySelector('#petTypeGridModal');grid.className='chip-grid';
   window.petTypeVal='cat';
   PET_TYPES.forEach(t=>{
     const s=document.createElement('span');s.innerHTML=`${t.icon} ${t.name}`;s.dataset.id=t.id;
@@ -2108,14 +2132,14 @@ function renderTreePet(box){
   });
 }
 function addPet(){
-  const name=document.getElementById('petName').value.trim();
+  const name=document.getElementById('petNameModal')?.value.trim();
   const type=PET_TYPES.find(t=>t.id===(window.petTypeVal||'cat'));
-  if(!name)return showModal({title:'提示',body:'先给宠物取个名字吧',noCancel:true});
-  if((state.game.energy||0)<50)return showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能领养啦',noCancel:true});
+  if(!name){showModal({title:'提示',body:'先给宠物取个名字吧',noCancel:true});return false;}
+  if((state.game.energy||0)<50){showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能领养啦',noCancel:true});return false;}
   addEnergy(-50);
   state.pet.owned.push({id:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,hunger:80,happiness:80,interactLog:{}});
   if(!state.pet.activeId)state.pet.activeId=state.pet.owned[state.pet.owned.length-1].id;
-  saveState();render();
+  saveState();render();return true;
 }
 function feedPet(id,e){
   e.stopPropagation();

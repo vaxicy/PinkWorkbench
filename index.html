@@ -8,8 +8,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="工作台" />
 <link rel="manifest" href="./manifest.json" />
-<link rel="icon" type="image/png" href="./icon.png?v=4" />
-<link rel="apple-touch-icon" href="./icon.png?v=4" />
+<link rel="icon" type="image/png" href="./icon.png?v=5" />
+<link rel="apple-touch-icon" href="./icon.png?v=5" />
 <title>工作台</title>
 <style>
   :root{
@@ -171,7 +171,10 @@
   .game-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
   .game-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
   .game-head b{color:var(--brown);font-size:14px;}
+  .game-head .editable-name{cursor:pointer;border-bottom:1px dashed var(--pink-3);transition:.2s;}
+  .game-head .editable-name:hover{color:var(--pink-4);border-bottom-color:var(--pink-4);}
   .game-head span{font-size:11px;color:var(--brown-light);}
+  .name-edit{font-family:inherit;font-size:14px;font-weight:700;color:var(--brown);padding:0 2px;border:1px solid var(--pink-3);border-radius:6px;background:#fff;width:90px;outline:none;box-sizing:border-box;}
   .game-bar{height:5px;background:var(--pink-1);border-radius:999px;overflow:hidden;}
   .game-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#7dd87d);border-radius:999px;transition:width .3s ease;}
   .stat-bars{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:1px;}
@@ -2012,7 +2015,7 @@ function renderTreeGarden(box){
     const waterPct=thirsty?8:100;const waterColor=thirsty?'var(--pink-4)':'var(--green)';
     row.innerHTML=`<div class="game-avatar">${p.icon}</div>
       <div class="game-main">
-        <div class="game-head"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
+        <div class="game-head"><b class="editable-name" onclick="startPlantNameEdit(${p.id},event)">${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
         <div class="game-bar"><i style="width:${Math.min(100,p.exp/need*100)}%"></i></div>
         <div class="stat-bars"><div class="stat-bar"><span>💧</span><span class="track"><i style="width:${waterPct}%;background:${waterColor}"></i></span><span class="val">${thirsty?'渴':100}</span></div></div>
         <span class="game-status">☀️ 今日晒太阳 ${sunToday}/3</span>
@@ -2074,6 +2077,24 @@ function sunPlant(id,e){
   levelUpPlant(p);saveState();render();showMiniConfetti(e.target);
 }
 function levelUpPlant(p){const need=plantNeedExp(p.level);while(p.exp>=need&&p.level<5){p.exp-=need;p.level++;}}
+function startPlantNameEdit(id,e){
+  e.stopPropagation();
+  if(document.querySelector('.name-edit'))return;
+  const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
+  const b=e.target.closest('b');if(!b)return;
+  const input=document.createElement('input');input.value=p.name;input.className='name-edit';
+  input.style.width=(Math.max(50,p.name.length*14+12))+'px';
+  const original=p.name;
+  input.onblur=()=>{savePlantName(id,input.value);};
+  input.onkeydown=ev=>{if(ev.key==='Enter')input.blur();if(ev.key==='Escape'){input.value=original;input.blur();}};
+  b.replaceWith(input);input.focus();input.select();
+}
+function savePlantName(id,newName){
+  const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
+  newName=(newName||'').trim();
+  if(!newName)newName=p.name;
+  p.name=newName;saveState();render();
+}
 
 /* ---------- 宠物 ---------- */
 const PET_TYPES=[{id:'cat',icon:'🐱',name:'小猫咪'},{id:'dog',icon:'🐶',name:'小狗狗'},{id:'rabbit',icon:'🐰',name:'小兔子'},{id:'dino',icon:'🦖',name:'小恐龙'},{id:'fox',icon:'🦊',name:'小狐狸'},{id:'panda',icon:'🐼',name:'小熊猫'},{id:'koala',icon:'🐨',name:'小树袋熊'},{id:'penguin',icon:'🐧',name:'小企鹅'}];
@@ -2090,7 +2111,7 @@ function renderTreePet(box){
     const row=div('game-card');
     row.innerHTML=`<div class="game-avatar">${p.icon}</div>
       <div class="game-main">
-        <div class="game-head"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
+        <div class="game-head"><b class="editable-name" onclick="startPetNameEdit(${p.id},event)">${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
         <div class="game-bar"><i style="width:${Math.min(100,p.exp/need*100)}%"></i></div>
         <div class="stat-bars">
           <div class="stat-bar"><span>🍖</span><span class="track"><i style="width:${p.hunger}%;background:linear-gradient(90deg,#ffb3c6,#ff7aa2)"></i></span><span class="val">${p.hunger}</span></div>
@@ -2158,6 +2179,24 @@ function petPet(id,e){
   levelUpPet(p);saveState();render();showMiniConfetti(e.target);
 }
 function levelUpPet(p){const need=petNeedExp(p.level);while(p.exp>=need&&p.level<6){p.exp-=need;p.level++;}}
+function startPetNameEdit(id,e){
+  e.stopPropagation();
+  if(document.querySelector('.name-edit'))return;
+  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const b=e.target.closest('b');if(!b)return;
+  const input=document.createElement('input');input.value=p.name;input.className='name-edit';
+  input.style.width=(Math.max(50,p.name.length*14+12))+'px';
+  const original=p.name;
+  input.onblur=()=>{savePetName(id,input.value);};
+  input.onkeydown=ev=>{if(ev.key==='Enter')input.blur();if(ev.key==='Escape'){input.value=original;input.blur();}};
+  b.replaceWith(input);input.focus();input.select();
+}
+function savePetName(id,newName){
+  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  newName=(newName||'').trim();
+  if(!newName)newName=p.name;
+  p.name=newName;saveState();render();
+}
 
 function addTreeEntry(){
   const t=document.getElementById('treeText').value.trim();if(!t)return;

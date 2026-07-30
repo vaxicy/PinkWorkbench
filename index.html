@@ -39,8 +39,10 @@
   .avatar-hint{position:absolute;bottom:-2px;right:-2px;width:24px;height:24px;background:var(--pink-3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;text-align:center;box-shadow:var(--shadow);cursor:pointer;border:2px solid var(--surface);transition:transform .2s,background .2s;}.avatar-hint:hover{transform:scale(1.1);background:var(--pink-4);}
   .avatar-hint svg{display:block;transform:translateY(-1px);}
   .profile .name{font-size:12px;font-weight:700;color:var(--brown);padding:4px;border-radius:8px;cursor:pointer;}
+  .sidebar-name-edit{font-family:inherit;font-size:12px;font-weight:700;color:var(--brown);padding:3px 4px;border-radius:8px;border:1px solid var(--pink-3);background:#fff;width:110px;text-align:center;outline:none;box-sizing:border-box;}
+  .sidebar-name-edit:focus{border-color:var(--pink-4);box-shadow:0 0 0 2px var(--pink-1);}
   .profile .name:hover{background:var(--pink-1);}
-  .profile input{width:100%;text-align:center;border:1px solid var(--pink-3);border-radius:8px;padding:4px;font-size:12px;font-weight:700;color:var(--brown);outline:none;}
+  .profile input{width:110px;text-align:center;border:1px solid var(--pink-3);border-radius:8px;padding:3px 4px;font-size:12px;font-weight:700;color:var(--brown);outline:none;box-sizing:border-box;font-family:inherit;}
   .avatar-menu{display:none;position:absolute;top:70px;left:50%;transform:translateX(-50%);background:var(--surface);border:1px solid var(--pink-1);border-radius:var(--radius-sm);padding:8px;box-shadow:var(--shadow);z-index:10;width:120px;}
   .avatar-menu.show{display:block;}
   .avatar-menu button{width:100%;border:none;background:transparent;padding:7px;border-radius:8px;font-size:12px;color:var(--brown);cursor:pointer;text-align:left;}
@@ -135,7 +137,7 @@
   /* 习惯打卡 */
   .habit-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px;padding:12px 14px;background:var(--pink-0);border-radius:var(--radius-sm);font-size:13px;color:var(--brown-light);}
   .habit-summary span{display:flex;align-items:center;gap:4px;}
-  .habit-summary b{color:var(--pink-4);font-size:15px;}
+  .habit-summary b{color:var(--pink-4);font-size:14px;}
   .habit-row .check.on{background:var(--green);border-color:var(--green);}
   .habit-row .check.on::after{content:"✓";color:var(--surface);font-size:14px;font-weight:800;}
   .task.habit-row.done b,.task.habit-row.done span{text-decoration:none;color:var(--brown);}
@@ -156,26 +158,45 @@
   /* 小树洞游戏化 */
   .tree-energy-bar{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:10px 14px;background:linear-gradient(90deg,var(--pink-0),var(--pink-1));border-radius:var(--radius-sm);font-size:13px;color:var(--brown);}
   .tree-energy-bar span:first-child{font-weight:800;color:var(--pink-4);font-size:15px;}
+  .energy-link{color:var(--pink-4);cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-weight:700;}
+  .energy-link:hover{color:var(--pink-3);}
+  .energy-guide{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+  .energy-guide .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;background:var(--cream);border-radius:var(--radius-sm);font-size:13px;color:var(--brown);}
+  .energy-guide .row b{color:var(--pink-4);font-weight:800;flex:none;}
   .tree-tabs{display:flex;gap:8px;margin-bottom:14px;}
   .tree-tab{flex:1;padding:10px;border:1px solid var(--pink-1);border-radius:999px;background:var(--surface);color:var(--brown-light);font-family:var(--font);font-size:13px;cursor:pointer;}
   .tree-tab.on{background:var(--pink-1);color:var(--pink-4);border-color:var(--pink-2);font-weight:700;}
-  .game-card{display:flex;align-items:center;gap:14px;padding:14px;background:var(--pink-0);border-radius:var(--radius-sm);margin-bottom:12px;}
-  .game-avatar{font-size:48px;line-height:1;}
-  .game-info{flex:1;display:flex;flex-direction:column;gap:5px;}
-  .game-info b{color:var(--brown);font-size:15px;}
-  .game-info span{font-size:12px;color:var(--brown-light);}
-  .game-bar{height:8px;background:var(--pink-1);border-radius:999px;overflow:hidden;}
+  .game-card{display:flex;align-items:stretch;gap:10px;padding:10px;background:var(--pink-0);border-radius:var(--radius-sm);margin-bottom:8px;}
+  .game-avatar{align-self:center;font-size:32px;line-height:1;flex:none;width:40px;text-align:center;}
+  .game-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+  .game-head{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap;}
+  .game-head b{color:var(--brown);font-size:14px;}
+  .game-head span{font-size:11px;color:var(--brown-light);}
+  .game-bar{height:5px;background:var(--pink-1);border-radius:999px;overflow:hidden;}
   .game-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#7dd87d);border-radius:999px;transition:width .3s ease;}
-  .game-status{font-size:12px;color:var(--pink-4);}
-  .game-actions{display:flex;flex-direction:column;gap:8px;}
-  .game-actions .btn-small{padding:6px 10px;font-size:12px;}
-  .game-actions .btn-small:disabled{opacity:.5;cursor:not-allowed;}
+  .stat-bars{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:1px;}
+  .stat-bar{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--brown-light);}
+  .stat-bar .track{width:42px;height:4px;background:var(--pink-1);border-radius:999px;overflow:hidden;}
+  .stat-bar .track i{display:block;height:100%;border-radius:999px;transition:width .3s ease;}
+  .stat-bar .val{min-width:18px;text-align:right;font-weight:700;color:var(--pink-4);font-size:10px;}
+  .game-status{font-size:10px;color:var(--pink-4);margin-top:1px;}
+  .game-actions{display:flex;flex-direction:row;gap:6px;align-items:flex-end;flex:none;padding-bottom:2px;}
+  .game-actions .btn-small{padding:4px 8px;font-size:11px;white-space:nowrap;border-radius:999px;background:#fff;border:1px solid var(--pink-2);color:var(--pink-4);font-weight:600;}
+  .game-actions .btn-small:disabled{opacity:.5;cursor:not-allowed;background:var(--pink-1);border-color:var(--pink-1);color:var(--brown-light);}
+  .game-actions .btn-small:hover:not(:disabled){background:var(--pink-1);}
+  .chip-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px;}
+  .chip-grid span{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 8px;background:var(--pink-0);border-radius:999px;font-size:12px;color:var(--brown);border:1px solid transparent;cursor:pointer;transition:background .2s,border-color .2s;}
+  .chip-grid span.active{background:var(--pink-4);color:#fff;border-color:var(--pink-4);}
+  .chip-grid span:hover:not(.active){background:var(--cream);border-color:var(--pink-2);}
+  .heart-toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%) translateY(10px);background:var(--pink-4);color:#fff;padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;box-shadow:0 6px 20px rgba(255,122,162,.4);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:9999;}
+  .heart-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
   .form-row{margin-bottom:12px;}
   .form-row input,.form-row select{width:100%;padding:11px 14px;border:1px solid var(--pink-1);border-radius:var(--radius-sm);background:var(--surface);font-family:var(--font);font-size:13px;color:var(--brown);outline:none;}
   .form-row input:focus,.form-row select:focus{border-color:var(--pink-3);}
   .btn-pink{width:100%;border:none;border-radius:999px;padding:12px;background:linear-gradient(135deg,var(--pink-3),var(--pink-4));color:var(--surface);font-family:var(--font);font-size:14px;font-weight:800;cursor:pointer;box-shadow:var(--shadow);margin-top:4px;}
   .btn-pink:active{transform:scale(.99);}
+  .btn-pink:disabled{opacity:.5;cursor:not-allowed;background:var(--pink-1);color:var(--brown-light);}
   .btn-small{border:none;background:var(--pink-1);color:var(--pink-4);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;}
   .btn-ghost{border:1px dashed var(--pink-2);background:transparent;color:var(--brown-light);border-radius:999px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;}
   .btn-ghost:hover{border-color:var(--pink-3);color:var(--pink-4);}
@@ -460,7 +481,7 @@
       <button class="nav-item" data-page="sport"><span class="ico">🏃</span><span class="label">运动打卡</span></button>
       <button class="nav-item" data-page="money"><span class="ico">💰</span><span class="label">记账</span></button>
       <button class="nav-item" data-page="period"><span class="ico">🌸</span><span class="label">经期记录</span></button>
-      <button class="nav-item" data-page="tree"><span class="ico">🌳</span><span class="label">小树洞</span></button>
+      <button class="nav-item" data-page="tree"><span class="ico">🌳</span><span class="label">治愈花园</span></button>
     </nav>
     <div class="backup-bar">
       <button class="tutorial-btn" onclick="openTutorialModal()"><span class="ico">📖</span><span class="label">使用教程</span></button>
@@ -526,7 +547,7 @@ function defaultState(){
       {id:'supplement',icon:'💊',name:'补品类'},{id:'food',icon:'🍽️',name:'饮食'},
       {id:'work',icon:'💻',name:'工作'},{id:'study',icon:'📖',name:'学习'},{id:'life',icon:'🌸',name:'生活'}
     ],todos:[],schedule:[],memos:[],habits:[]},
-    english:{tab:'words',linked:true,wordCount:3,sentenceCount:3,usedWordIdx:[],usedSentenceIdx:[],wordDate:'',sentenceDate:'',wordToday:[],sentenceToday:[]},
+    english:{tab:'words',linked:true,wordCount:3,sentenceCount:3,usedWordIdx:[],usedSentenceIdx:[],wordDate:'',sentenceDate:'',wordToday:[],sentenceToday:[],finishDate:''},
     sport:{tab:'today',items:[],week:[0,0,0,0,0,0,0]},
     money:{tab:'today',records:[],shopping:{pending:[],bought:[]}},
     period:{tab:'calendar',viewDate:today,currentStart:null,records:[],feelings:{}},
@@ -547,6 +568,7 @@ function migrateData(){
     delete state.english.count;
   }
   // 兼容新模块字段
+  if(state.english && !('finishDate' in state.english))state.english.finishDate='';
   if(!state.game)state.game={energy:0,lastCheckin:'',streak:0};
   if(!state.garden)state.garden={plants:[],harvested:0};
   if(!state.pet)state.pet={owned:[],activeId:null};
@@ -604,6 +626,15 @@ function showMiniConfetti(target){
     p.style.setProperty('--dx',(Math.random()*120-60)+'px');p.style.setProperty('--dy',(Math.random()*-100-40)+'px');
     document.body.appendChild(p);setTimeout(()=>p.remove(),900);
   }
+}
+let heartToastTimer=null;
+function showHeartToast(n){
+  let el=document.getElementById('heartToast');
+  if(!el){el=document.createElement('div');el.id='heartToast';el.className='heart-toast';document.body.appendChild(el);}
+  el.textContent=`💖 +${n} 爱心值`;
+  el.classList.add('show');
+  clearTimeout(heartToastTimer);
+  heartToastTimer=setTimeout(()=>el.classList.remove('show'),1500);
 }
 
 /* ================= 自定义滚动条 ================= */
@@ -666,7 +697,7 @@ function refreshCustomScrollbars(){document.querySelectorAll('.custom-scroll').f
 
 /* ================= 路由 ================= */
 const pageIcons={plan:'📅',english:'📚',sport:'🏃',money:'💰',period:'🌸',tree:'🌳'};
-const pageTitles={plan:'每日计划',english:'英语学习',sport:'运动打卡',money:'记账',period:'经期记录',tree:'小树洞'};
+const pageTitles={plan:'每日计划',english:'英语学习',sport:'运动打卡',money:'记账',period:'经期记录',tree:'治愈花园'};
 let currentPage='plan';
 
 function switchPage(page){
@@ -955,7 +986,7 @@ function scheduleRow(item){
     </div>`;
   return row;
 }
-function toggleTodo(id,e){e.stopPropagation();const i=state.plan.todos.find(x=>x.id===id);if(i){i.done=!i.done;saveState();render();}}
+function toggleTodo(id,e){e.stopPropagation();const i=state.plan.todos.find(x=>x.id===id);if(i){const wasDone=i.done;i.done=!i.done;if(!wasDone&&i.done){addEnergy(1);showHeartToast(1);}saveState();render();}}
 function delTodo(id,e){e.stopPropagation();showConfirm('确定删除这条任务？').then(yes=>{if(yes){state.plan.todos=state.plan.todos.filter(x=>x.id!==id);saveState();render();}});}
 function editTodo(id,e){e.stopPropagation();const item=state.plan.todos.find(x=>x.id===id);const row=e.target.closest('.task');row.innerHTML='';const form=div('inline-form');const tIn=document.createElement('input');tIn.value=item.t;const sIn=document.createElement('input');sIn.value=item.s;const selWrap=div();renderCustomSelect(selWrap,state.plan.categories.map(c=>({value:c.id,label:`${c.icon} ${c.name}`})),item.cat,'选择分类');const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.t=tIn.value||item.t;item.s=sIn.value;item.cat=getCustomSelectValue(selWrap);saveState();render();};form.append(tIn,sIn,selWrap,ok);row.appendChild(form);}
 function addTodo(){const t=document.getElementById('todoT').value.trim();if(!t)return;const s=document.getElementById('todoS').value.trim();const catBox=document.getElementById('todoCatBox');const cat=getCustomSelectValue(catBox)||(state.plan.activeCat==='all'?state.plan.categories[0]?.id:state.plan.activeCat);state.plan.todos.push({id:Date.now(),t,s,cat,done:false});saveState();render();}
@@ -1082,14 +1113,14 @@ function toggleHabit(id,e){
   e.stopPropagation();const h=state.plan.habits.find(x=>x.id===id);if(!h||h.type!=='check')return;
   const wasDone=habitDoneToday(h);const t=todayKey();
   if(h.logs[t])delete h.logs[t];else h.logs[t]=1;
-  if(!wasDone&&habitDoneToday(h)){addEnergy(5);showMiniConfetti(e.target);}
+  if(!wasDone&&habitDoneToday(h)){addEnergy(5);showMiniConfetti(e.target);showHeartToast(5);}
   saveState();render();
 }
 function incHabit(id,e){
   e.stopPropagation();const h=state.plan.habits.find(x=>x.id===id);if(!h||h.type!=='count')return;
   const wasDone=habitDoneToday(h);const t=todayKey();
   h.logs[t]=(habitTodayValue(h)||0)+1;
-  if(!wasDone&&habitDoneToday(h)){addEnergy(5);showMiniConfetti(e.target);}
+  if(!wasDone&&habitDoneToday(h)){addEnergy(5);showMiniConfetti(e.target);showHeartToast(5);}
   saveState();renderHabitList();
 }
 function decHabit(id,e){
@@ -1448,7 +1479,20 @@ function renderEnglish(box){
     });
     card.appendChild(wrap);
   }
+  const finished=state.english.finishDate===todayKey();
+  const finishBtn=document.createElement('button');
+  finishBtn.className='btn-pink';finishBtn.style.marginTop='12px';
+  finishBtn.textContent=finished?'✅ 今日学习已完成':'✅ 完成今日学习 +2 爱心值';
+  finishBtn.disabled=finished;
+  finishBtn.onclick=finishEnglish;
+  card.appendChild(finishBtn);
   box.appendChild(card);
+}
+function finishEnglish(){
+  if(state.english.finishDate===todayKey())return;
+  state.english.finishDate=todayKey();
+  addEnergy(2);showHeartToast(2);
+  saveState();render();
 }
 function openEnglishCountSetting(){
   showModal({title:'每日推几个',body:'',noCancel:true,render:(body)=>{
@@ -1547,7 +1591,7 @@ function sportRow(item){
     <div class="task-actions"><button onclick="editSport(${item.id},event)">✏️</button><button onclick="delSport(${item.id},event)">🗑️</button></div>`;
   return row;
 }
-function toggleSport(id,e){e.stopPropagation();const i=state.sport.items.find(x=>x.id===id);if(i){const wasDone=i.done;i.done=!i.done;const idx=(new Date().getDay()+6)%7;state.sport.week[idx]=Math.max(0,state.sport.week[idx]+(i.done?1:-1)*(parseInt(i.min)||10));if(!wasDone&&i.done){addEnergy(10);showMiniConfetti(e.target);}saveState();render();}}
+function toggleSport(id,e){e.stopPropagation();const i=state.sport.items.find(x=>x.id===id);if(i){const wasDone=i.done;i.done=!i.done;const idx=(new Date().getDay()+6)%7;state.sport.week[idx]=Math.max(0,state.sport.week[idx]+(i.done?1:-1)*(parseInt(i.min)||10));if(!wasDone&&i.done){addEnergy(10);showMiniConfetti(e.target);showHeartToast(10);}saveState();render();}}
 function delSport(id,e){e.stopPropagation();showConfirm('确定删除这条运动？').then(yes=>{if(yes){state.sport.items=state.sport.items.filter(x=>x.id!==id);saveState();render();}});}
 function editSport(id,e){e.stopPropagation();const item=state.sport.items.find(x=>x.id===id);const row=e.target.closest('.task');row.innerHTML='';const form=div('inline-form');const tIn=document.createElement('input');tIn.value=item.t;const sIn=document.createElement('input');sIn.value=item.s;const mIn=document.createElement('input');mIn.type='number';mIn.value=item.min||'';mIn.placeholder='分钟';const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.t=tIn.value||item.t;item.s=sIn.value;item.min=parseInt(mIn.value)||0;saveState();render();};form.append(tIn,sIn,mIn,ok);row.appendChild(form);}
 function addSport(){const t=document.getElementById('sportT').value.trim();if(!t)return;const s=document.getElementById('sportS').value.trim();const min=parseInt(document.getElementById('sportMin').value)||0;state.sport.items.push({id:Date.now(),t,s,min,done:false});saveState();render();}
@@ -1619,7 +1663,7 @@ function moneyRow(r){
 function setMoneyType(t){window.moneyType=t;updateMoneyTypeUI();renderMoneyCategorySelect();}
 function updateMoneyTypeUI(){document.getElementById('btnExp')?.classList.toggle('on',window.moneyType==='expense');document.getElementById('btnInc')?.classList.toggle('on',window.moneyType==='income');}
 function renderMoneyCategorySelect(){const box=document.getElementById('moneyCatBox');if(!box)return;const cats=window.moneyType==='income'?['工资','奖金','红包','兼职','投资','其他']:moneyCats;renderCustomSelect(box,cats.map(c=>({value:c,label:c})),cats[0],'选择分类');}
-function addMoney(){const amt=parseFloat(document.getElementById('moneyAmt').value);if(!amt||amt<=0)return;const cat=getCustomSelectValue(document.getElementById('moneyCatBox'))||'其他';const note=document.getElementById('moneyNote').value.trim();state.money.records.push({id:Date.now(),type:window.moneyType||'expense',cat,amt,note,date:todayKey()});saveState();render();}
+function addMoney(){const amt=parseFloat(document.getElementById('moneyAmt').value);if(!amt||amt<=0)return;const cat=getCustomSelectValue(document.getElementById('moneyCatBox'))||'其他';const note=document.getElementById('moneyNote').value.trim();state.money.records.push({id:Date.now(),type:window.moneyType||'expense',cat,amt,note,date:todayKey()});addEnergy(1);showHeartToast(1);saveState();render();}
 function delMoney(id,e){e.stopPropagation();showConfirm('确定删除这条记录？').then(yes=>{if(yes){state.money.records=state.money.records.filter(x=>x.id!==id);saveState();render();}});}
 function editMoney(id,e){e.stopPropagation();const item=state.money.records.find(x=>x.id===id);const row=e.target.closest('.record');row.innerHTML='';const form=div('inline-form');const aIn=document.createElement('input');aIn.type='number';aIn.value=item.amt;aIn.placeholder='金额';const nIn=document.createElement('input');nIn.value=item.note;nIn.placeholder='备注';const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.amt=parseFloat(aIn.value)||item.amt;item.note=nIn.value;saveState();render();};form.append(aIn,nIn,ok);row.appendChild(form);}
 function renderMoneyChart(recs){
@@ -1783,12 +1827,13 @@ function togglePeriod(){
     // 开始经期
     state.period.currentStart=sel;
   }
+  addEnergy(1);showHeartToast(1);
   saveState();render();
 }
 function setPeriodFeel(day,key,val){const f=state.period.feelings[day]||{};f[key]=val;state.period.feelings[day]=f;}
 function updatePainVal(input,day){const v=input.value;setPeriodFeel(day,'pain',v);const label=input.closest('.feel-section')?.querySelector('.feel-label .slider-val');if(label)label.textContent=v;}
 function toggleSymptom(day,s){const f=state.period.feelings[day]||{};f.symptoms=f.symptoms||[];if(f.symptoms.includes(s))f.symptoms=f.symptoms.filter(x=>x!==s);else f.symptoms.push(s);state.period.feelings[day]=f;render();}
-function savePeriodFeel(day){saveState();showModal({title:'保存成功',body:`${day} 的经期记录已保存`,noCancel:true});}
+function savePeriodFeel(day){addEnergy(1);showHeartToast(1);saveState();showModal({title:'保存成功',body:`${day} 的经期记录已保存`,noCancel:true});}
 function getLastPeriodStart(){
   const all=[...state.period.records.map(r=>r.startDate)];
   if(state.period.currentStart)all.push(state.period.currentStart);
@@ -1849,7 +1894,7 @@ const treeMoods=[
 ];
 function renderTree(box){
   // 顶部能量与 Tab
-  const header=div();header.innerHTML=`<div class="tree-energy-bar"><span id="energyBadge">💖 ${state.game.energy||0}</span><span>完成任务获得爱心值，喂养你的植物和宠物</span></div>`;
+  const header=div();header.innerHTML=`<div class="tree-energy-bar"><span id="energyBadge">💖 ${state.game.energy||0}</span><a class="energy-link" onclick="showEnergyGuide()">完成任务获得爱心值，喂养你的植物和宠物 ›</a></div>`;
   box.appendChild(header);
   const tabs=div('tree-tabs');
   const current=state.tree.tab||'diary';
@@ -1862,6 +1907,26 @@ function renderTree(box){
   if(current==='diary')renderTreeDiary(box);
   else if(current==='garden')renderTreeGarden(box);
   else renderTreePet(box);
+}
+function showEnergyGuide(){
+  const items=[
+    ['✅ 完成待办任务','+1'],
+    ['💰 记一笔账','+1'],
+    ['🌸 记录经期','+1'],
+    ['💧 给植物浇水','+1'],
+    ['☀️ 给植物晒太阳','+1'],
+    ['🍖 给宠物喂食','+1'],
+    ['🤗 抚摸宠物','+1'],
+    ['📚 完成今日英语学习','+2'],
+    ['🌳 写一篇心事','+3'],
+    ['✨ 习惯打卡','+5'],
+    ['🏃 运动打卡','+10'],
+  ];
+  const body=div('energy-guide');
+  items.forEach(([label,val])=>{
+    const r=div('row');r.innerHTML=`<span>${label}</span><b>${val} 💖</b>`;body.appendChild(r);
+  });
+  showModal({title:'💖 如何获得爱心值',body:'',noCancel:true,render:m=>m.appendChild(body)});
 }
 function renderTreeDiary(box){
   const card=div('card');
@@ -1930,13 +1995,13 @@ function updateTreeImagePreview(){
 }
 function removeTreeImage(){window.treeImage=null;updateTreeImagePreview();}
 /* ---------- 花园 ---------- */
-const PLANT_TYPES=[{id:'succulent',icon:'🌵',name:'多肉'},{id:'sunflower',icon:'🌻',name:'向日葵'},{id:'sakura',icon:'🌸',name:'樱花'},{id:'clover',icon:'🍀',name:'四叶草'}];
+const PLANT_TYPES=[{id:'succulent',icon:'🌵',name:'多肉'},{id:'sunflower',icon:'🌻',name:'向日葵'},{id:'sakura',icon:'🌸',name:'樱花'},{id:'clover',icon:'🍀',name:'四叶草'},{id:'tulip',icon:'🌷',name:'郁金香'},{id:'rose',icon:'🌹',name:'玫瑰'},{id:'hibiscus',icon:'🌺',name:'木槿'},{id:'mint',icon:'🌿',name:'薄荷'}];
 const PLANT_STAGES=['种子','发芽','幼苗','茁壮','开花'];
 function plantStage(level){return PLANT_STAGES[Math.min(PLANT_STAGES.length-1,Math.max(0,level-1))];}
 function plantNeedExp(level){return level*20;}
 function renderTreeGarden(box){
   const card=div('card');
-  card.innerHTML=`<div class="card-title">🌱 我的花园</div><div class="card-sub">浇水晒太阳，看它们一点点长大</div>`;
+  card.innerHTML=`<div class="card-sub" style="margin-bottom:10px;">🌱 浇水晒太阳，看它们一点点长大</div>`;
   if(!state.garden.plants.length){card.innerHTML+='<div class="empty-tip">花园里空空如也，下方种一颗吧</div>';}
   else state.garden.plants.forEach(p=>{
     const stage=plantStage(p.level);
@@ -1944,10 +2009,13 @@ function renderTreeGarden(box){
     const thirsty=(Date.now()-(p.lastWatered||0))>24*3600000;
     const sunToday=(p.sunLog||{})[todayKey()]||0;
     const row=div('game-card');
+    const waterPct=thirsty?8:100;const waterColor=thirsty?'var(--pink-4)':'var(--green)';
     row.innerHTML=`<div class="game-avatar">${p.icon}</div>
-      <div class="game-info"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span>
+      <div class="game-main">
+        <div class="game-head"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
         <div class="game-bar"><i style="width:${Math.min(100,p.exp/need*100)}%"></i></div>
-        <span class="game-status">${thirsty?'🥵 好渴呀':'😊 很开心'} · 今日晒太阳 ${sunToday}/3</span>
+        <div class="stat-bars"><div class="stat-bar"><span>💧</span><span class="track"><i style="width:${waterPct}%;background:${waterColor}"></i></span><span class="val">${thirsty?'渴':100}</span></div></div>
+        <span class="game-status">☀️ 今日晒太阳 ${sunToday}/3</span>
       </div>
       <div class="game-actions">
         <button class="btn-small" onclick="waterPlant(${p.id},event)">💧 浇水 -10</button>
@@ -1957,16 +2025,16 @@ function renderTreeGarden(box){
   });
   const form=div();form.style.marginTop='14px';
   form.innerHTML=`<div class="form-row"><input id="plantName" placeholder="给植物取个名字"/></div>
-    <div class="emoji-grid" id="plantTypeGrid"></div>
+    <div class="chip-grid" id="plantTypeGrid"></div>
     <button class="btn-pink" onclick="addPlant()">🌱 种新植物 (-30)</button>`;
   card.appendChild(form);
   box.appendChild(card);
-  const grid=card.querySelector('#plantTypeGrid');
+  const grid=card.querySelector('#plantTypeGrid');grid.className='chip-grid';
   window.plantTypeVal='succulent';
   PLANT_TYPES.forEach(t=>{
-    const s=document.createElement('span');s.textContent=t.icon+' '+t.name;s.dataset.id=t.id;
-    if(t.id==='succulent')s.style.background='var(--cream)';
-    s.onclick=()=>{window.plantTypeVal=t.id;Array.from(grid.children).forEach(c=>c.style.background='');s.style.background='var(--cream)';};
+    const s=document.createElement('span');s.innerHTML=`${t.icon} ${t.name}`;s.dataset.id=t.id;
+    if(t.id==='succulent')s.classList.add('active');
+    s.onclick=()=>{window.plantTypeVal=t.id;Array.from(grid.children).forEach(c=>c.classList.remove('active'));s.classList.add('active');};
     grid.appendChild(s);
   });
 }
@@ -1983,34 +2051,40 @@ function waterPlant(id,e){
   e.stopPropagation();
   if((state.game.energy||0)<10)return showModal({title:'爱心值不足',body:'完成习惯打卡可获得爱心值',noCancel:true});
   const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
-  addEnergy(-10);p.exp+=15;p.lastWatered=Date.now();
+  addEnergy(-10);addEnergy(1);showHeartToast(1);p.exp+=15;p.lastWatered=Date.now();
   levelUpPlant(p);saveState();render();showMiniConfetti(e.target);
 }
 function sunPlant(id,e){
   e.stopPropagation();const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
   const t=todayKey();if(!p.sunLog)p.sunLog={};if((p.sunLog[t]||0)>=3)return;
   p.exp+=5;p.sunLog[t]=(p.sunLog[t]||0)+1;
+  addEnergy(1);showHeartToast(1);
   levelUpPlant(p);saveState();render();showMiniConfetti(e.target);
 }
 function levelUpPlant(p){const need=plantNeedExp(p.level);while(p.exp>=need&&p.level<5){p.exp-=need;p.level++;}}
 
 /* ---------- 宠物 ---------- */
-const PET_TYPES=[{id:'cat',icon:'🐱',name:'小猫咪'},{id:'dog',icon:'🐶',name:'小狗狗'},{id:'rabbit',icon:'🐰',name:'小兔子'},{id:'dino',icon:'🦖',name:'小恐龙'}];
+const PET_TYPES=[{id:'cat',icon:'🐱',name:'小猫咪'},{id:'dog',icon:'🐶',name:'小狗狗'},{id:'rabbit',icon:'🐰',name:'小兔子'},{id:'dino',icon:'🦖',name:'小恐龙'},{id:'fox',icon:'🦊',name:'小狐狸'},{id:'panda',icon:'🐼',name:'小熊猫'},{id:'koala',icon:'🐨',name:'小树袋熊'},{id:'penguin',icon:'🐧',name:'小企鹅'}];
 const PET_STAGES=['幼崽','少年','成年'];
 function petStage(level){return PET_STAGES[Math.min(PET_STAGES.length-1,Math.max(0,Math.floor((level-1)/2)))];}
 function petNeedExp(level){return level*25;}
 function renderTreePet(box){
   const card=div('card');
-  card.innerHTML=`<div class="card-title">🐾 我的宠物</div><div class="card-sub">喂食、抚摸，陪它一起长大</div>`;
+  card.innerHTML=`<div class="card-sub" style="margin-bottom:10px;">🐾 喂食、抚摸，陪它一起长大</div>`;
   if(!state.pet.owned.length){card.innerHTML+='<div class="empty-tip">还没有宠物，下方领养一只吧</div>';}
   else state.pet.owned.forEach(p=>{
     const stage=petStage(p.level);const need=petNeedExp(p.level);
     const today=(p.interactLog||{})[todayKey()]||{};
     const row=div('game-card');
     row.innerHTML=`<div class="game-avatar">${p.icon}</div>
-      <div class="game-info"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span>
+      <div class="game-main">
+        <div class="game-head"><b>${esc(p.name)}</b><span>${p.typeName} · ${stage} Lv.${p.level}</span></div>
         <div class="game-bar"><i style="width:${Math.min(100,p.exp/need*100)}%"></i></div>
-        <span class="game-status">饱食度 ${p.hunger}/100 · 开心值 ${p.happiness}/100 · 今日抚摸 ${today.pet||0}/5</span>
+        <div class="stat-bars">
+          <div class="stat-bar"><span>🍖</span><span class="track"><i style="width:${p.hunger}%;background:linear-gradient(90deg,#ffb3c6,#ff7aa2)"></i></span><span class="val">${p.hunger}</span></div>
+          <div class="stat-bar"><span>😊</span><span class="track"><i style="width:${p.happiness}%;background:linear-gradient(90deg,#ffe08a,#ffc34d)"></i></span><span class="val">${p.happiness}</span></div>
+        </div>
+        <span class="game-status">🤗 今日抚摸 ${today.pet||0}/5</span>
       </div>
       <div class="game-actions">
         <button class="btn-small" onclick="feedPet(${p.id},event)">🍖 喂食 -5</button>
@@ -2020,16 +2094,16 @@ function renderTreePet(box){
   });
   const form=div();form.style.marginTop='14px';
   form.innerHTML=`<div class="form-row"><input id="petName" placeholder="给宠物取个名字"/></div>
-    <div class="emoji-grid" id="petTypeGrid"></div>
+    <div class="chip-grid" id="petTypeGrid"></div>
     <button class="btn-pink" onclick="addPet()">🐾 领养宠物 (-50)</button>`;
   card.appendChild(form);
   box.appendChild(card);
-  const grid=card.querySelector('#petTypeGrid');
+  const grid=card.querySelector('#petTypeGrid');grid.className='chip-grid';
   window.petTypeVal='cat';
   PET_TYPES.forEach(t=>{
-    const s=document.createElement('span');s.textContent=t.icon+' '+t.name;s.dataset.id=t.id;
-    if(t.id==='cat')s.style.background='var(--cream)';
-    s.onclick=()=>{window.petTypeVal=t.id;Array.from(grid.children).forEach(c=>c.style.background='');s.style.background='var(--cream)';};
+    const s=document.createElement('span');s.innerHTML=`${t.icon} ${t.name}`;s.dataset.id=t.id;
+    if(t.id==='cat')s.classList.add('active');
+    s.onclick=()=>{window.petTypeVal=t.id;Array.from(grid.children).forEach(c=>c.classList.remove('active'));s.classList.add('active');};
     grid.appendChild(s);
   });
 }
@@ -2047,7 +2121,7 @@ function feedPet(id,e){
   e.stopPropagation();
   if((state.game.energy||0)<5)return showModal({title:'爱心值不足',body:'完成习惯打卡可获得爱心值',noCancel:true});
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
-  addEnergy(-5);p.hunger=Math.min(100,p.hunger+20);p.happiness=Math.min(100,p.happiness+10);p.exp+=10;
+  addEnergy(-5);addEnergy(1);showHeartToast(1);p.hunger=Math.min(100,p.hunger+20);p.happiness=Math.min(100,p.happiness+10);p.exp+=10;
   levelUpPet(p);saveState();render();showMiniConfetti(e.target);
 }
 function petPet(id,e){
@@ -2056,6 +2130,7 @@ function petPet(id,e){
   if((p.interactLog[t].pet||0)>=5)return;
   p.happiness=Math.min(100,p.happiness+15);p.hunger=Math.max(0,p.hunger-5);p.exp+=5;
   p.interactLog[t].pet=(p.interactLog[t].pet||0)+1;
+  addEnergy(1);showHeartToast(1);
   levelUpPet(p);saveState();render();showMiniConfetti(e.target);
 }
 function levelUpPet(p){const need=petNeedExp(p.level);while(p.exp>=need&&p.level<6){p.exp-=need;p.level++;}}
@@ -2066,7 +2141,7 @@ function addTreeEntry(){
   const entry={id:Date.now(),text:t,mood:getTreeMood(),date:todayKey(),time:`${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`};
   if(window.treeImage){entry.image=window.treeImage;window.treeImage=null;}
   state.tree.entries.push(entry);
-  addEnergy(3);
+  addEnergy(3);showHeartToast(3);
   saveState();render();
 }
 function delTree(id){showConfirm('确定删除这条心事？').then(yes=>{if(yes){state.tree.entries=state.tree.entries.filter(x=>x.id!==id);saveState();render();}});}

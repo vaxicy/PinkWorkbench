@@ -407,7 +407,7 @@ function defaultState(){
       {id:'supplement',icon:'💊',name:'补品类'},{id:'food',icon:'🍽️',name:'饮食'},
       {id:'work',icon:'💻',name:'工作'},{id:'study',icon:'📖',name:'学习'},{id:'life',icon:'🌸',name:'生活'}
     ],todos:[],schedule:[]},
-    english:{tab:'words',count:3},
+    english:{tab:'words',linked:true,wordCount:3,sentenceCount:3},
     sport:{tab:'today',items:[],week:[0,0,0,0,0,0,0]},
     money:{tab:'today',records:[]},
     period:{tab:'calendar',viewDate:today,currentStart:null,records:[],feelings:{}},
@@ -415,6 +415,13 @@ function defaultState(){
   };
 }
 let state=loadState();
+// 迁移旧的 english.count 到 wordCount / sentenceCount
+if(state.english && 'count' in state.english){
+  state.english.linked=true;
+  state.english.wordCount=state.english.count;
+  state.english.sentenceCount=state.english.count;
+  delete state.english.count;
+}
 
 function seedHash(str){let h=0;for(let c of str){h=(h<<5)-h+c.charCodeAt(0);h|=0;}return Math.abs(h);}
 function seededRandom(seed){return function(){seed=(seed*9301+49297)%233280;return seed/233280;}}
@@ -852,11 +859,17 @@ function renderEnglish(box){
     btn.onclick=()=>{state.english.tab=k;saveState();render();};
     tabs.appendChild(btn);
   });
+  const gear=document.createElement('span');
+  gear.className='set-gear';gear.title='设置每日数量';gear.textContent='⚙️';
+  gear.onclick=openEnglishCountSetting;
+  tabs.appendChild(gear);
   box.appendChild(tabs);
   const card=div('card');
-  if(state.english.tab==='words'){
-    card.innerHTML=`<div class="card-title">📝 每日单词 · <span style="font-weight:400;color:var(--brown-light)">每日 ${state.english.count} 个</span><span class="set-gear" title="设置每日数量" onclick="openEnglishCountSetting()">⚙️</span></div>`;
-    const words=pickByDate(wordsPool,state.english.count,0);
+  const isWords=state.english.tab==='words';
+  const count=isWords?state.english.wordCount:state.english.sentenceCount;
+  card.innerHTML=`<div class="card-title">${isWords?'📝':'🎧'} 每日${isWords?'单词':'长句'} · <span style="font-weight:400;color:var(--brown-light)">每日 ${count} ${isWords?'个':'句'}</span></div>`;
+  if(isWords){
+    const words=pickByDate(wordsPool,state.english.wordCount,0);
     const wrap=div('word-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     words.forEach((w,i)=>{
       const item=div('word-card');item.style.cssText='text-align:left;padding:18px 16px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
@@ -871,8 +884,7 @@ function renderEnglish(box){
     });
     card.appendChild(wrap);
   }else{
-    card.innerHTML=`<div class="card-title">🎧 每日长句 · <span style="font-weight:400;color:var(--brown-light)">每日 ${state.english.count} 句</span><span class="set-gear" title="设置每日数量" onclick="openEnglishCountSetting()">⚙️</span></div>`;
-    const sentences=pickByDate(sentencePool,state.english.count,200);
+    const sentences=pickByDate(sentencePool,state.english.sentenceCount,200);
     const wrap=div('sentence-list');wrap.style.display='flex';wrap.style.flexDirection='column';wrap.style.gap='12px';
     sentences.forEach((s,i)=>{
       const item=div('sentence-card');item.style.cssText='padding:18px;border-radius:var(--radius-sm);background:var(--cream);border:1px solid var(--pink-1);';
@@ -886,17 +898,44 @@ function renderEnglish(box){
   box.appendChild(card);
 }
 function openEnglishCountSetting(){
-  const cur=state.english.count||3;
   showModal({title:'每日推几个',body:'',noCancel:true,render:(body)=>{
-    const tip=div();tip.textContent='选择每天推送的单词 / 长句数量：';tip.style.cssText='font-size:13px;color:var(--brown-light);margin-bottom:12px;';
-    body.appendChild(tip);
-    const grid=div();grid.style.cssText='display:flex;gap:10px;justify-content:center;';
-    [1,2,3,4,5].forEach(n=>{
-      const b=document.createElement('button');b.textContent=n;b.style.cssText='width:44px;height:44px;border-radius:50%;border:1px solid var(--pink-2);font-size:16px;font-weight:700;cursor:pointer;background:'+(n===cur?'var(--pink-2)':'#fff')+';color:'+(n===cur?'#fff':'var(--brown)')+';';
-      b.onclick=()=>{state.english.count=n;saveState();hideModal();render();};
-      grid.appendChild(b);
-    });
-    body.appendChild(grid);
+    const mode=div('toggle');
+    const mkMode=(label,val)=>{
+      const b=document.createElement('button');b.textContent=label;
+      if(state.english.linked===val)b.className='on';
+      b.onclick=()=>{state.english.linked=val;saveState();render();openEnglishCountSetting();};
+      return b;
+    };
+    mode.appendChild(mkMode('统一设置',true));
+    mode.appendChild(mkMode('单独设置',false));
+    body.appendChild(mode);
+
+    const buildGrid=(label,cur,onPick)=>{
+      const wrap=div();
+      const t=div();t.textContent=label;t.style.cssText='font-size:13px;color:var(--brown-light);margin:14px 0 8px;';
+      wrap.appendChild(t);
+      const grid=div();grid.style.cssText='display:flex;gap:10px;justify-content:center;';
+      [1,2,3,4,5].forEach(n=>{
+        const b=document.createElement('button');b.textContent=n;b.style.cssText='width:44px;height:44px;border-radius:50%;border:1px solid var(--pink-2);font-size:16px;font-weight:700;cursor:pointer;background:'+(n===cur?'var(--pink-2)':'#fff')+';color:'+(n===cur?'#fff':'var(--brown)')+';';
+        b.onclick=()=>onPick(n);
+        grid.appendChild(b);
+      });
+      wrap.appendChild(grid);
+      return wrap;
+    };
+
+    if(state.english.linked){
+      body.appendChild(buildGrid('单词 + 长句统一数量',state.english.wordCount,n=>{
+        state.english.wordCount=n;state.english.sentenceCount=n;saveState();hideModal();render();
+      }));
+    }else{
+      body.appendChild(buildGrid('每日单词数量',state.english.wordCount,n=>{
+        state.english.wordCount=n;saveState();hideModal();render();
+      }));
+      body.appendChild(buildGrid('每日长句数量',state.english.sentenceCount,n=>{
+        state.english.sentenceCount=n;saveState();hideModal();render();
+      }));
+    }
   }});
 }
 function renderSport(box){

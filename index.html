@@ -64,6 +64,23 @@
   .tutorial ol li{margin:5px 0;font-size:13px;color:var(--brown);}
   .tutorial code{background:var(--cream);padding:1px 6px;border-radius:5px;font-size:12px;color:var(--pink-4);}
   .tutorial .tut-tip{background:var(--cream);border-left:3px solid var(--pink-3);padding:8px 10px;border-radius:8px;font-size:12px;color:var(--brown);margin:10px 0 0;}
+  .memo-item{background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;margin-bottom:8px;}
+  .memo-head{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .memo-head b{color:var(--pink-4);}
+  .memo-time{font-size:11px;color:var(--brown-light);}
+  .memo-body{margin:6px 0;white-space:pre-wrap;word-break:break-word;color:var(--brown);font-size:13px;}
+  .memo-textarea{width:100%;border:1px solid var(--pink-2);border-radius:var(--radius-sm);padding:8px 10px;font:inherit;resize:vertical;box-sizing:border-box;}
+  .shop-list,.shop-bought{display:flex;flex-direction:column;gap:6px;}
+  .shop-item{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:var(--radius-sm);padding:8px 10px;}
+  .shop-item.bought{opacity:.7;}
+  .shop-check{flex:0 0 auto;display:flex;align-items:center;}
+  .shop-check input{width:18px;height:18px;accent-color:var(--pink-3);cursor:pointer;}
+  .shop-check.done{width:20px;height:20px;border-radius:6px;background:var(--green);color:var(--surface);align-items:center;justify-content:center;font-weight:800;font-size:12px;}
+  .shop-info{flex:1;min-width:0;}
+  .shop-info b{color:var(--pink-4);}
+  .shop-cat{display:block;font-size:11px;color:var(--brown-light);margin-top:2px;}
+  .shop-amt{font-weight:800;color:var(--pink-4);}
+  .shop-item button{margin-left:auto;}
 
   /* 主内容 */
   .main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg);}
@@ -153,6 +170,8 @@
   .money-form input[type="number"],.inline-form input[type="number"]{-moz-appearance:textfield;}
   [data-theme="dark"] .money-form input,[data-theme="dark"] .inline-form input{background:var(--cream);color:var(--brown);border-color:var(--pink-1);}
   [data-theme="dark"] .money-form input:focus,[data-theme="dark"] .inline-form input:focus{border-color:var(--pink-3);}
+  [data-theme="dark"] .profile input{background:var(--panel);color:var(--brown);border-color:var(--pink-2);}
+  [data-theme="dark"] .profile input::placeholder{color:var(--brown-light);opacity:.7;}
   .inline-form{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;}
   .inline-form input{flex:1;min-width:0;}
 
@@ -465,10 +484,10 @@ function defaultState(){
     plan:{tab:'todo',activeCat:'all',categories:[
       {id:'supplement',icon:'💊',name:'补品类'},{id:'food',icon:'🍽️',name:'饮食'},
       {id:'work',icon:'💻',name:'工作'},{id:'study',icon:'📖',name:'学习'},{id:'life',icon:'🌸',name:'生活'}
-    ],todos:[],schedule:[]},
+    ],todos:[],schedule:[],memos:[]},
     english:{tab:'words',linked:true,wordCount:3,sentenceCount:3,usedWordIdx:[],usedSentenceIdx:[],wordDate:'',sentenceDate:'',wordToday:[],sentenceToday:[]},
     sport:{tab:'today',items:[],week:[0,0,0,0,0,0,0]},
-    money:{tab:'today',records:[]},
+    money:{tab:'today',records:[],shopping:{pending:[],bought:[]}},
     period:{tab:'calendar',viewDate:today,currentStart:null,records:[],feelings:{}},
     tree:{entries:[]}
   };
@@ -622,7 +641,7 @@ function renderProfile(){
 const profileBox=document.getElementById('profileBox');
 profileBox.onclick=e=>{
   if(e.target.closest('.avatar-wrap')||e.target.closest('.avatar-menu')||e.target.id==='avatarHint')return;
-  e.stopPropagation();
+  if(document.querySelector('input.sidebar-name-edit'))return;
   const nameEl=document.getElementById('profileName');
   if(!nameEl||nameEl.tagName.toLowerCase()==='input')return;
   const input=document.createElement('input');input.value=state.profile.name;input.className='sidebar-name-edit';
@@ -632,11 +651,14 @@ profileBox.onclick=e=>{
   input.onkeydown=e=>{if(e.key==='Enter')input.blur();};
   nameEl.replaceWith(input);input.focus();input.select();
 };
-document.addEventListener('click',e=>{
-  if(e.target.closest('input.sidebar-name-edit'))return;
+// 点击任意非输入框区域（含侧栏空白）即自动结束名字编辑；用捕获阶段即便有 stopPropagation 也能生效
+document.addEventListener('mousedown',e=>{
   const ed=document.querySelector('input.sidebar-name-edit');
-  if(ed)ed.blur();
-});
+  if(!ed)return;
+  if(e.target===ed||ed.contains(e.target))return;
+  if(e.target.closest('.avatar-wrap'))return;
+  ed.blur();
+},true);
 function toggleAvatarMenu(e){e.stopPropagation();document.getElementById('avatarMenu').classList.toggle('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.avatar-wrap'))document.getElementById('avatarMenu').classList.remove('show');});
 function uploadAvatar(){document.getElementById('avatarFile').click();}
@@ -747,9 +769,9 @@ function clearData(){showConfirm('确定清空所有本地数据？此操作不�
 /* ================= 每日计划 ================= */
 function renderPlan(box){
   const tabs=div('tabs');
-  ['todo','schedule'].forEach(k=>{
+  [['todo','✅ 待办清单'],['schedule','📅 日程规划'],['memo','📒 备忘录']].forEach(([k,t])=>{
     const btn=document.createElement('button');btn.className='tab'+(state.plan.tab===k?' active':'');
-    btn.textContent=k==='todo'?'✅ 待办清单':'📅 日程规划';
+    btn.textContent=t;
     btn.onclick=()=>{state.plan.tab=k;saveState();render();};
     tabs.appendChild(btn);
   });
@@ -789,7 +811,7 @@ function renderPlan(box){
     card.appendChild(add);
     renderTodoCategorySelect();
     box.appendChild(card);
-  }else{
+  }else if(state.plan.tab==='schedule'){
     const card=div('card');
     card.innerHTML=`<div class="card-title">📅 日程规划</div><div class="card-sub">按时间线安排今天的行程</div>`;
     const tl=div('timeline');
@@ -809,6 +831,8 @@ function renderPlan(box){
     bindTimePicker('schStartWrap',nowTime(),v=>{window.schStartVal=v;});
     bindTimePicker('schEndWrap','',v=>{window.schEndVal=v;},true);
     window.schStartVal=nowTime();window.schEndVal='';
+  }else{
+    box.appendChild(renderPlanMemo());
   }
 }
 function renderTodoCategorySelect(){
@@ -846,6 +870,30 @@ function addTodo(){const t=document.getElementById('todoT').value.trim();if(!t)r
 function delSchedule(id,e){e.stopPropagation();showConfirm('确定删除这条日程？').then(yes=>{if(yes){state.plan.schedule=state.plan.schedule.filter(x=>x.id!==id);saveState();render();}});}
 function editSchedule(id,e){e.stopPropagation();const item=state.plan.schedule.find(x=>x.id===id);const row=e.target.closest('.timeline-item');row.innerHTML='';const form=div('inline-form');const tIn=document.createElement('input');tIn.value=item.t;const sIn=document.createElement('input');sIn.value=item.s;const stWrap=div();bindInlineTimePicker(stWrap,item.start,v=>item.start=v);const enWrap=div();bindInlineTimePicker(enWrap,item.end||'',v=>item.end=v,true);const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{item.t=tIn.value||item.t;item.s=sIn.value;saveState();render();};form.append(tIn,sIn,stWrap,enWrap,ok);row.appendChild(form);}
 function addSchedule(){const t=document.getElementById('schT').value.trim();if(!t)return;const start=window.schStartVal||nowTime();const end=window.schEndVal||'';const s=document.getElementById('schS').value.trim();state.plan.schedule.push({id:Date.now(),t,s,start,end});saveState();render();}
+function renderPlanMemo(){
+  const card=div('card');
+  card.innerHTML=`<div class="card-title">📒 备忘录</div><div class="card-sub">随手记，想法不丢</div>`;
+  const list=div();list.id='memoList';
+  if(!state.plan.memos.length)list.innerHTML='<div class="empty-tip">还没有备忘录，下面写一条吧</div>';
+  else state.plan.memos.slice().reverse().forEach(m=>{
+    const item=div('memo-item');
+    const time=new Date(m.updatedAt).toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'});
+    item.innerHTML=`<div class="memo-head"><b>${esc(m.title||'无标题')}</b><span class="memo-time">${time}</span></div>
+      <div class="memo-body">${esc(m.content).replace(/\n/g,'<br>')}</div>
+      <div class="task-actions" style="opacity:1;justify-content:flex-end;"><button onclick="editMemo(${m.id},event)">✏️</button><button onclick="delMemo(${m.id},event)">🗑️</button></div>`;
+    list.appendChild(item);
+  });
+  card.appendChild(list);
+  const form=div();form.style.marginTop='14px';
+  form.innerHTML=`<div class="form-row"><input id="memoTitle" placeholder="标题（可选）"/></div>
+    <div class="form-row"><textarea id="memoContent" placeholder="写点什么…" rows="3" class="memo-textarea"></textarea></div>
+    <button class="btn-pink" onclick="addMemo()">➕ 添加备忘录</button>`;
+  card.appendChild(form);
+  return card;
+}
+function addMemo(){const title=document.getElementById('memoTitle').value.trim();const content=document.getElementById('memoContent').value.trim();if(!content&&!title)return;const now=Date.now();state.plan.memos.push({id:now,title,content,createdAt:now,updatedAt:now});saveState();render();}
+function delMemo(id,e){e.stopPropagation();showConfirm('删除这条备忘录？').then(yes=>{if(yes){state.plan.memos=state.plan.memos.filter(x=>x.id!==id);saveState();render();}});}
+function editMemo(id,e){e.stopPropagation();const m=state.plan.memos.find(x=>x.id===id);const row=e.target.closest('.memo-item');row.innerHTML='';const f=div('inline-form');const t=document.createElement('input');t.value=m.title;t.placeholder='标题';const c=document.createElement('textarea');c.value=m.content;c.rows=3;c.className='memo-textarea';const ok=document.createElement('button');ok.className='btn-small';ok.textContent='保存';ok.onclick=()=>{m.title=t.value.trim();m.content=c.value.trim();m.updatedAt=Date.now();saveState();render();};f.append(t,c,ok);row.appendChild(f);}
 
 /* ================= 自定义选择器组件 ================= */
 function renderCustomSelect(container,options,value,placeholder='请选择'){
@@ -1278,14 +1326,16 @@ function addSport(){const t=document.getElementById('sportT').value.trim();if(!t
 const moneyCats=['餐饮','交通','购物','娱乐','美妆','医疗','学习','其他'];
 function renderMoney(box){
   const tabs=div('tabs');
-  ['today','month'].forEach(k=>{
+  [['shopping','🛒 待买清单'],['today','💹 今日收支'],['month','📈 月度账单']].forEach(([k,t])=>{
     const btn=document.createElement('button');btn.className='tab'+(state.money.tab===k?' active':'');
-    btn.textContent=k==='today'?'💹 今日收支':'📈 月度账单';
+    btn.textContent=t;
     btn.onclick=()=>{state.money.tab=k;saveState();render();};
     tabs.appendChild(btn);
   });
   box.appendChild(tabs);
-  if(state.money.tab==='today'){
+  if(state.money.tab==='shopping'){
+    box.appendChild(renderMoneyShopping());
+  }else if(state.money.tab==='today'){
     const card=div('card');
     const today=todayKey();
     const todayRecs=state.money.records.filter(r=>r.date===today);
@@ -1352,6 +1402,48 @@ function renderMoneyChart(recs){
   if(vals.every(v=>v===0))html+='<div class="empty-tip" style="height:auto;">本月暂无支出</div>';
   html+='</div>';wrap.innerHTML=html;return wrap;
 }
+function renderMoneyShopping(){
+  const card=div('card');
+  card.innerHTML=`<div class="card-title">🛒 待买清单</div><div class="card-sub">记下想买的，买完一键入账到「今日收支」</div>`;
+  const pend=div('shop-list');
+  const pending=state.money.shopping.pending;
+  if(!pending.length)pend.innerHTML='<div class="empty-tip">还没有待买的东西</div>';
+  else pending.forEach(it=>{
+    const row=div('shop-item');
+    row.innerHTML=`<label class="shop-check"><input type="checkbox" onchange="buyItem(${it.id},event)"/></label>
+      <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')}</span></div>
+      <div class="shop-amt">¥${it.amount||0}</div>
+      <button class="btn-small del" onclick="delShop(${it.id},event)">🗑️</button>`;
+    pend.appendChild(row);
+  });
+  card.appendChild(pend);
+  const form=div('inline-form');form.style.marginTop='12px';
+  form.innerHTML=`<div class="form-row"><input id="shopName" placeholder="想买什么"/></div>
+    <div class="form-row"><input id="shopAmt" type="number" placeholder="预估金额"/></div>
+    <div class="form-row" id="shopCatBox"></div>
+    <button class="btn-pink" onclick="addShop()">➕ 加入清单</button>`;
+  card.appendChild(form);
+  renderShopCategorySelect();
+  const bought=state.money.shopping.bought;
+  const bwrap=div('shop-bought');bwrap.style.marginTop='16px';
+  bwrap.innerHTML='<div class="card-title" style="margin-top:8px;">✅ 已买清单</div>';
+  if(!bought.length)bwrap.innerHTML+='<div class="empty-tip">还没有买过的记录</div>';
+  else bought.slice().reverse().forEach(it=>{
+    const row=div('shop-item bought');
+    row.innerHTML=`<div class="shop-check done">✓</div>
+      <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')} · ${it.boughtAt}</span></div>
+      <div class="shop-amt">¥${it.amount||0}</div>
+      <button class="btn-small del" onclick="undoBuy(${it.id},event)">↩️</button>`;
+    bwrap.appendChild(row);
+  });
+  card.appendChild(bwrap);
+  return card;
+}
+function renderShopCategorySelect(){const box=document.getElementById('shopCatBox');if(!box)return;renderCustomSelect(box,moneyCats.map(c=>({value:c,label:c})),moneyCats[0],'选择分类');}
+function addShop(){const name=document.getElementById('shopName').value.trim();if(!name)return;const amt=parseFloat(document.getElementById('shopAmt').value)||0;const cat=getCustomSelectValue(document.getElementById('shopCatBox'))||'其他';state.money.shopping.pending.push({id:Date.now(),name,amount:amt,category:cat});saveState();render();}
+function delShop(id,e){e.stopPropagation();state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);saveState();render();}
+function buyItem(id,e){const it=state.money.shopping.pending.find(x=>x.id===id);if(!it)return;showModal({title:'确认购买金额',input:true,placeholder:'实际金额',inputValue:String(it.amount||0)}).then(val=>{const amt=parseFloat(val);if(!amt||amt<=0)return;const recId=Date.now();state.money.records.push({id:recId,type:'expense',cat:it.category||'其他',amt,note:it.name,date:todayKey()});state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);state.money.shopping.bought.push({id:it.id,name:it.name,amount:amt,category:it.category,boughtAt:todayKey(),recordId:recId});state.money.tab='today';saveState();render();});}
+function undoBuy(id,e){e.stopPropagation();const it=state.money.shopping.bought.find(x=>x.id===id);if(!it)return;showConfirm('撤销购买？将从支出记录移除，并移回待买清单').then(yes=>{if(yes){state.money.records=state.money.records.filter(r=>r.id!==it.recordId);state.money.shopping.pending.push({id:it.id,name:it.name,amount:it.amount,category:it.category});state.money.shopping.bought=state.money.shopping.bought.filter(x=>x.id!==id);saveState();render();}});}
 
 /* ================= 经期记录 ================= */
 const periodMoods=[{k:'happy',v:'😊'},{k:'sad',v:'😢'},{k:'angry',v:'😠'},{k:'tired',v:'😴'},{k:'anxious',v:'😰'},{k:'calm',v:'😌'}];

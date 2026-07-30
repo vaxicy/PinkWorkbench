@@ -56,13 +56,19 @@
   .backup-bar{margin-top:auto;padding-top:10px;border-top:1px dashed var(--pink-1);display:flex;flex-direction:column;gap:6px;}
   .backup-bar button{border:1px solid var(--pink-1);background:var(--surface);border-radius:999px;padding:6px 4px;font-size:10px;font-weight:700;color:var(--brown-light);cursor:pointer;}
   .backup-bar button:hover{background:var(--cream);color:var(--pink-4);}
+  .backup-bar button.tutorial-btn{background:linear-gradient(135deg,var(--pink-3),var(--pink-4));color:var(--surface);border:none;font-weight:800;}
+  .backup-bar button.tutorial-btn:hover{background:linear-gradient(135deg,var(--pink-3),var(--pink-4));color:var(--surface);filter:brightness(1.06);}
+  .tutorial h4{margin:16px 0 6px;font-size:14px;color:var(--pink-4);}
+  .tutorial h4:first-of-type{margin-top:0;}
+  .tutorial ol{margin:0 0 4px;padding-left:20px;}
+  .tutorial ol li{margin:5px 0;font-size:13px;color:var(--brown);}
+  .tutorial code{background:var(--cream);padding:1px 6px;border-radius:5px;font-size:12px;color:var(--pink-4);}
+  .tutorial .tut-tip{background:var(--cream);border-left:3px solid var(--pink-3);padding:8px 10px;border-radius:8px;font-size:12px;color:var(--brown);margin:10px 0 0;}
 
   /* 主内容 */
   .main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg);}
-  .topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--pink-1);display:flex;align-items:center;justify-content:space-between;padding:0 22px;}
-  .app-name{font-size:15px;font-weight:800;color:var(--pink-4);cursor:pointer;padding:5px 10px;border-radius:var(--radius-sm);transition:.2s;white-space:nowrap;max-width:42vw;overflow:hidden;text-overflow:ellipsis;}
-  .app-name:hover{background:var(--cream);}
-  .app-name-edit{font-size:15px;font-weight:800;color:var(--pink-4);border:1px solid var(--pink-2);border-radius:var(--radius-sm);padding:4px 8px;outline:none;width:140px;max-width:42vw;}
+  .topbar{height:60px;background:var(--surface);border-bottom:1px solid var(--pink-1);display:flex;align-items:center;justify-content:center;position:relative;padding:0 22px;}
+  .topbar-center{display:flex;align-items:center;gap:10px;justify-content:center;}
   .topbar .title{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:800;color:var(--pink-4);}
   .topbar .title .ico{font-size:24px;}
   .date-chip{background:var(--cream);border:1px solid var(--pink-1);padding:5px 12px;border-radius:999px;font-size:12px;font-weight:700;color:var(--pink-3);}
@@ -326,19 +332,34 @@
 
   @media(max-width:680px){
     body{padding:0;}
-    .app{border-radius:0;max-width:100%;height:100vh;min-height:unset;flex-direction:column;}
-    .sidebar{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;padding:10px;gap:4px;border-right:none;border-bottom:1px solid var(--pink-1);}
-    .profile,.backup-bar{display:none;}
-    .nav-item{flex-direction:row;padding:7px 8px;font-size:11px;}
-    .nav-item .ico{font-size:17px;}
-    .topbar{padding:0 14px;}
+    .app{border-radius:0;max-width:100%;height:100vh;min-height:unset;flex-direction:row;}
+    .sidebar{order:1;width:64px;flex-direction:column;align-items:center;padding:14px 6px;gap:8px;border-right:1px solid var(--pink-1);border-bottom:none;box-shadow:none;overflow-y:auto;}
+    .profile{display:flex;flex-direction:column;align-items:center;}
+    .profile .name{display:none;}
+    .avatar{width:44px;height:44px;font-size:24px;}
+    nav{width:100%;}
+    .nav-item{flex-direction:column;align-items:center;width:100%;padding:9px 2px;font-size:11px;gap:3px;}
+    .nav-item .ico{font-size:22px;}
+    .nav-item .label{display:none;}
+    .backup-bar{margin-top:auto;display:flex;flex-direction:column;gap:6px;width:100%;padding-top:10px;}
+    .backup-bar button{flex-direction:column;align-items:center;gap:2px;padding:8px 2px;font-size:9px;}
+    .backup-bar button .ico{font-size:16px;}
+    .backup-bar button .label{display:none;}
+    .main{order:2;min-width:0;padding-bottom:0;}
+    .topbar{padding:0 14px;height:54px;justify-content:center;}
+    .topbar-center{gap:8px;}
+    .topbar .title{font-size:15px;}
+    .topbar .theme-toggle{right:14px;font-size:18px;}
+    .date-chip{font-size:11px;padding:4px 9px;}
     .content{padding:14px;}
+    .card{padding:14px;}
+    .summary{grid-template-columns:repeat(3,1fr);}
     .task-actions{opacity:1;}
     .sport-chart-wrap{grid-template-columns:1fr;}
   }
 
-  .theme-toggle{background:transparent;border:none;font-size:20px;cursor:pointer;margin-left:8px;padding:4px 6px;transition:transform .2s;line-height:1;}
-  .theme-toggle:hover{transform:scale(1.15);}
+  .theme-toggle{background:transparent;border:none;font-size:20px;cursor:pointer;padding:4px 6px;transition:transform .2s;line-height:1;position:absolute;right:22px;top:50%;transform:translateY(-50%);margin-left:0;}
+  .theme-toggle:hover{transform:translateY(-50%) scale(1.15);}
   [data-theme="dark"]{
     --bg:#17131c;--bg-dot:#211a27;--panel:#1c1622;--cream:#2a2230;--surface:#332a3d;--english-card:#26202c;--english-accent:#ff9fb8;
     --pink-1:#4a2a38;--pink-2:#ff8fab;--pink-3:#ff8fab;--pink-4:#ff7096;
@@ -352,23 +373,6 @@
   [data-theme="dark"] .avatar-hint{background:var(--pink-3)!important;border-color:var(--surface)!important;}[data-theme="dark"] .avatar-menu{background:var(--surface)!important;}
 
   @media(max-width:680px){
-    body{padding:0;}
-    .app{border-radius:0;max-width:100%;height:100vh;min-height:unset;flex-direction:column;}
-    .sidebar{order:2;width:100%;flex-direction:row;flex-wrap:nowrap;justify-content:space-around;padding:8px 4px calc(8px + env(safe-area-inset-bottom));gap:2px;border-right:none;border-top:1px solid var(--pink-1);border-bottom:none;position:fixed;bottom:0;left:0;background:var(--panel);z-index:50;}
-    .profile,.backup-bar{display:none;}
-    .nav-item{flex-direction:column;padding:5px 2px;font-size:10px;gap:2px;flex:1;min-width:0;}
-    .nav-item .ico{font-size:20px;}
-    .main{order:1;padding-bottom:calc(70px + env(safe-area-inset-bottom));}
-    .topbar{padding:0 12px;height:54px;}
-    .topbar .title{font-size:15px;}
-    .app-name{font-size:13px;padding:4px 8px;}
-    .date-chip{font-size:11px;padding:4px 9px;}
-    .theme-toggle{font-size:18px;}
-    .content{padding:14px;}
-    .card{padding:14px;}
-    .summary{grid-template-columns:repeat(3,1fr);}
-    .task-actions{opacity:1;}
-    .sport-chart-wrap{grid-template-columns:1fr;}
     .modal{width:92vw;max-width:92vw;padding:18px;}
   }
 
@@ -391,26 +395,28 @@
       <div class="name" id="profileName">小美的工作台</div>
     </div>
     <nav id="nav">
-      <button class="nav-item active" data-page="plan"><span class="ico">📅</span>每日计划</button>
-      <button class="nav-item" data-page="english"><span class="ico">📚</span>英语学习</button>
-      <button class="nav-item" data-page="sport"><span class="ico">🏃</span>运动打卡</button>
-      <button class="nav-item" data-page="money"><span class="ico">💰</span>记账</button>
-      <button class="nav-item" data-page="period"><span class="ico">🌸</span>经期记录</button>
-      <button class="nav-item" data-page="tree"><span class="ico">🌳</span>小树洞</button>
+      <button class="nav-item active" data-page="plan"><span class="ico">📅</span><span class="label">每日计划</span></button>
+      <button class="nav-item" data-page="english"><span class="ico">📚</span><span class="label">英语学习</span></button>
+      <button class="nav-item" data-page="sport"><span class="ico">🏃</span><span class="label">运动打卡</span></button>
+      <button class="nav-item" data-page="money"><span class="ico">💰</span><span class="label">记账</span></button>
+      <button class="nav-item" data-page="period"><span class="ico">🌸</span><span class="label">经期记录</span></button>
+      <button class="nav-item" data-page="tree"><span class="ico">🌳</span><span class="label">小树洞</span></button>
     </nav>
     <div class="backup-bar">
-      <button onclick="exportData()">⬇️ 导出备份</button>
-      <button onclick="importData()">⬆️ 导入恢复</button>
-      <button onclick="clearData()">🗑️ 清空数据</button>
+      <button class="tutorial-btn" onclick="openTutorialModal()"><span class="ico">📖</span><span class="label">使用教程</span></button>
+      <button onclick="exportData()"><span class="ico">⬇️</span><span class="label">导出备份</span></button>
+      <button onclick="importData()"><span class="ico">⬆️</span><span class="label">导入恢复</span></button>
+      <button onclick="clearData()"><span class="ico">🗑️</span><span class="label">清空数据</span></button>
     </div>
     <input type="file" id="importFile" accept=".json" style="display:none;" onchange="handleImport(this)">
   </aside>
 
   <main class="main">
     <header class="topbar">
-      <div class="app-name" id="appName" title="点击修改应用名称">工作台</div>
-      <div class="title" id="pageTitle"><span class="ico">📅</span> 每日计划</div>
-      <div class="date-chip" id="dateChip">07-30</div>
+      <div class="topbar-center">
+        <div class="title" id="pageTitle"><span class="ico">📅</span> 每日计划</div>
+        <div class="date-chip" id="dateChip">07-30</div>
+      </div>
       <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">☀️</button>
     </header>
     <div class="content custom-scroll" id="contentBox"></div>
@@ -604,16 +610,6 @@ function saveAppName(name){
   const pn=document.getElementById('profileName');if(pn)pn.textContent=state.profile.name;
   updateAppNameUI();
 }
-function bindAppNameEdit(){
-  const an=document.getElementById('appName');if(!an)return;
-  an.onclick=()=>{
-    if(an.tagName.toLowerCase()==='input')return;
-    const input=document.createElement('input');input.value=state.profile.name;input.className='app-name-edit';
-    input.onblur=()=>{saveAppName(input.value);renderProfile();};
-    input.onkeydown=e=>{if(e.key==='Enter')input.blur();};
-    an.replaceWith(input);input.focus();input.select();
-  };
-}
 function renderProfile(){
   const box=document.getElementById('avatarBox');
   if(!box)return;
@@ -622,20 +618,25 @@ function renderProfile(){
   if(!nameEl)return;
   if(nameEl.tagName.toLowerCase()!=='input')nameEl.textContent=state.profile.name;
   updateAppNameUI();
-  bindAppNameEdit();
 }
 const profileBox=document.getElementById('profileBox');
 profileBox.onclick=e=>{
   if(e.target.closest('.avatar-wrap')||e.target.closest('.avatar-menu')||e.target.id==='avatarHint')return;
+  e.stopPropagation();
   const nameEl=document.getElementById('profileName');
   if(!nameEl||nameEl.tagName.toLowerCase()==='input')return;
-  const input=document.createElement('input');input.value=state.profile.name;
+  const input=document.createElement('input');input.value=state.profile.name;input.className='sidebar-name-edit';
   input.onblur=()=>{
     saveAppName(input.value);render();
   };
   input.onkeydown=e=>{if(e.key==='Enter')input.blur();};
   nameEl.replaceWith(input);input.focus();input.select();
 };
+document.addEventListener('click',e=>{
+  if(e.target.closest('input.sidebar-name-edit'))return;
+  const ed=document.querySelector('input.sidebar-name-edit');
+  if(ed)ed.blur();
+});
 function toggleAvatarMenu(e){e.stopPropagation();document.getElementById('avatarMenu').classList.toggle('show');}
 document.addEventListener('click',e=>{if(!e.target.closest('.avatar-wrap'))document.getElementById('avatarMenu').classList.remove('show');});
 function uploadAvatar(){document.getElementById('avatarFile').click();}
@@ -700,6 +701,32 @@ function showModal({title='提示',body='',input=false,inputValue='',placeholder
 }
 function showConfirm(body){return showModal({title:'请确认',body,noCancel:false});}
 function hideModal(){document.getElementById('modalOverlay').classList.remove('show');modalResolve=null;}
+
+/* ================= 使用教程弹窗 ================= */
+const TUTORIAL_HTML=`
+  <div class="tutorial">
+    <p class="tut-tip">💡 iOS 只能用 <b>Safari</b> 把网页添加到主屏幕（微信 / Chrome 内打开时先点「在 Safari 中打开」）。</p>
+    <h4>📱 iPhone / iPad（Safari）</h4>
+    <ol>
+      <li>用 <b>Safari</b> 打开 <code>https://pink-workbench.pages.dev</code></li>
+      <li>点底部工具栏中间的 <b>分享按钮</b>（⬆️ 方块图标）</li>
+      <li>向上滑，点 <b>「添加到主屏幕 / Add to Home Screen」</b></li>
+      <li>输入桌面显示的名字（默认同步你在应用里设置的应用名），点右上角 <b>添加</b></li>
+      <li>回到桌面，点击粉色图标即可像原生 App 一样打开，离线也能用</li>
+    </ol>
+    <h4>🤖 Android（Chrome / Edge）</h4>
+    <ol>
+      <li>用 Chrome 或 Edge 打开 <code>https://pink-workbench.pages.dev</code></li>
+      <li>点右上角菜单（⋮）→ <b>「添加到主屏幕 / 安装应用」</b></li>
+      <li>按提示确认，桌面即生成图标</li>
+    </ol>
+    <h4>💻 电脑（Chrome / Edge）</h4>
+    <ol>
+      <li>地址栏右侧出现「安装」图标（或菜单 → 安装），点击即可当作桌面应用使用</li>
+    </ol>
+    <p class="tut-tip">💡 首次安装需联网；安装后内容会被 Service Worker 缓存，之后无网络也能打开历史数据。桌面图标名字会同步你在应用里改的名称。</p>
+  </div>`;
+function openTutorialModal(){showModal({title:'📖 使用教程',body:TUTORIAL_HTML,noCancel:true});}
 
 /* ================= 数据备份 ================= */
 function exportData(){

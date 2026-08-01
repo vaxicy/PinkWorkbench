@@ -1,0 +1,10 @@
+# 本地工作记忆 / 敏感数据
+.codebuddy/
+.workbuddy/
+
+# AI 生成的临时像素素材（已被否决，不进版本库）
+generated-images/
+
+# 构建缓存
+.wrangler/
+node_modules/

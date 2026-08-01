@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D 动画手感 demo · 植物 & 宠物</title>
+<style>
+  :root{
+    --pink-1:#ffe5ec;--pink-2:#ffc2d1;--pink-3:#ff8fab;--pink-4:#fb6f92;
+    --brown:#6b4f3a;--green:#5cb87a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{
+    font-family:"PingFang SC","Microsoft YaHei",sans-serif;
+    background:linear-gradient(160deg,#fff0f5,#ffe5ec 60%,#ffd9e6);
+    min-height:100vh;display:flex;flex-direction:column;align-items:center;
+    padding:34px 16px 60px;color:var(--brown);
+  }
+  h1{font-size:24px;font-weight:800;margin-bottom:6px;}
+  .sub{font-size:13px;opacity:.75;margin-bottom:26px;}
+  .sub b{color:var(--pink-4);}
+
+  .row{display:flex;gap:26px;flex-wrap:wrap;justify-content:center;}
+
+  .card{
+    width:230px;background:#fff;border-radius:22px;padding:22px 18px 18px;
+    box-shadow:0 10px 30px rgba(255,143,170,.25),0 2px 8px rgba(0,0,0,.05);
+    border:1.5px solid var(--pink-1);text-align:center;
+    transition:box-shadow .3s;
+  }
+  .card:hover{box-shadow:0 18px 44px rgba(255,143,170,.38),0 4px 12px rgba(0,0,0,.06);}
+  .card h2{font-size:15px;margin-bottom:4px;}
+  .card .tag{font-size:11px;color:#c98;opacity:.8;margin-bottom:14px;}
+
+  /* ===== 3D 场景：perspective 是 3D 感的钥匙 ===== */
+  .scene{
+    position:relative;height:150px;margin:0 auto 16px;width:150px;
+    perspective:620px;            /* 透视距离，越小越夸张 */
+  }
+  .tilt{
+    position:absolute;inset:0;transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.34,1.56,.64,1); /* 弹性回位 */
+    will-change:transform;
+  }
+
+  /* ===== 植物 ===== */
+  .plant{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);transform-origin:50% 100%;will-change:transform;}
+  .plant .body{
+    font-size:52px;line-height:1;display:block;transform-origin:50% 100%;
+    animation:swaySlow 4s ease-in-out infinite;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));
+  }
+  @keyframes swaySlow{0%,100%{transform:rotate(-2.2deg);}50%{transform:rotate(2.2deg);}}
+  .plant .accent{
+    position:absolute;top:-16px;right:-14px;font-size:20px;pointer-events:none;
+    animation:flutter 2.3s ease-in-out infinite;      /* 比茎快，制造视差 */
+    filter:drop-shadow(0 0 4px rgba(255,210,90,.8));
+  }
+  @keyframes flutter{
+    0%,100%{transform:translate(0,0) rotate(-8deg) scale(1);}
+    25%{transform:translate(3px,-4px) rotate(6deg) scale(1.15);}
+    50%{transform:translate(0,-7px) rotate(10deg) scale(1);}
+    75%{transform:translate(-3px,-4px) rotate(2deg) scale(1.1);}
+  }
+  .pot{
+    position:absolute;bottom:12px;left:50%;transform:translateX(-50%);
+    width:64px;height:26px;background:linear-gradient(180deg,#d4956b,#a06a3f);
+    border-radius:4px 4px 12px 12px;
+    box-shadow:inset 0 -3px 4px rgba(0,0,0,.22),0 3px 6px rgba(160,106,63,.3);
+  }
+  .pot::before{
+    content:'';position:absolute;top:-3px;left:-5px;right:-5px;height:6px;
+    background:linear-gradient(180deg,#c0825e,#9a5e36);border-radius:3px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+  }
+
+  /* ===== 宠物 ===== */
+  .petjump{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);transform-origin:50% 100%;will-change:transform;z-index:2;}
+  .pet{
+    font-size:52px;line-height:1;display:block;transform-origin:50% 100%;
+    animation:petIdle 3.2s ease-in-out infinite;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.15));
+  }
+  /* 呼吸(scaleY) + 歪头(rotateY) 合成一个待机 */
+  @keyframes petIdle{
+    0%,100%{transform:scaleY(1) rotateY(0deg);}
+    50%{transform:scaleY(1.05) rotateY(8deg);}
+  }
+  .cushion{
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:78px;height:20px;border-radius:50%;
+    background:radial-gradient(ellipse at 50% 40%,#ffd6e7 0%,#ff9ebb 75%,#ff8fab 100%);
+    box-shadow:0 4px 8px rgba(255,143,170,.4),inset 0 -2px 3px rgba(194,24,91,.22);
+    z-index:1;
+  }
+
+  /* ===== 影子（3D 落地感）===== */
+  .shadow{
+    position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
+    width:64px;height:12px;border-radius:50%;
+    background:radial-gradient(ellipse,rgba(107,79,58,.28),transparent 70%);
+    animation:shadowPulse 4s ease-in-out infinite;
+  }
+  @keyframes shadowPulse{0%,100%{transform:translateX(-50%) scaleX(1);opacity:.8;}50%{transform:translateX(-50%) scaleX(.94);opacity:.65;}}
+
+  /* ===== 点击触发的挤压拉伸 ===== */
+  .scene.do-squish .plant{animation:squish .6s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes squish{
+    0%{transform:translateX(-50%) scale(1,1);}
+    30%{transform:translateX(-50%) scale(1.22,0.78);}
+    55%{transform:translateX(-50%) scale(0.9,1.12);}
+    75%{transform:translateX(-50%) scale(1.06,0.95);}
+    100%{transform:translateX(-50%) scale(1,1);}
+  }
+  .scene.do-stretch .plant{animation:stretchUp .7s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes stretchUp{
+    0%{transform:translateX(-50%) scale(1,1) translateY(0);}
+    30%{transform:translateX(-50%) scale(0.88,1.18) translateY(-8px);}
+    55%{transform:translateX(-50%) scale(1.1,0.9) translateY(0);}
+    80%{transform:translateX(-50%) scale(0.96,1.05) translateY(-3px);}
+    100%{transform:translateX(-50%) scale(1,1) translateY(0);}
+  }
+
+  .scene.do-feed .petjump{animation:petJump .75s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes petJump{
+    0%{transform:translateX(-50%) translateY(0) scale(1,1);}
+    20%{transform:translateX(-50%) translateY(0) scale(1.25,0.72);}   /* 预备：压扁 */
+    45%{transform:translateX(-50%) translateY(-20px) scale(0.88,1.18);}/* 跳起：拉长 */
+    68%{transform:translateX(-50%) translateY(0) scale(1.18,0.8);}    /* 落地：压扁 */
+    84%{transform:translateX(-50%) translateY(-5px) scale(0.95,1.06);} /* 余跳 */
+    100%{transform:translateX(-50%) translateY(0) scale(1,1);}
+  }
+  .scene.do-feed .shadow{animation:shadowJump .75s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes shadowJump{
+    0%,100%{transform:translateX(-50%) scale(1);opacity:.8;}
+    45%{transform:translateX(-50%) scale(.6);opacity:.4;}             /* 跳起时影子变小变淡 */
+  }
+  .scene.do-pet .petjump{animation:petWobble .55s cubic-bezier(.34,1.56,.64,1) 2;}
+  @keyframes petWobble{
+    0%,100%{transform:translateX(-50%) rotateZ(0) scale(1,1);}
+    25%{transform:translateX(-50%) rotateZ(-7deg) scale(1.08,0.92);}
+    75%{transform:translateX(-50%) rotateZ(7deg) scale(1.08,0.92);}
+  }
+
+  /* ===== 飘起的粒子 ===== */
+  .fx{position:absolute;left:50%;bottom:70px;font-size:22px;pointer-events:none;z-index:5;
+      animation:floatUp 1s ease-out forwards;}
+  @keyframes floatUp{
+    0%{transform:translate(-50%,0) scale(.6);opacity:0;}
+    20%{opacity:1;transform:translate(-50%,-8px) scale(1.1);}
+    100%{transform:translate(calc(-50% + var(--dx,0px)),-64px) scale(1);opacity:0;}
+  }
+
+  .btns{display:flex;gap:10px;justify-content:center;}
+  button{
+    border:none;cursor:pointer;font-family:inherit;font-weight:700;font-size:13px;
+    padding:9px 16px;border-radius:999px;color:#fff;
+    background:linear-gradient(135deg,var(--pink-3),var(--pink-4));
+    box-shadow:0 4px 12px rgba(251,111,146,.4);
+    transition:transform .15s,box-shadow .15s;
+  }
+  button:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(251,111,146,.5);}
+  button:active{transform:translateY(0) scale(.94);}
+  .note{margin-top:26px;font-size:12px;opacity:.7;max-width:520px;text-align:center;line-height:1.7;}
+  .note code{background:#fff;padding:1px 6px;border-radius:6px;color:var(--pink-4);}
+</style>
+</head>
+<body>
+  <h1>🪴 3D 动画手感 demo</h1>
+  <p class="sub">鼠标<b>移到卡片上</b>＝3D 倾斜 · <b>点按钮</b>＝挤压拉伸 · 平时有<b>呼吸 / 摆动 / 歪头</b></p>
+
+  <div class="row">
+    <!-- 植物 -->
+    <div class="card" id="plantCard">
+      <h2>🌵 胖多肉</h2>
+      <div class="tag">茎慢摆 + ✨ 快颤 ＝ 视差纵深</div>
+      <div class="scene" id="plantScene">
+        <div class="tilt" id="plantTilt">
+          <div class="shadow"></div>
+          <div class="plant" id="plantActor">
+            <span class="body">🌵</span>
+            <span class="accent">✨</span>
+          </div>
+          <div class="pot"></div>
+        </div>
+      </div>
+      <div class="btns">
+        <button onclick="plantAct('do-squish','💧')">💧 浇水</button>
+        <button onclick="plantAct('do-stretch','☀️')">☀️ 晒太阳</button>
+      </div>
+    </div>
+
+    <!-- 宠物 -->
+    <div class="card" id="petCard">
+      <h2>🐱 咪咪</h2>
+      <div class="tag">呼吸 scaleY + 歪头 rotateY</div>
+      <div class="scene" id="petScene">
+        <div class="tilt" id="petTilt">
+          <div class="shadow"></div>
+          <div class="petjump" id="petActor">
+            <span class="pet">🐱</span>
+          </div>
+          <div class="cushion"></div>
+        </div>
+      </div>
+      <div class="btns">
+        <button onclick="petAct('do-feed','🍖')">🍖 喂食</button>
+        <button onclick="petAct('do-pet','💕')">🤗 抚摸</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="note">
+    这是纯 <code>CSS + 一点 JS</code> 的手感 demo，没引入任何库。<br>
+    核心就是：<code>perspective</code> 透视 + <code>squash &amp; stretch</code> 挤压拉伸 + <code>分层摆动</code> + <code>呼吸/歪头</code>。<br>
+    正式版会把这套动作接到花园的真实数据（等级、成长阶段）上，植物照样能用 🌻🌸🍀，宠物换 🐶🐰🦊。
+  </p>
+
+<script>
+  /* ---------- 鼠标 3D 倾斜 ---------- */
+  function addTilt(card,tilt){
+    const MAX=12; // 最大转角
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-0.5;   // -0.5 ~ 0.5
+      const py=(e.clientY-r.top)/r.height-0.5;
+      tilt.style.transform=`rotateY(${px*MAX*2}deg) rotateX(${-py*MAX*2}deg)`;
+    });
+    card.addEventListener('mouseleave',()=>{ tilt.style.transform='rotateY(0) rotateX(0)'; });
+  }
+  addTilt(document.getElementById('plantCard'),document.getElementById('plantTilt'));
+  addTilt(document.getElementById('petCard'),document.getElementById('petTilt'));
+
+  /* ---------- 粒子 ---------- */
+  function spawnFx(scene,emoji,count){
+    for(let i=0;i<count;i++){
+      const s=document.createElement('span');
+      s.className='fx';s.textContent=emoji;
+      s.style.setProperty('--dx',(Math.random()*70-35)+'px');
+      s.style.animationDelay=(Math.random()*0.15)+'s';
+      s.style.fontSize=(18+Math.random()*10)+'px';
+      scene.appendChild(s);
+      setTimeout(()=>s.remove(),1200);
+    }
+  }
+
+  /* ---------- 触发动作（动画结束自动清 class，可重复点） ---------- */
+  function trigger(scene,cls,after){
+    scene.classList.remove(cls);
+    void scene.offsetWidth;           // 强制重排，让动画能重新播放
+    scene.classList.add(cls);
+    clearTimeout(scene._t);
+    scene._t=setTimeout(()=>scene.classList.remove(cls),900);
+    if(after)after();
+  }
+  function plantAct(cls,emoji){
+    const scene=document.getElementById('plantScene');
+    trigger(scene,cls,()=>spawnFx(scene,emoji,4));
+  }
+  function petAct(cls,emoji){
+    const scene=document.getElementById('petScene');
+    trigger(scene,cls,()=>spawnFx(scene,emoji,4));
+  }
+</script>
+</body>
+</html>

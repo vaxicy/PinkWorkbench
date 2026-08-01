@@ -2828,6 +2828,7 @@ function showEnergyGuide(){
     ['☀️ 给植物晒太阳','+1'],
     ['🍖 给宠物喂食','+1'],
     ['🤗 抚摸宠物','+1'],
+    ['🧶 陪宠物玩','+1'],
     ['📚 完成今日英语学习','+2'],
     ['🌳 写一篇心事','+3'],
     ['✨ 习惯打卡','+5'],
@@ -3357,7 +3358,7 @@ function renderTreePet(box){
   <div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 5 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5</small></button>
-    <button class="pixel-action" onclick="playPet(${p.id},event)">🧶 陪玩<small>心情 +8</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3</small></button>
   </div>`;
   box.appendChild(card);
 }
@@ -3388,7 +3389,8 @@ function petPet(id,e){
 }
 function playPet(id,e){
   e.stopPropagation();const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
-  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
+  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
   addEnergy(1);showHeartToast(1);levelUpPet(p);
   floatEmoji(e.target,'🧶',{count:3});saveState();render();playPixelCat('do-jump');
 }
@@ -3531,7 +3533,7 @@ function renderTreePet(box){
   <div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 5 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5</small></button>
-    <button class="pixel-action" onclick="playPet(${p.id},event)">🧶 陪玩<small>心情 +8</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3</small></button>
   </div>`;
   box.appendChild(card);
 }
@@ -3710,7 +3712,7 @@ function renderTreePet(box){
   <div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 5 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5</small></button>
-    <button class="pixel-action" onclick="playPet(${p.id},event)">🧶 陪玩<small>心情 +8</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3</small></button>
   </div>`;
   box.appendChild(card);
 }
@@ -3830,8 +3832,9 @@ function petPet(id,e){
 function playPet(id,e){
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
   const before=p.level;
-  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();
+  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
   addEnergy(1);showHeartToast(1);levelUpPet(p);
   saveState();render();
   setTimeout(()=>{
@@ -3907,7 +3910,7 @@ function renderTreePet(box){
   <div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 5 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5</small></button>
-    <button class="pixel-action" onclick="playPet(${p.id},event)">🧶 陪玩<small>心情 +8</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3</small></button>
   </div>`;
   box.appendChild(card);
   if(roomType==='cat')setTimeout(()=>scheduleCatIdle(p.id),60);
@@ -3951,8 +3954,9 @@ function petPet(id,e){
 function playPet(id,e){
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
   const before=p.level;
-  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();
+  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
   addEnergy(1);showHeartToast(1);levelUpPet(p);
   saveState();render();
   setTimeout(()=>{
@@ -4080,8 +4084,9 @@ function petPet(id,e){
 function playPet(id,e){
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
   const before=p.level;
-  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();
+  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
   addEnergy(1);showHeartToast(1);levelUpPet(p);
   saveState();render();
   setTimeout(()=>{
@@ -4143,7 +4148,7 @@ function renderTreePet(box){
   <div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 5 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5</small></button>
-    <button class="pixel-action" onclick="playPet(${p.id},event)">🧶 陪玩<small>心情 +8</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3</small></button>
   </div>`;
   box.appendChild(card);
   setTimeout(()=>schedulePetIdle(p.id),60);
@@ -4187,8 +4192,9 @@ function petPet(id,e){
 function playPet(id,e){
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
   const before=p.level;
-  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();
+  p.happiness=Math.min(100,(p.happiness??80)+8);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=4;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
   addEnergy(1);showHeartToast(1);levelUpPet(p);
   saveState();render();
   setTimeout(()=>{

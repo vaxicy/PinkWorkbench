@@ -533,6 +533,17 @@
   .garden-planted-sprite.type-sunflower.stage-1{max-width:62%;max-height:82%;}
   .garden-planted-sprite.type-sunflower.stage-2{max-width:72%;max-height:100%;}
   .garden-planted-sprite.type-sunflower.stage-3{max-width:84%;max-height:100%;}
+  /* v59: keep larger GPT plant stages inside the soil beds above the overlay cards. */
+  .garden-plant-slot{bottom:29.5%;height:24%;}
+  .garden-planted-sprite.type-succulent.stage-1{max-width:54%;max-height:70%;}
+  .garden-planted-sprite.type-succulent.stage-2{max-width:60%;max-height:78%;}
+  .garden-planted-sprite.type-succulent.stage-3{max-width:64%;max-height:82%;}
+  .garden-planted-sprite.type-rose.stage-2{max-width:68%;max-height:82%;}
+  .garden-planted-sprite.type-rose.stage-3{max-width:72%;max-height:86%;}
+  .garden-planted-sprite.type-blueberry.stage-2{max-width:66%;max-height:82%;}
+  .garden-planted-sprite.type-blueberry.stage-3{max-width:72%;max-height:86%;}
+  .garden-planted-sprite.type-sunflower.stage-2{max-width:62%;max-height:88%;}
+  .garden-planted-sprite.type-sunflower.stage-3{max-width:66%;max-height:90%;}
   .garden-plant-slot{animation:plantIdleSway 4.8s ease-in-out infinite;transform-origin:50% 100%;}
   .garden-plant-slot.slot-1{animation-delay:.45s;}
   .garden-plant-slot.slot-2{animation-delay:.9s;}
@@ -611,7 +622,7 @@
     .pixel-action{min-height:62px;font-size:14px;}
     .garden-board{margin:12px;padding:12px;overflow:hidden;}
     .asset-garden{width:auto;min-height:0;max-height:none;margin:12px;overflow:visible;}
-    .garden-plant-slot{bottom:21.4%;width:20.8%;height:28%;}
+    .garden-plant-slot{bottom:29.5%;width:20.8%;height:24%;}
     .garden-plant-slot.slot-0{left:15.2%;}
     .garden-plant-slot.slot-1{left:38.6%;}
     .garden-plant-slot.slot-2{left:62.3%;}
@@ -634,6 +645,55 @@
     .asset-garden{width:auto;min-height:0;}
     .garden-overlay-list{grid-template-columns:none;}
     .garden-plot{min-width:184px;}
+  }
+  /* v61: anchor plants to the inner soil area, not the full plot card width. */
+  .garden-plant-slot{bottom:31.2%;width:14.8%;height:22%;}
+  .garden-plant-slot.slot-0{left:18.1%;}
+  .garden-plant-slot.slot-1{left:42.15%;}
+  .garden-plant-slot.slot-2{left:66.25%;}
+  .garden-planted-sprite.stage-0{max-width:46%;max-height:56%;}
+  .garden-planted-sprite.stage-1{max-width:56%;max-height:68%;}
+  .garden-planted-sprite.stage-2{max-width:68%;max-height:80%;}
+  .garden-planted-sprite.stage-3{max-width:72%;max-height:84%;}
+  .garden-planted-sprite.type-succulent.stage-1{max-width:50%;max-height:62%;}
+  .garden-planted-sprite.type-succulent.stage-2{max-width:56%;max-height:68%;}
+  .garden-planted-sprite.type-succulent.stage-3{max-width:58%;max-height:72%;}
+  .garden-planted-sprite.type-rose.stage-2{max-width:62%;max-height:76%;}
+  .garden-planted-sprite.type-rose.stage-3{max-width:66%;max-height:80%;}
+  .garden-planted-sprite.type-blueberry.stage-2{max-width:62%;max-height:76%;}
+  .garden-planted-sprite.type-blueberry.stage-3{max-width:66%;max-height:80%;}
+  .garden-planted-sprite.type-sunflower.stage-2{max-width:56%;max-height:86%;}
+  .garden-planted-sprite.type-sunflower.stage-3{max-width:58%;max-height:88%;}
+  @media(max-width:680px){
+    .garden-plant-slot{bottom:31.2%;width:14.8%;height:22%;}
+    .garden-plant-slot.slot-0{left:18.1%;}
+    .garden-plant-slot.slot-1{left:42.15%;}
+    .garden-plant-slot.slot-2{left:66.25%;}
+  }
+  /* v63: v3 assets have safe padding now, so plants can be fuller again. */
+  .garden-plant-slot{bottom:30.4%;width:16.2%;height:24%;}
+  .garden-plant-slot.slot-0{left:17.4%;}
+  .garden-plant-slot.slot-1{left:41.45%;}
+  .garden-plant-slot.slot-2{left:65.55%;}
+  .garden-planted-sprite.stage-0{max-width:54%;max-height:62%;}
+  .garden-planted-sprite.stage-1{max-width:66%;max-height:76%;}
+  .garden-planted-sprite.stage-2{max-width:78%;max-height:90%;}
+  .garden-planted-sprite.stage-3{max-width:84%;max-height:96%;}
+  .garden-planted-sprite.type-succulent{filter:saturate(1.28) brightness(1.09) contrast(1.04) drop-shadow(0 8px 6px rgba(77,52,31,.2));}
+  .garden-planted-sprite.type-succulent.stage-1{max-width:62%;max-height:72%;}
+  .garden-planted-sprite.type-succulent.stage-2{max-width:70%;max-height:82%;}
+  .garden-planted-sprite.type-succulent.stage-3{max-width:76%;max-height:88%;}
+  .garden-planted-sprite.type-rose.stage-2{max-width:74%;max-height:88%;}
+  .garden-planted-sprite.type-rose.stage-3{max-width:78%;max-height:92%;}
+  .garden-planted-sprite.type-blueberry.stage-2{max-width:74%;max-height:88%;}
+  .garden-planted-sprite.type-blueberry.stage-3{max-width:78%;max-height:92%;}
+  .garden-planted-sprite.type-sunflower.stage-2{max-width:68%;max-height:96%;}
+  .garden-planted-sprite.type-sunflower.stage-3{max-width:70%;max-height:98%;}
+  @media(max-width:680px){
+    .garden-plant-slot{bottom:30.4%;width:16.2%;height:24%;}
+    .garden-plant-slot.slot-0{left:17.4%;}
+    .garden-plant-slot.slot-1{left:41.45%;}
+    .garden-plant-slot.slot-2{left:65.55%;}
   }
   @media(max-width:680px){
     .nurture-card{border-radius:14px;overflow:hidden;}
@@ -3561,7 +3621,7 @@ function plantStageLabel(level){
 }
 function plantStageAsset(p){
   const type=(p?.type==='sakura')?'rose':(p?.type==='clover')?'blueberry':(p?.type||'succulent');
-  return `plant-${type}-stage-${plantGrowthStageIndex(p?.level)+1}-clean-v2.png`;
+  return `plant-${type}-stage-${plantGrowthStageIndex(p?.level)+1}-clean-v3.png`;
 }
 function plantCareStatus(p){
   const moisture=Math.round(p.moisture??100);

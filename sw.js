@@ -1,1 +1,1 @@
-const CACHE_NAME = 'pink-workbench-v58';
+const CACHE_NAME = 'pink-workbench-v59';

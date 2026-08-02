@@ -1194,6 +1194,179 @@
   .dice-empty .de-sub{font-size:12px;color:var(--brown-light);line-height:1.6;max-width:280px;}
   @keyframes wheelIdle{0%,100%{transform:rotate(0);}50%{transform:rotate(8deg);}}
 
+  /* v64: garden and pet final mobile layout. */
+  .garden-board-v64{margin:14px 16px 16px;border:2px solid #ffbfd0;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#fff,#fff8fb);box-shadow:0 8px 18px rgba(255,143,171,.1);}
+  .garden-stage-v64{background-image:url("./generated-images/garden-empty-3plots.png");aspect-ratio:16/9;min-height:360px;max-height:520px;margin:0;overflow:hidden;background-size:cover;background-position:center;background-repeat:no-repeat;}
+  .garden-stage-v64 .garden-plant-slot{bottom:14.2%;width:17.4%;height:34%;}
+  .garden-stage-v64 .garden-plant-slot.slot-0{left:16.7%;}
+  .garden-stage-v64 .garden-plant-slot.slot-1{left:40.85%;}
+  .garden-stage-v64 .garden-plant-slot.slot-2{left:64.9%;}
+  .garden-panel-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:10px 12px 12px;background:rgba(255,255,255,.72);backdrop-filter:blur(3px);}
+  .garden-panel-list .garden-overlay-item{margin:0;}
+  @media(max-width:680px){
+    .content{padding:12px 10px 24px;}
+    .tree-energy-bar{margin-bottom:10px;}
+    .tree-tabs{margin-bottom:10px;}
+    .tree-tab{min-width:116px;}
+    .nurture-card{border-radius:14px;}
+    .garden-board-v64{margin:10px 8px 12px;border-radius:13px;}
+    .garden-stage-v64{aspect-ratio:auto;min-height:clamp(250px,68vw,330px);max-height:none;}
+    .garden-stage-v64 .scene-floating-top{left:10px;right:10px;top:10px;}
+    .garden-stage-v64 .scene-bubble{font-size:11px;padding:6px 8px;border-radius:12px;}
+    .garden-stage-v64 .garden-plant-slot{bottom:13.6%;width:18.4%;height:35%;}
+    .garden-stage-v64 .garden-plant-slot.slot-0{left:16.2%;}
+    .garden-stage-v64 .garden-plant-slot.slot-1{left:40.7%;}
+    .garden-stage-v64 .garden-plant-slot.slot-2{left:65.1%;}
+    .garden-panel-list{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding:8px;background:#fff8fb;}
+    .garden-panel-list .garden-overlay-item{flex:0 0 78%;min-width:0;scroll-snap-align:start;padding:8px;}
+    .garden-panel-list .garden-overlay-actions button{min-height:34px;font-size:12px;}
+    .pet-room{min-height:clamp(260px,72vw,360px);aspect-ratio:auto;margin:10px 8px;background-size:cover;background-position:center;}
+    .pet-sprite,.pet-cat-sprite{width:40%;min-width:116px;max-width:210px;bottom:-1%;}
+    .pet-dog-sprite{width:42%;min-width:124px;}
+    .pet-rabbit-sprite{width:36%;min-width:106px;}
+    .pet-fox-sprite{width:40%;min-width:116px;}
+    .pet-stats{margin:10px 8px 0;}
+    .pet-actions{padding:10px 8px 12px;}
+  }
+  @media(max-width:430px){
+    .sidebar{width:56px;}
+    .content{padding:10px 7px 22px;}
+    .card{padding:12px;}
+    .tree-tab{min-width:108px;padding:8px 10px;}
+    .garden-board-v64{margin:8px 4px 10px;}
+    .garden-stage-v64{min-height:245px;}
+    .garden-panel-list .garden-overlay-item{flex-basis:84%;}
+    .pet-room{min-height:255px;margin:8px 4px;}
+    .pet-room .scene-bubble{max-width:68%;}
+    .pet-actions{grid-template-columns:1fr;}
+  }
+  /* v65: move v64 garden plants back into the soil beds. */
+  .garden-stage-v64 .garden-plant-slot{bottom:22.8%;width:16.4%;height:28%;}
+  .garden-stage-v64 .garden-plant-slot.slot-0{left:17.25%;}
+  .garden-stage-v64 .garden-plant-slot.slot-1{left:41.4%;}
+  .garden-stage-v64 .garden-plant-slot.slot-2{left:65.45%;}
+  .garden-stage-v64 .garden-planted-sprite.stage-0{max-width:52%;max-height:58%;}
+  .garden-stage-v64 .garden-planted-sprite.stage-1{max-width:62%;max-height:72%;}
+  .garden-stage-v64 .garden-planted-sprite.stage-2{max-width:74%;max-height:86%;}
+  .garden-stage-v64 .garden-planted-sprite.stage-3{max-width:80%;max-height:92%;}
+  @media(max-width:680px){
+    .garden-stage-v64 .garden-plant-slot{bottom:22%;width:17%;height:29%;}
+    .garden-stage-v64 .garden-plant-slot.slot-0{left:16.9%;}
+    .garden-stage-v64 .garden-plant-slot.slot-1{left:41.15%;}
+    .garden-stage-v64 .garden-plant-slot.slot-2{left:65.35%;}
+  }
+  @media(max-width:430px){
+    .garden-stage-v64 .garden-plant-slot{bottom:21.5%;height:30%;}
+  }
+
+  /* v67: mobile garden polish + pet shop decorations. */
+  .daily-love-btn{border:1.5px solid var(--pink-1);background:#fff;color:var(--pink-4);border-radius:999px;padding:8px 12px;font-family:var(--font);font-size:12px;font-weight:900;cursor:pointer;white-space:nowrap;}
+  .daily-love-btn.claimed{color:var(--brown-light);background:var(--cream);cursor:default;opacity:.78;}
+  .pet-shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px;}
+  .pet-shop-card{border:1.5px solid var(--pink-1);background:linear-gradient(180deg,#fff,#fff8fb);border-radius:14px;padding:10px;display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:center;}
+  .pet-shop-card img{width:58px;height:58px;object-fit:contain;image-rendering:auto;filter:drop-shadow(0 5px 5px rgba(95,55,65,.14));}
+  .pet-shop-card b{display:block;color:var(--brown);font-size:13px;margin-bottom:3px;}
+  .pet-shop-card small{display:block;color:var(--brown-light);font-size:11px;line-height:1.3;margin-bottom:8px;}
+  .pet-shop-card button{width:100%;border:1.5px solid var(--pink-2);background:#fff;color:var(--pink-4);border-radius:999px;padding:7px 9px;font-family:var(--font);font-size:12px;font-weight:900;cursor:pointer;}
+  .pet-shop-card button.primary{background:var(--pink-4);border-color:var(--pink-4);color:#fff;}
+  .pet-shop-card button:disabled{opacity:.52;cursor:not-allowed;}
+  .pet-decoration{position:absolute;z-index:4;pointer-events:none;object-fit:contain;filter:drop-shadow(0 5px 5px rgba(70,42,52,.16));}
+  .pet-decoration.decor-head{left:50%;top:39%;width:9%;min-width:42px;transform:translate(-50%,-50%);}
+  .pet-decoration.decor-collar{left:50%;top:62%;width:10%;min-width:48px;transform:translate(-50%,-50%);}
+  .pet-decoration.decor-room{left:18%;bottom:3%;width:13%;min-width:58px;}
+  .pet-decoration.decor-toy{right:14%;bottom:7%;width:9%;min-width:44px;}
+  @media(max-width:680px){
+    .daily-love-btn{padding:7px 10px;font-size:11px;}
+    .garden-board-v64{overflow:visible;}
+    .garden-stage-v64{border-radius:12px;min-height:clamp(250px,62vw,315px);background-size:cover;background-position:center;}
+    .garden-panel-list{display:grid;grid-template-columns:1fr;gap:8px;padding:9px;background:#fff8fb;overflow:visible;scroll-snap-type:none;}
+    .garden-panel-list .garden-overlay-item{flex:auto;width:100%;scroll-snap-align:none;display:grid;grid-template-columns:1fr;gap:3px;padding:10px 12px;border-radius:13px;}
+    .garden-panel-list .garden-overlay-item span{font-size:12px;line-height:1.35;white-space:normal;}
+    .garden-panel-list .garden-overlay-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:5px;}
+    .garden-panel-list .garden-overlay-actions button{min-height:36px;padding:7px 6px;}
+    .pet-shop-grid{grid-template-columns:1fr;}
+    .pet-decoration.decor-head{top:40%;width:13%;min-width:36px;}
+    .pet-decoration.decor-collar{top:62%;width:14%;min-width:42px;}
+    .pet-decoration.decor-room{left:12%;bottom:4%;width:18%;min-width:50px;}
+    .pet-decoration.decor-toy{right:10%;bottom:7%;width:14%;min-width:42px;}
+  }
+  @media(max-width:430px){
+    .nurture-head{padding:12px 12px 9px;}
+    .nurture-title{display:grid;grid-template-columns:auto 1fr;column-gap:8px;}
+    .nurture-title small{grid-column:1/-1;margin-top:4px;}
+    .garden-board-v64{margin:8px 0 10px;}
+    .garden-stage-v64{min-height:242px;}
+    .garden-panel-list{padding:8px;}
+    .garden-panel-list .garden-overlay-item{padding:9px 10px;}
+    .pet-shop-card{grid-template-columns:52px 1fr;padding:9px;}
+    .pet-shop-card img{width:52px;height:52px;}
+  }
+  /* v68: dress decorations on the pet body instead of floating over the face. */
+  .pet-decoration.decor-head{top:34%;left:50%;width:6.8%;min-width:34px;z-index:5;}
+  .pet-decoration.decor-collar{top:59%;left:50%;width:7.6%;min-width:38px;z-index:5;}
+  .pet-decoration.decor-bow-pink{top:57%;width:8.2%;min-width:42px;}
+  .pet-room-cat .pet-decoration.decor-head{top:35%;left:50%;width:6.6%;}
+  .pet-room-cat .pet-decoration.decor-collar{top:59%;left:50%;width:7.2%;}
+  .pet-room-cat .pet-decoration.decor-bow-pink{top:56.5%;left:50%;width:8%;}
+  .pet-room-dog .pet-decoration.decor-head{top:36%;left:50%;width:7.5%;}
+  .pet-room-dog .pet-decoration.decor-collar{top:60.5%;left:50%;width:8.5%;}
+  .pet-room-dog .pet-decoration.decor-bow-pink{top:58.5%;width:9%;}
+  .pet-room-rabbit .pet-decoration.decor-head{top:30%;left:50%;width:6.2%;}
+  .pet-room-rabbit .pet-decoration.decor-collar{top:57%;left:50%;width:7.5%;}
+  .pet-room-rabbit .pet-decoration.decor-bow-pink{top:55%;width:8.2%;}
+  .pet-room-fox .pet-decoration.decor-head{top:33%;left:50%;width:7%;}
+  .pet-room-fox .pet-decoration.decor-collar{top:59.5%;left:50%;width:8%;}
+  .pet-room-fox .pet-decoration.decor-bow-pink{top:57.5%;width:8.6%;}
+  .pet-decoration.decor-collar-heart,.pet-decoration.decor-collar-bell{top:64%;width:6.2%;min-width:32px;}
+  .pet-room-cat .pet-decoration.decor-collar-heart,.pet-room-cat .pet-decoration.decor-collar-bell{top:64%;width:5.6%;}
+  .pet-room-dog .pet-decoration.decor-collar-heart,.pet-room-dog .pet-decoration.decor-collar-bell{top:65%;width:6.4%;}
+  .pet-room-rabbit .pet-decoration.decor-collar-heart,.pet-room-rabbit .pet-decoration.decor-collar-bell{top:61%;width:5.6%;}
+  .pet-room-fox .pet-decoration.decor-collar-heart,.pet-room-fox .pet-decoration.decor-collar-bell{top:64%;width:6.2%;}
+  @media(max-width:680px){
+    .pet-decoration.decor-head{top:34%;width:10%;min-width:30px;}
+    .pet-decoration.decor-collar{top:59%;width:11%;min-width:34px;}
+    .pet-decoration.decor-bow-pink{top:57%;width:12%;min-width:36px;}
+    .pet-room-dog .pet-decoration.decor-collar{top:60.5%;}
+    .pet-room-rabbit .pet-decoration.decor-head{top:30%;}
+    .pet-room-rabbit .pet-decoration.decor-collar{top:57%;}
+    .pet-decoration.decor-room{left:11%;bottom:4%;width:17%;min-width:48px;}
+    .pet-decoration.decor-toy{right:10%;bottom:7%;width:13%;min-width:38px;}
+  }
+  /* v68 final: animal-specific wearable overlays. */
+  .pet-decoration.is-wear{z-index:5;}
+  .pet-decoration.decor-head.is-wear{top:34%;width:6%;min-width:28px;}
+  .pet-decoration.decor-collar.is-wear{top:63%;width:6.4%;min-width:30px;}
+  .pet-decoration.decor-bow-pink.is-wear{top:58%;width:7.2%;min-width:34px;}
+  .pet-room-cat .pet-decoration.decor-head.is-wear{top:35%;width:5.8%;}
+  .pet-room-cat .pet-decoration.decor-collar.is-wear{top:63.5%;width:6%;}
+  .pet-room-cat .pet-decoration.decor-bow-pink.is-wear{top:58%;width:7%;}
+  .pet-room-dog .pet-decoration.decor-head.is-wear{top:36%;width:6.4%;}
+  .pet-room-dog .pet-decoration.decor-collar.is-wear{top:64%;width:6.8%;}
+  .pet-room-dog .pet-decoration.decor-bow-pink.is-wear{top:59%;width:7.5%;}
+  .pet-room-rabbit .pet-decoration.decor-head.is-wear{top:30%;width:5.5%;}
+  .pet-room-rabbit .pet-decoration.decor-collar.is-wear{top:60%;width:5.8%;}
+  .pet-room-rabbit .pet-decoration.decor-bow-pink.is-wear{top:56%;width:6.8%;}
+  .pet-room-fox .pet-decoration.decor-head.is-wear{top:33%;width:6.2%;}
+  .pet-room-fox .pet-decoration.decor-collar.is-wear{top:63.5%;width:6.5%;}
+  .pet-room-fox .pet-decoration.decor-bow-pink.is-wear{top:58%;width:7.2%;}
+  @media(max-width:680px){
+    .pet-decoration.decor-head.is-wear{width:9%;min-width:26px;}
+    .pet-decoration.decor-collar.is-wear{width:9.5%;min-width:28px;}
+    .pet-decoration.decor-bow-pink.is-wear{width:10.5%;min-width:32px;}
+  }
+  /* v71: make dressed pets feel more interactive even without full action art. */
+  .pet-sprite.is-dressed-action{animation-duration:.82s;filter:drop-shadow(0 12px 10px rgba(86,48,42,.24));}
+  .pet-sprite.is-dressed-action.is-blink{animation:dressedBlink .55s ease-out;}
+  .pet-sprite.is-dressed-action.is-tail{animation:dressedTail 1s ease-in-out;}
+  .pet-sprite.is-dressed-action.is-happy{animation:dressedHappy 1s ease-in-out;}
+  .pet-sprite.is-dressed-action.is-feed{animation:dressedFeed .86s ease-in-out;}
+  .pet-sprite.is-dressed-action.is-jump{animation:dressedJump .88s cubic-bezier(.34,1.56,.64,1);}
+  @keyframes dressedBlink{0%,100%{transform:translateX(-50%) scaleY(1);}45%{transform:translateX(-50%) translateY(2px) scaleY(.96);}}
+  @keyframes dressedTail{0%,100%{transform:translateX(-50%) rotate(0deg);}25%{transform:translateX(calc(-50% - 5px)) rotate(-2deg);}65%{transform:translateX(calc(-50% + 5px)) rotate(2deg);}}
+  @keyframes dressedHappy{0%,100%{transform:translateX(-50%) translateY(0) rotate(0deg);}25%{transform:translateX(-50%) translateY(-8px) rotate(-2deg);}55%{transform:translateX(-50%) translateY(-4px) rotate(2deg);}}
+  @keyframes dressedFeed{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}45%{transform:translateX(-50%) translateY(10px) scale(.98,1.02);}}
+  @keyframes dressedJump{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}35%{transform:translateX(-50%) translateY(-24px) scale(1.03,.98);}70%{transform:translateX(-50%) translateY(2px) scale(.98,1.03);}}
+
 </style>
 </head>
 <body>
@@ -1333,8 +1506,32 @@ function migrateData(){
     state.game.energy=10;
     state.game.v58EnergyReset=true;
   }
+  if(!state.game.v74EnergyReset){
+    state.game.energy=100;
+    state.game.v74EnergyReset=true;
+  }
+  if(!state.game.v77DebugReset){
+    state.game.energy=10;
+    state.game.v77DebugReset=true;
+  }
   if(!state.garden)state.garden={plants:[],harvested:0};
   if(!state.pet)state.pet={owned:[],activeId:null};
+  if(state.pet && Array.isArray(state.pet.owned) && !state.pet.v77InteractReset){
+    const t=todayKey();
+    state.pet.owned.forEach(p=>{
+      if(!p.interactLog)p.interactLog={};
+      p.interactLog[t]={pet:0,play:0};
+    });
+    state.pet.v77InteractReset=true;
+  }
+  if(state.pet && Array.isArray(state.pet.owned) && !state.pet.v75InteractReset){
+    const t=todayKey();
+    state.pet.owned.forEach(p=>{
+      if(!p.interactLog)p.interactLog={};
+      p.interactLog[t]={pet:0,play:0};
+    });
+    state.pet.v75InteractReset=true;
+  }
   if(!state.tree)state.tree={tab:'diary',entries:[]};
   // 植物新字段兼容（moisture 实时水分 / lastMoistureTick 衰减基线）
   if(state.garden && Array.isArray(state.garden.plants)){
@@ -4361,6 +4558,58 @@ function showAddPetModal(){
   });
 }
 
+/* v64 garden renderer: scene stays visible on iPhone; cards live below it. */
+function renderTreeGarden(box){
+  const card=div('card nurture-card');
+  card.innerHTML=`<div class="nurture-head">
+    <div class="nurture-title">🌱 我的花园 <small>播种、浇水、晒太阳，看它们一天天长大</small></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><span class="resource-pill">🌱 3 块地</span><span class="resource-pill">☀️ 每株 3 次</span></div>
+  </div>`;
+  const board=div('garden-board-v64');
+  const scene=div('pixel-scene asset-garden garden-stage-v64');
+  scene.innerHTML=`<div class="scene-floating-top"><span class="scene-bubble">🌼 像素小花园</span><button class="scene-bubble" onclick="showAddPlantModal()">＋ 播种</button></div>`;
+  const panels=div('garden-panel-list');
+  const plants=(state.garden.plants||[]).map(normalizePlantType);
+  for(let i=0;i<3;i++){
+    const p=plants[i];
+    if(!p){
+      const empty=div('garden-overlay-item');
+      empty.innerHTML=`<b>空地</b><span>等待播种 · -15 爱心</span><div class="garden-overlay-actions"><button onclick="showAddPlantModal()">播种</button></div>`;
+      panels.appendChild(empty);
+      continue;
+    }
+    const type=(p.type==='sakura')?'rose':(p.type==='clover')?'blueberry':p.type;
+    const stageIdx=plantGrowthStageIndex(p.level);
+    const slot=div(`garden-plant-slot slot-${i}`);
+    slot.dataset.plantId=p.id;
+    const img=document.createElement('img');
+    img.className=`garden-planted-sprite type-${type} stage-${stageIdx}`;
+    img.src=`./generated-images/${plantStageAsset(p)}`;
+    img.alt=p.typeName||p.name;
+    slot.appendChild(img);
+    scene.appendChild(slot);
+    const need=plantNeedExp(p.level);
+    const sunToday=(p.sunLog||{})[todayKey()]||0;
+    const moisture=Math.round(p.moisture??100);
+    const row=div('garden-overlay-item');
+    row.dataset.plantId=p.id;
+    row.innerHTML=`<b class="game-name" onclick="openRenameModal(${p.id},'plant')" title="点击改名">${esc(p.name)}</b>
+      <span>${plantStageLabel(p.level)} · Lv.${p.level} · 经验 ${p.exp}/${need}</span>
+      <span>💧 ${moisture}% · ☀️ ${sunToday}/3 · 第 ${nurtureDays(p)} 天</span>
+      <span>${plantCareStatus(p)}</span>
+      <div class="garden-overlay-actions">
+        <button onclick="waterPlant(${p.id},event)">浇水</button>
+        <button onclick="sunPlant(${p.id},event)" ${sunToday>=3?'disabled':''}>晒晒</button>
+        <button onclick="removePlant(${p.id},event)">铲除</button>
+      </div>`;
+    panels.appendChild(row);
+  }
+  board.appendChild(scene);
+  board.appendChild(panels);
+  card.appendChild(board);
+  box.appendChild(card);
+}
+
 function addTreeEntry(){
   const t=document.getElementById('treeText').value.trim();if(!t)return;
   const now=new Date();
@@ -4856,6 +5105,606 @@ function spinWheel(){
 }
 
 /* ================= 初始化 ================= */
+/* v67: mobile nurture economy + pet shop. */
+const PET_SHOP_ITEMS=[
+  {id:'bow-pink',name:'粉色蝴蝶结项圈',cat:'collar',price:12,img:'shop-bow-pink.png'},
+  {id:'crown-gold',name:'小皇冠',cat:'head',price:24,img:'shop-crown-gold.png'},
+  {id:'collar-heart',name:'爱心项圈',cat:'collar',price:16,img:'shop-collar-heart.png'},
+  {id:'collar-bell',name:'铃铛项圈',cat:'collar',price:14,img:'shop-collar-bell.png'},
+  {id:'toy-yarn',name:'粉色毛线球',cat:'toy',price:10,img:'shop-toy-yarn.png'},
+  {id:'rug-flower',name:'花朵小地毯',cat:'room',price:18,img:'shop-rug-flower.png'}
+];
+function ensureNurtureEconomy(){
+  if(!state.game)state.game={energy:10,lastCheckin:'',streak:0};
+  if(!state.shop)state.shop={owned:[]};
+  if(!Array.isArray(state.shop.owned))state.shop.owned=[];
+  if(!state.shop.v67Gifted){
+    state.shop.v67Gifted=true;
+    addEnergy(8);
+  }
+  if(state.pet&&Array.isArray(state.pet.owned)){
+    state.pet.owned.forEach(p=>{
+      if(!p.decor)p.decor={};
+      if(p.decor.head==='bow-pink'){
+        p.decor.collar='bow-pink';
+        delete p.decor.head;
+      }
+    });
+  }
+}
+function claimDailyLove(){
+  ensureNurtureEconomy();
+  const today=todayKey();
+  if(state.game.lastCheckin===today)return;
+  const yesterday=addDays(today,-1);
+  state.game.streak=state.game.lastCheckin===yesterday?(state.game.streak||0)+1:1;
+  state.game.lastCheckin=today;
+  const bonus=8+(state.game.streak%7===0?12:(state.game.streak%3===0?5:0));
+  addEnergy(bonus);
+  showHeartToast(bonus);
+  saveState();
+  render();
+}
+function levelUpPlant(p){
+  let gained=0;
+  while(p.exp>=plantNeedExp(p.level)&&p.level<5){
+    p.exp-=plantNeedExp(p.level);
+    p.level++;
+    gained++;
+  }
+  if(gained){addEnergy(gained*5);showHeartToast(gained*5);}
+  return gained;
+}
+function levelUpPet(p){
+  let gained=0;
+  while(p.exp>=petNeedExp(p.level)&&p.level<6){
+    p.exp-=petNeedExp(p.level);
+    p.level++;
+    gained++;
+  }
+  if(gained){addEnergy(gained*8);showHeartToast(gained*8);}
+  return gained;
+}
+function renderTree(box){
+  ensureNurtureEconomy();
+  const checked=state.game.lastCheckin===todayKey();
+  const header=div();
+  header.innerHTML=`<div class="tree-energy-bar"><span id="energyBadge">💖 ${state.game.energy||0}</span><a class="energy-link" onclick="showEnergyGuide()">完成任务获得爱心值，喂养你的植物和宠物 ›</a><button class="daily-love-btn ${checked?'claimed':''}" onclick="claimDailyLove()" ${checked?'disabled':''}>${checked?'今日已领':'每日 +8'}</button></div>`;
+  box.appendChild(header);
+  const tabs=div('tree-tabs');
+  const current=state.tree.tab||'diary';
+  [['diary','🌳 心事本'],['garden','🌱 我的花园'],['pet','🐾 我的宠物']].forEach(([k,l])=>{
+    const b=document.createElement('button');b.className='tree-tab'+(current===k?' on':'');b.textContent=l;
+    b.onclick=()=>{state.tree.tab=k;saveState();render();};
+    tabs.appendChild(b);
+  });
+  box.appendChild(tabs);
+  if(current==='diary')renderTreeDiary(box);
+  else if(current==='garden')renderTreeGarden(box);
+  else renderTreePet(box);
+}
+function showEnergyGuide(){
+  ensureNurtureEconomy();
+  const checked=state.game.lastCheckin===todayKey();
+  const items=[
+    ['每日领取','+8 起'],['连续 3 天登录','额外 +5'],['连续 7 天登录','额外 +12'],
+    ['完成待办任务','+1'],['习惯打卡','+5'],['完成英语学习','+5'],['运动打卡','+10'],
+    ['记一笔账','+1'],['写一条心事','+3'],['植物升级','+5'],['宠物升级','+8'],['抚摸/陪玩宠物','+2']
+  ];
+  const body=div('energy-guide');
+  const claim=document.createElement('button');
+  claim.className='btn-pink';
+  claim.textContent=checked?'今日爱心已领取':'领取今日爱心';
+  claim.disabled=checked;
+  claim.onclick=()=>{hideModal();claimDailyLove();};
+  body.appendChild(claim);
+  items.forEach(([label,val])=>{
+    const r=div('row');r.innerHTML=`<span>${label}</span><b>${val} 💖</b>`;body.appendChild(r);
+  });
+  showModal({title:'💖 如何获得爱心值',body:'',noCancel:true,render:m=>m.appendChild(body)});
+}
+function finishEnglish(){
+  if(state.english.finishDate===todayKey())return;
+  state.english.finishDate=todayKey();
+  addEnergy(5);showHeartToast(5);
+  saveState();render();
+}
+function petDecorationHtml(p){
+  ensureNurtureEconomy();
+  const decor=p.decor||{};
+  const petType=['cat','dog','rabbit','fox'].includes(p.type)?p.type:'cat';
+  return ['head','collar','room','toy'].map(cat=>{
+    const id=decor[cat];
+    const item=PET_SHOP_ITEMS.find(x=>x.id===id);
+    if(!item)return '';
+    const wearable=item.cat==='head'||item.cat==='collar';
+    const src=wearable?`wear-${petType}-${item.id}.png`:item.img;
+    return `<img class="pet-decoration decor-${item.cat} decor-${item.id}${wearable?' is-wear':''}" src="./generated-images/${src}" alt="${esc(item.name)}">`;
+  }).join('');
+}
+function openPetShop(petId){
+  ensureNurtureEconomy();
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!p)return;
+  if(!p.decor)p.decor={};
+  const body=div('pet-shop-grid');
+  PET_SHOP_ITEMS.forEach(item=>{
+    const owned=state.shop.owned.includes(item.id);
+    const equipped=p.decor[item.cat]===item.id;
+    const card=div('pet-shop-card');
+    const action=owned
+      ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
+      : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 💖</button>`;
+    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${{head:'头饰',collar:'项圈',toy:'玩具',room:'房间装饰'}[item.cat]} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    body.appendChild(card);
+  });
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+}
+function buyPetDecor(petId,itemId){
+  ensureNurtureEconomy();
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(state.shop.owned.includes(itemId))return equipPetDecor(petId,itemId);
+  if((state.game.energy||0)<item.price)return showModal({title:'爱心值不足',body:'完成任务或领取每日爱心后再来买吧。',noCancel:true});
+  addEnergy(-item.price);
+  state.shop.owned.push(itemId);
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function equipPetDecor(petId,itemId){
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function unequipPetDecor(petId,cat){
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!p)return;
+  if(!p.decor)p.decor={};
+  delete p.decor[cat];
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function renderTreePet(box){
+  ensureNurtureEconomy();
+  const card=div('card nurture-card');
+  const pets=state.pet.owned||[];
+  pets.forEach(p=>{if(!p.createdAt)p.createdAt=p.id||Date.now();if(!p.decor)p.decor={};});
+  const p=pets.find(x=>x.id===state.pet.activeId)||pets[0];
+  if(!p){
+    card.innerHTML=`<div class="nurture-head"><div class="nurture-title">🐾 我的宠物 <small>还没有宠物，下方领养一只吧</small></div><div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="showAddPetModal()">＋ 领养</button></div></div>
+      <button class="add-fab${state.game.energy<50?' disabled':''}" onclick="showAddPetModal()">🐾 领养宠物 <span style="opacity:.7;font-weight:600;">(-50)</span></button>`;
+    box.appendChild(card);return;
+  }
+  const today=(p.interactLog||{})[todayKey()]||{};
+  const hunger=Math.round(p.hunger??80);
+  const happiness=Math.round(p.happiness??80);
+  const intimacy=Math.min(100,Math.round((p.level/6)*72+(today.pet||0)*4+nurtureDays(p)));
+  const roomType=['cat','dog','rabbit','fox'].includes(p.type)?p.type:'cat';
+  const status=petNurtureStatus(p,today);
+  card.innerHTML=`<div class="nurture-head">
+    <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">＋ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+  </div>
+  ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
+  <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
+    <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status}</span></div>
+    <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petSpriteAsset(roomType,'idle')}" alt="${esc(p.name)}" />
+    ${petDecorationHtml(p)}
+  </div>
+  <div class="pet-stats">
+    <div class="pet-stat"><b>🍚 饱腹</b><div class="pixel-track"><i style="width:${hunger}%;background:linear-gradient(90deg,#8fd67a,#57bd72)"></i></div><span>${hunger}/100</span></div>
+    <div class="pet-stat"><b>💗 心情</b><div class="pixel-track"><i style="width:${happiness}%;background:linear-gradient(90deg,#ff8fab,#ff5f91)"></i></div><span>${happiness}/100</span></div>
+    <div class="pet-stat"><b>🫶 亲密度</b><div class="pixel-track"><i style="width:${intimacy}%;background:linear-gradient(90deg,#d5a8ff,#a879ff)"></i></div><span>${intimacy}/100</span></div>
+  </div>
+  <div class="pet-actions">
+    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 3 爱心</small></button>
+    <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5 · +2</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3 · +2</small></button>
+  </div>`;
+  box.appendChild(card);
+  setTimeout(()=>schedulePetIdle(p.id),60);
+}
+function renderTreeGarden(box){
+  ensureNurtureEconomy();
+  const card=div('card nurture-card');
+  card.innerHTML=`<div class="nurture-head">
+    <div class="nurture-title">🌱 我的花园 <small>播种、浇水、晒太阳，看它们一天天长大</small></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><span class="resource-pill">🌱 3 块地</span><span class="resource-pill">☀️ 每株 3 次</span></div>
+  </div>`;
+  const board=div('garden-board-v64');
+  const scene=div('pixel-scene asset-garden garden-stage-v64');
+  scene.innerHTML=`<div class="scene-floating-top"><span class="scene-bubble">🌼 像素小花园</span><button class="scene-bubble" onclick="showAddPlantModal()">＋ 播种</button></div>`;
+  const panels=div('garden-panel-list');
+  const plants=(state.garden.plants||[]).map(normalizePlantType);
+  for(let i=0;i<3;i++){
+    const p=plants[i];
+    if(!p){
+      const empty=div('garden-overlay-item');
+      empty.innerHTML=`<b>空地 ${i+1}</b><span>等待播种 · -15 爱心</span><div class="garden-overlay-actions"><button onclick="showAddPlantModal()">播种</button></div>`;
+      panels.appendChild(empty);
+      continue;
+    }
+    const type=(p.type==='sakura')?'rose':(p.type==='clover')?'blueberry':p.type;
+    const stageIdx=plantGrowthStageIndex(p.level);
+    const slot=div(`garden-plant-slot slot-${i}`);
+    slot.dataset.plantId=p.id;
+    const img=document.createElement('img');
+    img.className=`garden-planted-sprite type-${type} stage-${stageIdx}`;
+    img.src=`./generated-images/${plantStageAsset(p)}`;
+    img.alt=p.typeName||p.name;
+    slot.appendChild(img);
+    scene.appendChild(slot);
+    const need=plantNeedExp(p.level);
+    const sunToday=(p.sunLog||{})[todayKey()]||0;
+    const moisture=Math.round(p.moisture??100);
+    const row=div('garden-overlay-item');
+    row.dataset.plantId=p.id;
+    row.innerHTML=`<b class="game-name" onclick="openRenameModal(${p.id},'plant')" title="点击改名">${esc(p.name)}</b>
+      <span>${plantStageLabel(p.level)} · Lv.${p.level} · 经验 ${p.exp}/${need}</span>
+      <span>💧 ${moisture}% · ☀️ ${sunToday}/3 · 第 ${nurtureDays(p)} 天</span>
+      <span>${plantCareStatus(p)}</span>
+      <div class="garden-overlay-actions">
+        <button onclick="waterPlant(${p.id},event)">浇水</button>
+        <button onclick="sunPlant(${p.id},event)" ${sunToday>=3?'disabled':''}>晒晒</button>
+        <button onclick="removePlant(${p.id},event)">铲除</button>
+      </div>`;
+    panels.appendChild(row);
+  }
+  board.appendChild(scene);
+  board.appendChild(panels);
+  card.appendChild(board);
+  box.appendChild(card);
+}
+function waterPlant(id,e){
+  e?.stopPropagation?.();
+  if((state.game.energy||0)<2)return showModal({title:'爱心值不足',body:'浇水需要 2 爱心，先领取每日爱心或完成任务吧。',noCancel:true});
+  const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
+  const before=p.level;
+  addEnergy(-2);
+  p.exp+=15;p.moisture=Math.min(100,(p.moisture??100)+28);
+  p.lastWatered=Date.now();p.lastMoistureTick=Date.now();
+  levelUpPlant(p);
+  saveState();render();
+  setTimeout(()=>{
+    triggerPlantMotion(id,p.level>before?'is-grown':'is-watered');
+    sprinkleGardenBits(id,'water');
+    if(p.level>before){popLevelUp(getPlantSlot(id));petalRain(getPlantSlot(id));}
+  },30);
+}
+function sunPlant(id,e){
+  e?.stopPropagation?.();
+  const p=state.garden.plants.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.sunLog)p.sunLog={};if((p.sunLog[t]||0)>=3)return;
+  const before=p.level;
+  p.exp+=7;p.sunLog[t]=(p.sunLog[t]||0)+1;
+  p.moisture=Math.min(100,(p.moisture??100)+5);
+  addEnergy(2);showHeartToast(2);
+  levelUpPlant(p);
+  saveState();render();
+  setTimeout(()=>{
+    triggerPlantMotion(id,p.level>before?'is-grown':'is-sunned');
+    sprinkleGardenBits(id,'sun');
+    if(p.level>before){popLevelUp(getPlantSlot(id));petalRain(getPlantSlot(id));}
+  },30);
+}
+function feedPet(id,e){
+  e?.stopPropagation?.();
+  if((state.game.energy||0)<3)return showModal({title:'爱心值不足',body:'喂食需要 3 爱心，先领取每日爱心或完成任务吧。',noCancel:true});
+  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const before=p.level;
+  addEnergy(-3);
+  p.hunger=Math.min(100,(p.hunger??80)+22);p.happiness=Math.min(100,(p.happiness??80)+10);p.exp+=10;
+  p.lastPetTick=Date.now();levelUpPet(p);
+  saveState();render();
+  setTimeout(()=>{
+    triggerPetRoom(id,p.level>before?'pet-hop':'pet-pulse','🍚',4);
+    playPetSpriteAction(id,'feed','is-feed');
+    if(p.level>before){popLevelUp(getPetRoom(id));petalRain(getPetRoom(id));}
+  },30);
+}
+function petPet(id,e){
+  e?.stopPropagation?.();
+  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};
+  if((p.interactLog[t].pet||0)>=5)return;
+  const before=p.level;
+  p.happiness=Math.min(100,(p.happiness??80)+15);p.hunger=Math.max(0,(p.hunger??80)-4);p.exp+=5;
+  p.lastPetTick=Date.now();p.interactLog[t].pet=(p.interactLog[t].pet||0)+1;
+  addEnergy(2);showHeartToast(2);levelUpPet(p);
+  saveState();render();
+  setTimeout(()=>{
+    triggerPetRoom(id,p.level>before?'pet-hop':'pet-wiggle','💗',6);
+    playPetSpriteAction(id,'happy','is-happy');
+    if(p.level>before){popLevelUp(getPetRoom(id));petalRain(getPetRoom(id));}
+  },30);
+}
+function playPet(id,e){
+  e?.stopPropagation?.();
+  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
+  const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
+  const before=p.level;
+  p.happiness=Math.min(100,(p.happiness??80)+9);p.hunger=Math.max(0,(p.hunger??80)-3);p.exp+=5;p.lastPetTick=Date.now();p.interactLog[t].play=(p.interactLog[t].play||0)+1;
+  addEnergy(2);showHeartToast(2);levelUpPet(p);
+  saveState();render();
+  setTimeout(()=>{
+    triggerPetRoom(id,p.level>before?'pet-hop':'pet-hop','🧶',4);
+    playPetSpriteAction(id,'jump','is-jump');
+    if(p.level>before){popLevelUp(getPetRoom(id));petalRain(getPetRoom(id));}
+  },30);
+}
+
+function petWearKey(p){
+  const decor=p?.decor||{};
+  const type=['cat','dog','rabbit','fox'].includes(p?.type)?p.type:'cat';
+  const hasCrown=decor.head==='crown-gold';
+  const collarMap={'bow-pink':'bow','collar-heart':'heart','collar-bell':'bell'};
+  const collar=collarMap[decor.collar]||'';
+  if(type==='cat'){
+    if(hasCrown&&collar)return `crown-${collar}`;
+    if(hasCrown)return 'crown';
+    if(collar)return collar;
+    return '';
+  }
+  if(collar)return collar;
+  if(hasCrown)return 'crown';
+  return '';
+}
+function petOutfitSpriteAsset(p,action='idle'){
+  const type=['cat','dog','rabbit','fox'].includes(p?.type)?p.type:'cat';
+  const key=petWearKey(p);
+  if(key)return `pet-${type}-idle-${key}-v3.png`;
+  return petSpriteAsset(type,action);
+}
+function petDecorationHtml(p){
+  ensureNurtureEconomy();
+  const decor=p?.decor||{};
+  return ['room','toy'].map(cat=>{
+    const id=decor[cat];
+    const item=PET_SHOP_ITEMS.find(x=>x.id===id);
+    if(!item)return '';
+    return `<img class="pet-decoration decor-${item.cat} decor-${item.id}" src="./generated-images/${item.img}" alt="${esc(item.name)}">`;
+  }).join('');
+}
+function openPetShop(petId){
+  ensureNurtureEconomy();
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!p)return;
+  if(!p.decor)p.decor={};
+  const body=div('pet-shop-grid');
+  PET_SHOP_ITEMS.forEach(item=>{
+    const owned=state.shop.owned.includes(item.id);
+    const equipped=p.decor[item.cat]===item.id;
+    const card=div('pet-shop-card');
+    const action=owned
+      ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
+      : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 爱心</button>`;
+    const catText={head:'头饰',collar:'项圈',toy:'玩具',room:'房间装饰'}[item.cat]||'装饰';
+    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    body.appendChild(card);
+  });
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+}
+function buyPetDecor(petId,itemId){
+  ensureNurtureEconomy();
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(state.shop.owned.includes(itemId))return equipPetDecor(petId,itemId);
+  if((state.game.energy||0)<item.price)return showModal({title:'爱心值不足',body:'完成任务、晒太阳、摸摸或陪玩都可以获得爱心值，攒够再来买吧。',noCancel:true});
+  addEnergy(-item.price);
+  state.shop.owned.push(itemId);
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function equipPetDecor(petId,itemId){
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function unequipPetDecor(petId,cat){
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!p)return;
+  if(!p.decor)p.decor={};
+  delete p.decor[cat];
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function playPetSpriteAction(id,action='idle',cls=''){
+  const sprite=getPetSprite(id);
+  if(!sprite)return;
+  const pet=(state.pet.owned||[]).find(x=>x.id===id);
+  const kind=sprite.dataset.petKind||pet?.type||'cat';
+  sprite.src=`./generated-images/${pet?petOutfitSpriteAsset(pet,action):petSpriteAsset(kind,action)}`;
+  if(cls){
+    sprite.classList.remove('is-blink','is-tail','is-happy','is-jump','is-feed');
+    void sprite.offsetWidth;
+    sprite.classList.add(cls);
+    setTimeout(()=>sprite.classList.remove(cls),1000);
+  }
+  clearTimeout(sprite._idleReset);
+  sprite._idleReset=setTimeout(()=>{sprite.src=`./generated-images/${pet?petOutfitSpriteAsset(pet,'idle'):petSpriteAsset(kind,'idle')}`;},1100);
+}
+function renderTreePet(box){
+  ensureNurtureEconomy();
+  const card=div('card nurture-card');
+  const pets=state.pet.owned||[];
+  pets.forEach(p=>{if(!p.createdAt)p.createdAt=p.id||Date.now();if(!p.decor)p.decor={};});
+  const p=pets.find(x=>x.id===state.pet.activeId)||pets[0];
+  if(!p){
+    card.innerHTML=`<div class="nurture-head"><div class="nurture-title">🐾 我的宠物 <small>还没有宠物，领养一只开始陪伴吧</small></div><div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button></div></div>
+      <button class="add-fab${state.game.energy<50?' disabled':''}" onclick="showAddPetModal()">🐾 领养宠物 <span style="opacity:.7;font-weight:600;">(-50)</span></button>`;
+    box.appendChild(card);
+    return;
+  }
+  const today=(p.interactLog||{})[todayKey()]||{};
+  const hunger=Math.round(p.hunger??80);
+  const happiness=Math.round(p.happiness??80);
+  const intimacy=Math.min(100,Math.round((p.level/6)*72+(today.pet||0)*4+nurtureDays(p)));
+  const roomType=['cat','dog','rabbit','fox'].includes(p.type)?p.type:'cat';
+  const status=petNurtureStatus(p,today);
+  card.innerHTML=`<div class="nurture-head">
+    <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+  </div>
+  ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
+  <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
+    <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status}</span></div>
+    <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="${esc(p.name)}" />
+    ${petDecorationHtml(p)}
+  </div>
+  <div class="pet-stats">
+    <div class="pet-stat"><b>🍚 饱腹</b><div class="pixel-track"><i style="width:${hunger}%;background:linear-gradient(90deg,#8fd67a,#57bd72)"></i></div><span>${hunger}/100</span></div>
+    <div class="pet-stat"><b>💗 心情</b><div class="pixel-track"><i style="width:${happiness}%;background:linear-gradient(90deg,#ff8fab,#ff5f91)"></i></div><span>${happiness}/100</span></div>
+    <div class="pet-stat"><b>🫶 亲密度</b><div class="pixel-track"><i style="width:${intimacy}%;background:linear-gradient(90deg,#d5a8ff,#a879ff)"></i></div><span>${intimacy}/100</span></div>
+  </div>
+  <div class="pet-actions">
+    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 3 爱心</small></button>
+    <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5 · +2</small></button>
+    <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3 · +2</small></button>
+  </div>`;
+  box.appendChild(card);
+  setTimeout(()=>schedulePetIdle(p.id),60);
+}
+
+function ensurePetShopV70(){
+  const additions=[
+    {id:'lace-blue',name:'蓝白钩织围脖',cat:'collar',price:18,img:'shop-lace-blue.png'},
+    {id:'lace-pink',name:'粉白钩织围脖',cat:'collar',price:20,img:'shop-lace-pink.png'}
+  ];
+  additions.forEach(item=>{
+    if(!PET_SHOP_ITEMS.some(x=>x.id===item.id))PET_SHOP_ITEMS.push(item);
+  });
+}
+function petWearKey(p){
+  const decor=p?.decor||{};
+  const type=['cat','dog','rabbit','fox'].includes(p?.type)?p.type:'cat';
+  const hasCrown=decor.head==='crown-gold';
+  const collarMap={
+    'bow-pink':'bow',
+    'collar-heart':'heart',
+    'collar-bell':'bell',
+    'lace-blue':'lace-blue',
+    'lace-pink':'lace-pink'
+  };
+  const collar=collarMap[decor.collar]||'';
+  if(type==='cat'){
+    if(hasCrown&&['bow','heart','bell'].includes(collar))return `crown-${collar}`;
+    if(collar)return collar;
+    if(hasCrown)return 'crown';
+    return '';
+  }
+  if(collar)return collar;
+  if(hasCrown)return 'crown';
+  return '';
+}
+function openPetShop(petId){
+  ensurePetShopV70();
+  ensureNurtureEconomy();
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!p)return;
+  if(!p.decor)p.decor={};
+  const body=div('pet-shop-grid');
+  PET_SHOP_ITEMS.forEach(item=>{
+    const owned=state.shop.owned.includes(item.id);
+    const equipped=p.decor[item.cat]===item.id;
+    const card=div('pet-shop-card');
+    const action=owned
+      ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
+      : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 爱心</button>`;
+    const catText={head:'头饰',collar:'项圈/围脖',toy:'玩具',room:'房间装饰'}[item.cat]||'装饰';
+    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    body.appendChild(card);
+  });
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+}
+function buyPetDecor(petId,itemId){
+  ensurePetShopV70();
+  ensureNurtureEconomy();
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(state.shop.owned.includes(itemId))return equipPetDecor(petId,itemId);
+  if((state.game.energy||0)<item.price)return showModal({title:'爱心值不足',body:'完成任务、晒太阳、摸摸或陪玩都可以获得爱心值，攒够再来买吧。',noCancel:true});
+  addEnergy(-item.price);
+  state.shop.owned.push(itemId);
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+function equipPetDecor(petId,itemId){
+  ensurePetShopV70();
+  const item=PET_SHOP_ITEMS.find(x=>x.id===itemId);
+  const p=(state.pet.owned||[]).find(x=>x.id===petId);
+  if(!item||!p)return;
+  if(!p.decor)p.decor={};
+  p.decor[item.cat]=itemId;
+  saveState();
+  hideModal();
+  render();
+  setTimeout(()=>openPetShop(petId),30);
+}
+ensurePetShopV70();
+
+function petActionSpriteAssetV71(p,action='idle'){
+  const type=['cat','dog','rabbit','fox'].includes(p?.type)?p.type:'cat';
+  const key=petWearKey(p);
+  const actionMap={blink:'blink',tail:'tail',happy:'happy'};
+  const catAnimatedWearKeys=['lace-blue','lace-pink','bow','heart','bell','crown'];
+  if(type==='cat'&&catAnimatedWearKeys.includes(key)&&actionMap[action]){
+    return `pet-cat-anim-${key}-${actionMap[action]}-v4.png`;
+  }
+  if(key)return petOutfitSpriteAsset(p,'idle');
+  return petSpriteAsset(type,action);
+}
+function playPetSpriteAction(id,action='idle',cls=''){
+  const sprite=getPetSprite(id);
+  if(!sprite)return;
+  const pet=(state.pet.owned||[]).find(x=>x.id===id);
+  const kind=sprite.dataset.petKind||pet?.type||'cat';
+  const dressed=!!(pet&&petWearKey(pet));
+  sprite.src=`./generated-images/${pet?petActionSpriteAssetV71(pet,action):petSpriteAsset(kind,action)}`;
+  sprite.classList.remove('is-blink','is-tail','is-happy','is-jump','is-feed','is-dressed-action');
+  if(cls){
+    void sprite.offsetWidth;
+    if(dressed)sprite.classList.add('is-dressed-action');
+    sprite.classList.add(cls);
+    setTimeout(()=>sprite.classList.remove(cls,'is-dressed-action'),1000);
+  }
+  clearTimeout(sprite._idleReset);
+  sprite._idleReset=setTimeout(()=>{
+    sprite.src=`./generated-images/${pet?petOutfitSpriteAsset(pet,'idle'):petSpriteAsset(kind,'idle')}`;
+    sprite.classList.remove('is-blink','is-tail','is-happy','is-jump','is-feed','is-dressed-action');
+  },1120);
+}
+
 render();
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 </script>

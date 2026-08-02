@@ -7,6 +7,9 @@ generated-images/
 !generated-images/
 generated-images/*
 !generated-images/plant-*-clean-v3.png
+!generated-images/pet-*-idle-*-v3.png
+!generated-images/pet-cat-anim-*-v4.png
+!generated-images/shop-lace-*.png
 
 # 构建缓存
 .wrangler/

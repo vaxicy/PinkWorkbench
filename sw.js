@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pink-workbench-v89';
+const CACHE_NAME = 'pink-workbench-v95';
 
 self.addEventListener('install', event => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));
@@ -9,8 +9,8 @@ self.addEventListener('push', event => {
   const title = data.title || '喝水提醒';
   const options = {
     body: data.body || '该喝几口水啦 💧',
-    icon: './icon-192.png?v=89',
-    badge: './icon-192.png?v=89',
+    icon: './icon-192.png?v=95',
+    badge: './icon-192.png?v=95',
     tag: data.tag || ('water-reminder-'+Date.now()),
     data: { url: './index.html#plan' }
   };

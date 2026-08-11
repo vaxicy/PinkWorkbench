@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "pink-workbench-push",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    "APP_ORIGIN": "https://pink-workbench.pages.dev",
+    "VAPID_SUBJECT": "mailto:pink-workbench@example.com",
+    "VAPID_PUBLIC_KEY": "BOGC7tiOCcmI-aEX_xvVFRKPvL8JBS5W7zusVMfYa7517Abt_TT6z2EbddIuS9F6ahKW4Nb5UvEFsXufn7gAu-4"
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "REMINDERS", "class_name": "Reminder" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["Reminder"] }
+  ]
+}

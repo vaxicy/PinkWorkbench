@@ -1301,6 +1301,44 @@
     .pet-shop-card{grid-template-columns:52px 1fr;padding:9px;}
     .pet-shop-card img{width:52px;height:52px;}
   }
+  /* v78: mobile garden uses center anchors after the cover-cropped background shifts plot centers. */
+  @media(max-width:680px){
+    .garden-stage-v64 .garden-plant-slot{bottom:22%;width:18%;height:29%;}
+    .garden-stage-v64 .garden-plant-slot.slot-0{left:8.4%;}
+    .garden-stage-v64 .garden-plant-slot.slot-1{left:41%;}
+    .garden-stage-v64 .garden-plant-slot.slot-2{left:73.6%;}
+  }
+  @media(max-width:430px){
+    .garden-stage-v64 .garden-plant-slot{bottom:21.6%;width:18.6%;height:30%;}
+    .garden-stage-v64 .garden-plant-slot.slot-0{left:8.1%;}
+    .garden-stage-v64 .garden-plant-slot.slot-1{left:40.7%;}
+    .garden-stage-v64 .garden-plant-slot.slot-2{left:73.3%;}
+  }
+  /* v79: pet shop gets its own scroll-safe mobile layout. */
+  .modal.pet-shop-modal{max-width:520px;max-height:min(760px,calc(100dvh - 28px));display:flex;flex-direction:column;overflow:hidden;}
+  .modal.pet-shop-modal .modal-title{flex:0 0 auto;padding-right:42px;}
+  .modal.pet-shop-modal .modal-body{flex:1 1 auto;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;margin-bottom:0;padding:2px 2px 4px;}
+  .pet-shop-modal .pet-shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:2px;}
+  .pet-shop-modal .pet-shop-card{grid-template-columns:64px minmax(0,1fr);min-width:0;overflow:hidden;}
+  .pet-shop-modal .pet-shop-card > div{min-width:0;}
+  .pet-shop-modal .pet-shop-card img{display:block;width:64px;height:64px;align-self:center;justify-self:center;border-radius:14px;background:#fff7fa;border:1px solid #ffe1ea;padding:4px;}
+  .pet-shop-modal .pet-shop-card b,.pet-shop-modal .pet-shop-card small{overflow:hidden;text-overflow:ellipsis;}
+  .pet-shop-modal .pet-shop-card button{max-width:100%;min-width:0;white-space:nowrap;}
+  .shop-img-fallback{width:64px;height:64px;border-radius:14px;background:#fff7fa;border:1px solid #ffe1ea;display:grid;place-items:center;font-size:28px;}
+  @media(max-width:680px){
+    .modal.pet-shop-modal{width:min(88vw,430px);max-width:min(88vw,430px);max-height:calc(100dvh - 34px);padding:20px 16px 16px;border-radius:18px;}
+    .pet-shop-modal .pet-shop-grid{grid-template-columns:1fr;gap:9px;}
+    .pet-shop-modal .pet-shop-card{grid-template-columns:66px minmax(0,1fr);gap:10px;padding:10px;}
+    .pet-shop-modal .pet-shop-card img,.shop-img-fallback{width:62px;height:62px;}
+    .pet-shop-modal .pet-shop-card button{padding:8px 10px;font-size:12px;}
+  }
+  @media(max-width:430px){
+    .modal.pet-shop-modal{width:calc(100vw - 46px);max-width:calc(100vw - 46px);padding:18px 14px 14px;}
+    .pet-shop-modal .pet-shop-card{grid-template-columns:58px minmax(0,1fr);gap:9px;padding:9px;}
+    .pet-shop-modal .pet-shop-card img,.shop-img-fallback{width:56px;height:56px;border-radius:12px;}
+    .pet-shop-modal .pet-shop-card b{font-size:13px;}
+    .pet-shop-modal .pet-shop-card small{font-size:11px;}
+  }
   /* v68: dress decorations on the pet body instead of floating over the face. */
   .pet-decoration.decor-head{top:34%;left:50%;width:6.8%;min-width:34px;z-index:5;}
   .pet-decoration.decor-collar{top:59%;left:50%;width:7.6%;min-width:38px;z-index:5;}
@@ -1367,6 +1405,76 @@
   @keyframes dressedFeed{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}45%{transform:translateX(-50%) translateY(10px) scale(.98,1.02);}}
   @keyframes dressedJump{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}35%{transform:translateX(-50%) translateY(-24px) scale(1.03,.98);}70%{transform:translateX(-50%) translateY(2px) scale(.98,1.03);}}
 
+  /* ============== v81 喝水提醒 ============== */
+  .water-card{background:linear-gradient(135deg,#f7fbff,#fff);border-color:#cfe6f5;}
+  .water-card .card-title{color:#5b9fc4;}
+  .water-head-actions{margin-left:auto;display:flex;align-items:center;gap:6px;}
+  .water-icon-btn,.water-pill,.water-quick button{border:1px solid #cfe6f5;background:#fff;color:#5b9fc4;border-radius:999px;font:inherit;font-weight:800;cursor:pointer;}
+  .water-icon-btn{width:32px;height:32px;display:grid;place-items:center;}
+  .water-hero{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px 16px;border:1px solid #d8eafa;border-radius:16px;background:linear-gradient(135deg,#fafdff,#f1f8ff);}
+  .water-hero span,.water-hero small{display:block;color:#8ba0af;font-size:12px;font-weight:700;}
+  .water-countdown{display:block;margin:3px 0;font-size:38px;line-height:1;color:#5f6978;letter-spacing:1px;font-variant-numeric:tabular-nums;}
+  .water-drop{font-size:46px;filter:drop-shadow(0 5px 4px rgba(82,169,220,.18));animation:waterBob 2.4s ease-in-out infinite;}
+  @keyframes waterBob{50%{transform:translateY(-5px) rotate(4deg);}}
+  .water-progress{height:10px;border-radius:999px;background:#e5eff8;overflow:hidden;margin:14px 0 6px;}
+  .water-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9ed8f2,#6bb9df);transition:width .3s ease;}
+  .water-progress-line{display:flex;justify-content:space-between;gap:8px;color:#8ba0af;font-size:12px;font-weight:700;}
+  .water-progress-line b{color:#5b9fc4;}
+  .water-setting-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:13px;}
+  .water-setting-row>span{color:#8ba0af;font-size:12px;font-weight:800;min-width:72px;}
+  .water-pill{padding:7px 11px;font-size:12px;}
+  .water-pill.on{background:#dff2ff;border-color:#9ed8f2;color:#3786b2;}
+  .water-reminder-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px;}
+  .water-reminder-actions button{min-height:42px;border-radius:12px;border:1px solid #cfe6f5;background:#fff;color:#5b9fc4;font:inherit;font-weight:900;cursor:pointer;}
+  .water-reminder-actions button.primary{background:linear-gradient(135deg,#8ed0ef,#5caed7);color:#fff;border-color:transparent;}
+  .water-quick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px;}
+  .water-quick button{min-height:44px;font-size:13px;}
+  .water-quick button:active,.water-reminder-actions button:active{transform:translateY(1px);}
+  .water-notify-note{margin-top:9px;color:#8ba0af;font-size:11px;line-height:1.5;}
+  .water-notify-toggle{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:132px;border:1px solid #b9ddf8;background:#fff;color:#5aa1cb;border-radius:999px;padding:10px 16px;font-weight:700;cursor:pointer;}
+  .water-notify-toggle.on{background:#dff3ff;border-color:#79c6ed;color:#3289b9;}
+  .water-notify-toggle::before{content:'○';font-size:18px;line-height:1;}
+  .water-notify-toggle.on::before{content:'●';}
+  .water-notify-switch{display:flex!important;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:7px 12px!important;min-height:52px!important;border-radius:14px!important;}
+  .water-notify-switch>span{display:flex;flex-direction:column;gap:2px;line-height:1.1;}
+  .water-notify-switch b{font-size:14px;color:#5b9fc4;}
+  .water-notify-switch small{font-size:11px;font-weight:500;color:#9bb1c0;}
+  .water-notify-switch>i{position:relative;display:block;flex:0 0 50px;width:50px;height:30px;border-radius:999px;background:#cbd2da;transition:.2s;}
+  .water-notify-switch>i::after{content:'';position:absolute;top:4px;left:4px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.18);transition:.2s;}
+  .water-notify-switch.on{background:#e4f5ff!important;border-color:#93d2f2!important;}
+  .water-notify-switch.on>i{background:#68b8df;}
+  .water-notify-switch.on>i::after{left:24px;}
+  .water-records{margin-top:14px;padding-top:12px;border-top:1px dashed #d8eafa;}
+  .water-records-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;color:#718696;font-size:12px;font-weight:800;}
+  .water-records-head button{border:0;background:transparent;color:#5b9fc4;font:inherit;cursor:pointer;}
+  .water-record{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;margin-top:5px;border-radius:9px;background:#f5faff;color:#718696;font-size:12px;}
+  .water-record button{border:0;background:transparent;color:#b0c2ce;cursor:pointer;font-size:15px;}
+  .plan-tabs{align-items:stretch;}
+  .water-drink-button{display:block;width:100%;min-height:58px;margin-top:12px;border:0;border-radius:16px;background:linear-gradient(135deg,#8ed0ef,#5caed7);color:#fff;font:inherit;font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 8px 16px rgba(92,174,215,.22);}
+  .water-drink-button:active{transform:translateY(1px);box-shadow:0 4px 10px rgba(92,174,215,.2);}
+  .water-tab-card .water-interval-row{margin-top:16px;}
+  @media(max-width:680px){
+    body{min-height:100dvh;padding-bottom:env(safe-area-inset-bottom);}
+    .app{height:100dvh;min-height:100dvh;}
+    .content{padding-bottom:calc(28px + env(safe-area-inset-bottom));}
+    .water-card{padding:14px;margin-bottom:14px;}
+    .water-countdown{font-size:34px;}
+    .water-hero{padding:13px;}
+    .water-setting-row{align-items:flex-start;}
+    .water-setting-row>span{padding-top:8px;}
+    .water-pill{padding:8px 10px;}
+    .plan-tabs{flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:3px;scroll-snap-type:x proximity;}
+    .plan-tabs .tab{flex:0 0 auto;scroll-snap-align:start;}
+    .water-drink-button{min-height:54px;font-size:17px;}
+  }
+  @supports(height:100dvh){body{height:100dvh;}.app{height:calc(100dvh - 48px);}}
+  @media(max-width:680px){.app{height:100dvh;}}
+  .water-custom-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:10px 12px;border-radius:12px;background:#f5faff;border:1px solid #d8eafa;}
+  .water-custom-row input,.water-custom-row select{height:40px;border:1px solid #cfe6f5;border-radius:10px;background:#fff;color:#5b6978;font:inherit;font-size:16px;padding:0 10px;min-width:0;}
+  .water-custom-row input{width:100px;}
+  .water-custom-row select{flex:1;}
+  .water-custom-row button{height:40px;padding:0 16px;border:0;border-radius:10px;background:#6eb9dc;color:#fff;font:inherit;font-weight:900;cursor:pointer;white-space:nowrap;}
+  @media(max-width:680px){.water-custom-row{flex-wrap:wrap;}.water-custom-row input,.water-custom-row select{flex:1;}.water-custom-row button{width:100%;}}
 </style>
 </head>
 <body>
@@ -1479,6 +1587,7 @@ function defaultState(){
     period:{tab:'calendar',viewDate:today,currentStart:null,records:[],feelings:{}},
     tree:{tab:'diary',entries:[]},
     game:{energy:10,lastCheckin:'',streak:0},
+    water:{day:today,goalSips:0,sipsPerReminder:1,intervalMin:60,active:false,notify:false,nextReminderAt:0,records:[],rewardedMilestone:0,customOpen:false,customUnit:'min'},
     garden:{plants:[],harvested:0},
     pet:{owned:[],activeId:null},
     oracleTab:'fortune',
@@ -2055,9 +2164,212 @@ function handleImport(input){
 }
 function clearData(){showConfirm('确定清空所有本地数据？此操作不可恢复！').then(yes=>{if(yes){localStorage.removeItem(STORAGE_KEY);state=defaultState();render();}});}
 
+/* ================= v81 喝水提醒 ================= */
+let waterTicker=null;
+function ensureWaterState(){
+  const today=todayKey();
+  if(!state.water||typeof state.water!=='object')state.water={};
+  const w=state.water;
+  if(w.day!==today){w.day=today;w.records=[];w.nextReminderAt=0;w.active=false;w.goalReached=false;}
+  w.goalSips=Math.max(1,Math.min(200,parseInt(w.goalSips)||40));
+  w.sipsPerReminder=1;
+  w.intervalMin=Math.max(1,parseInt(w.intervalMin)||60);
+  if(!Array.isArray(w.records))w.records=[];
+  if(!w.deviceId)w.deviceId=crypto.randomUUID?.()||('pw-'+Date.now()+'-'+Math.random().toString(36).slice(2));
+  return w;
+}
+const PUSH_API='https://pink-workbench-push.huangzero2004.workers.dev';
+function pushBytes(value){const padded=value.replace(/-/g,'+').replace(/_/g,'/')+'==='.slice((value.length+3)%4);const raw=atob(padded);return Uint8Array.from(raw,c=>c.charCodeAt(0));}
+async function syncRemoteReminder(){
+  const w=ensureWaterState();if(!w.pushSubscribed)return;
+  await fetch(`${PUSH_API}/devices/${encodeURIComponent(w.deviceId)}/reminder`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({active:w.active,intervalMin:w.intervalMin,nextReminderAt:w.nextReminderAt})}).catch(()=>{});
+}
+async function subscribeRemotePush(){
+  if(!('serviceWorker' in navigator)||!('PushManager' in window))throw new Error('当前设备不支持 Web Push');
+  const w=ensureWaterState();
+  const keyResponse=await fetch(`${PUSH_API}/vapid-public-key`);const keyData=await keyResponse.json();
+  const registration=await navigator.serviceWorker.ready;
+  let subscription=await registration.pushManager.getSubscription();
+  if(!subscription)subscription=await registration.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:pushBytes(keyData.publicKey)});
+  const response=await fetch(`${PUSH_API}/devices/${encodeURIComponent(w.deviceId)}/subscribe`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({subscription,active:w.active,intervalMin:w.intervalMin,nextReminderAt:w.nextReminderAt})});
+  if(!response.ok)throw new Error('后台订阅保存失败');
+  w.pushSubscribed=true;w.notify=true;saveState();return subscription;
+}
+async function unsubscribeRemotePush(){
+  const w=ensureWaterState();
+  await fetch(`${PUSH_API}/devices/${encodeURIComponent(w.deviceId)}`,{method:'DELETE'}).catch(()=>{});
+  w.pushSubscribed=false;w.notify=false;saveState();
+}
+function waterTotal(){return ensureWaterState().records.reduce((sum,row)=>sum+(parseInt(row.sips)||0),0);}
+function waterTime(ms){
+  if(!ms||ms<=0)return '现在可以开始';
+  const total=Math.ceil(ms/1000),minutes=Math.floor(total/60),seconds=total%60;
+  return `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+}
+function waterProgress(){const w=ensureWaterState();return Math.min(100,Math.round(waterTotal()/w.goalSips*100));}
+function renderWaterCard(){
+  const w=ensureWaterState(),total=waterTotal(),percent=waterProgress();
+  const running=w.active&&w.nextReminderAt>Date.now();
+  const notifyReady=typeof Notification!=='undefined'&&Notification.permission==='granted'&&w.notify;
+  const card=div('card water-card');
+  card.innerHTML=`
+    <div class="card-title"><span>💧 喝水提醒</span><div class="water-head-actions"><span style="font-size:11px;color:#8ba0af;">${notifyReady?'通知已开启':'页面提醒'}</span><button class="water-icon-btn" onclick="openWaterGuide()" title="喝水提醒设置">⚙️</button></div></div>
+    <div class="card-sub">每次喝几口，轻松完成今天的喝水目标</div>
+    <div class="water-hero"><div><span>距离下次喝水</span><strong class="water-countdown" id="waterCountdown">${running?waterTime(w.nextReminderAt-Date.now()):'--:--'}</strong><small>每 ${w.intervalMin} 分钟提醒一次 · 每次 ${w.sipsPerReminder} 口</small></div><div class="water-drop">💧</div></div>
+    <div class="water-progress"><i style="width:${percent}%"></i></div>
+    <div class="water-progress-line"><span>今日进度</span><b>${total} / ${w.goalSips} 口（${percent}%）</b></div>
+    <div class="water-setting-row"><span>每次喝</span>${[3,5,8].map(n=>`<button class="water-pill ${w.sipsPerReminder===n?'on':''}" onclick="setWaterOption('sipsPerReminder',${n})">${n} 口</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('sipsPerReminder')">自定义</button></div>
+    <div class="water-setting-row"><span>提醒间隔</span>${[30,60,90].map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('intervalMin')">自定义</button></div>
+    <div class="water-setting-row"><span>每日目标</span>${[30,40,50].map(n=>`<button class="water-pill ${w.goalSips===n?'on':''}" onclick="setWaterOption('goalSips',${n})">${n} 口</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('goalSips')">自定义</button></div>
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button></div>
+    <div class="water-quick"><button onclick="logWater(3)">我喝了 3 口</button><button onclick="logWater(5)">我喝了 5 口</button><button onclick="logWater(8)">我喝了 8 口</button></div>
+    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击“开启弹出通知”。页面保持打开时也会正常倒计时提醒。'}</div>
+    <div class="water-records"><div class="water-records-head"><span>今日记录 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,5).map(row=>`<div class="water-record"><span>${row.time} · ${row.sips} 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝几口水吧 💧</div>'}</div>`;
+  startWaterTicker();
+  return card;
+}
+function setWaterOption(key,value){const w=ensureWaterState();w[key]=parseInt(value)||w[key];if(w.active)w.nextReminderAt=Date.now()+w.intervalMin*60000;saveState();syncRemoteReminder();render();}
+async function customWaterSetting(key){
+  const w=ensureWaterState();
+  const labels={goalSips:'每日目标口数',sipsPerReminder:'每次提醒口数',intervalMin:'提醒间隔（分钟）'};
+  const value=await showModal({title:labels[key]||'喝水设置',input:true,inputValue:String(w[key]),placeholder:'请输入数字'});
+  const number=parseInt(value);if(!number)return;
+  const limits={goalSips:[1,200],sipsPerReminder:[1,30],intervalMin:[1,Number.MAX_SAFE_INTEGER]}[key];
+  if(number<limits[0]||number>limits[1])return showModal({title:'数值不合适',body:`请输入 ${limits[0]} - ${limits[1]} 之间的数字。`,noCancel:true});
+  setWaterOption(key,number);
+}
+function toggleWaterReminder(){
+  const w=ensureWaterState();w.active=!w.active;w.nextReminderAt=w.active?Date.now()+w.intervalMin*60000:0;saveState();render();
+  syncRemoteReminder();
+}
+function logWater(sips){
+  const w=ensureWaterState(),before=waterTotal();
+  w.records.push({id:Date.now(),time:nowTime(),sips:Math.max(1,parseInt(sips)||w.sipsPerReminder)});
+  if(w.active)w.nextReminderAt=Date.now()+w.intervalMin*60000;
+  const after=waterTotal();
+  if(before<w.goalSips&&after>=w.goalSips&&!w.goalReached){w.goalReached=true;addEnergy(5);showHeartToast(5);}
+  else showHeartToast(1);
+  saveState();syncRemoteReminder();render();
+}
+function undoWaterLog(id){const w=ensureWaterState();w.records=w.records.filter(row=>row.id!==id);w.goalReached=waterTotal()>=w.goalSips;saveState();render();}
+function resetWaterRecords(){const w=ensureWaterState();w.records=[];w.goalReached=false;saveState();render();}
+function waterNotify(){
+  const w=ensureWaterState();
+  const title='💧 喝水提醒';const body='喝一口水，再继续今天的事情吧。';
+  if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
+  if(navigator.serviceWorker?.ready)navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,icon:'./icon-192.png?v=87',tag:'water-reminder',renotify:true})).catch(()=>{});
+  else try{new Notification(title,{body,icon:'./icon-192.png?v=87',tag:'water-reminder'});}catch(_){ }
+  if(navigator.vibrate)navigator.vibrate([80,60,80]);
+}
+async function requestWaterNotifications(){
+  if(typeof Notification==='undefined')return showModal({title:'当前设备不支持',body:'这个浏览器没有通知能力，可以继续使用页面倒计时和喝水记录。',noCancel:true});
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone;
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!standalone)return showModal({title:'先添加到主屏幕',body:'请点击 Safari 的分享按钮，选择“添加到主屏幕”，再从桌面打开治愈花园并开启通知。iPhone 的网页通知需要主屏幕网页应用。',noCancel:true});
+  const permission=await Notification.requestPermission();
+  const w=ensureWaterState();
+  if(permission==='granted'){
+    try{await subscribeRemotePush();}catch(error){w.notify=false;saveState();render();showModal({title:'后台通知还未接通',body:error.message+'。可以继续使用页面内提醒。',noCancel:true});return;}
+  }else{w.notify=false;saveState();render();}
+  if(permission!=='granted')showModal({title:'通知没有开启',body:'可以在浏览器或系统设置里允许通知，页面内倒计时仍然可以使用。',noCancel:true});
+}
+function openWaterGuide(){showModal({title:'💧 喝水提醒',body:'设置每次提醒喝几口、提醒间隔和每日目标。开启提醒后，页面打开时会倒计时；iPhone 请添加到主屏幕后再开启系统通知。',noCancel:true});}
+async function toggleWaterNotifications(){
+  const w=ensureWaterState();
+  const permission=typeof Notification!=='undefined'?Notification.permission:'unsupported';
+  if(w.notify&&permission==='granted'){
+    await unsubscribeRemotePush();render();return;
+  }
+  await requestWaterNotifications();
+}
+function startWaterTicker(){
+  if(waterTicker)return;
+  waterTicker=setInterval(()=>{
+    const w=ensureWaterState();
+    if(w.active&&w.nextReminderAt&&Date.now()>=w.nextReminderAt){waterNotify();w.nextReminderAt=Date.now()+w.intervalMin*60000;saveState();}
+    const el=document.getElementById('waterCountdown');
+    if(el)el.textContent=w.active&&w.nextReminderAt> Date.now()?waterTime(w.nextReminderAt-Date.now()):'--:--';
+  },1000);
+}
+
+/* v82: simple one-sip water tab */
+function renderWaterCard(){
+  const w=ensureWaterState(),total=waterTotal();
+  const running=w.active&&w.nextReminderAt>Date.now();
+  const notifyReady=typeof Notification!=='undefined'&&Notification.permission==='granted'&&w.notify;
+  const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone;
+  const card=div('card water-card water-tab-card');
+  card.innerHTML=`
+    <div class="card-title"><span>💧 喝水提醒</span><div class="water-head-actions"><span style="font-size:11px;color:#8ba0af;">${notifyReady?'通知已开启':'页面提醒'}</span><button class="water-icon-btn" onclick="openWaterGuide()" title="提醒设置">⚙️</button></div></div>
+    <div class="card-sub">默认每次喝一口，想起来就点一下</div>
+    <div class="water-hero"><div><span>距离下次喝水</span><strong class="water-countdown" id="waterCountdown">${running?waterTime(w.nextReminderAt-Date.now()):'--:--'}</strong><small>每 ${w.intervalMin} 分钟提醒一次</small></div><div class="water-drop">💧</div></div>
+    <div class="water-setting-row water-interval-row"><span>提醒间隔</span>${[30,60,90].map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('intervalMin')">自定义</button></div>
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-toggle ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}">${notifyReady?'通知已开启':'开启通知'}</button></div>
+    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后，当前版本无法保证后台弹出。'}</div>
+    <button class="water-drink-button" onclick="logWater()">💧 我喝了</button>
+    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击“开启弹出通知”。'}</div>
+    <div class="water-records"><div class="water-records-head"><span>今日已喝 · ${total} 口 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,8).map(row=>`<div class="water-record"><span>${row.time} · 1 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝一口水吧 💧</div>'}</div>`;
+  startWaterTicker();
+  return card;
+}
+function customWaterSetting(key){
+  if(key!=='intervalMin')return;
+  const w=ensureWaterState();
+  showModal({title:'提醒间隔',input:true,inputValue:String(w.intervalMin),placeholder:'请输入 1 分钟以上的整数'}).then(value=>{
+    const number=parseInt(value);if(!number||number<1)return;
+    setWaterOption('intervalMin',number);
+  });
+}
+function logWater(){
+  const w=ensureWaterState(),total=waterTotal();
+  w.records.push({id:Date.now(),time:nowTime(),sips:1});
+  if(w.active)w.nextReminderAt=Date.now()+w.intervalMin*60000;
+  const milestone=Math.floor((total+1)/5);
+  const previous=Number(w.rewardedMilestone)||0;
+  if(milestone>previous){w.rewardedMilestone=milestone;addEnergy(milestone-previous);showHeartToast(milestone-previous);}
+  else showHeartToast(1);
+  saveState();syncRemoteReminder();render();
+}
+function openWaterGuide(){
+  const w=ensureWaterState();
+  showModal({title:'💧 喝水提醒设置',body:`当前每次记录 1 口。你可以在下方选择提醒间隔，或自定义为 ${w.intervalMin} 分钟。iPhone 请从主屏幕打开网页应用后开启通知。`,noCancel:true});
+}
+
+function toggleWaterCustom(){const w=ensureWaterState();w.customOpen=!w.customOpen;saveState();render();}
+function applyWaterCustom(){
+  const w=ensureWaterState();
+  const input=document.getElementById('waterCustomValue');
+  const unit=document.getElementById('waterCustomUnit');
+  const number=parseInt(input?.value);
+    if(!number||number<1)return showModal({title:'提醒间隔不合适',body:'请输入 1 分钟以上的整数。',noCancel:true});
+  const minutes=unit?.value==='hour'?number*60:number;
+  w.intervalMin=minutes;w.customUnit=unit?.value==='hour'?'hour':'min';w.customOpen=false;w.nextReminderAt=w.active?Date.now()+minutes*60000:0;saveState();syncRemoteReminder();render();
+}
+function renderWaterCard(){
+  const w=ensureWaterState(),total=waterTotal(),running=w.active&&w.nextReminderAt>Date.now();
+  const notifyReady=typeof Notification!=='undefined'&&Notification.permission==='granted'&&w.notify;
+  const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone;
+  const presets=[15,30,45,60,90,120];
+  const isPreset=presets.includes(w.intervalMin);
+  const card=div('card water-card water-tab-card');
+  card.innerHTML=`
+    <div class="card-title"><span>💧 喝水提醒</span><div class="water-head-actions"><span style="font-size:11px;color:#8ba0af;">${notifyReady?'通知已开启':'页面提醒'}</span></div></div>
+    <div class="card-sub">默认每次喝一口，想起来就点一下</div>
+    <div class="water-hero"><div><span>距离下次喝水</span><strong class="water-countdown" id="waterCountdown">${running?waterTime(w.nextReminderAt-Date.now()):'--:--'}</strong><small>每 ${w.intervalMin} 分钟提醒一次</small></div><div class="water-drop">💧</div></div>
+    <div class="water-setting-row water-interval-row"><span>提醒间隔</span>${presets.map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill ${!isPreset||w.customOpen?'on':''}" onclick="toggleWaterCustom()">自定义</button></div>
+    ${w.customOpen?`<div class="water-custom-row"><input id="waterCustomValue" type="number" min="1" value="${isPreset?'60':w.customUnit==='hour'?Math.max(1,Math.round(w.intervalMin/60)):w.intervalMin}" inputmode="numeric"><select id="waterCustomUnit"><option value="min" ${w.customUnit!=='hour'?'selected':''}>分钟</option><option value="hour" ${w.customUnit==='hour'?'selected':''}>小时</option></select><button onclick="applyWaterCustom()">应用</button></div>`:''}
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button></div>
+    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后，当前版本无法保证后台弹出。'}</div>
+    <button class="water-drink-button" onclick="logWater()">💧 我喝了</button>
+    <div class="water-records"><div class="water-records-head"><span>今日已喝 · ${total} 口 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,8).map(row=>`<div class="water-record"><span>${row.time} · 1 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝一口水吧 💧</div>'}</div>`;
+  startWaterTicker();
+  return card;
+}
+
 /* ================= 每日计划 ================= */
 function renderPlan(box){
-  const tabs=div('tabs');
+  const tabs=div('tabs plan-tabs');
   [['habit','🎯 习惯打卡'],['todo','✅ 待办清单'],['schedule','📅 日程规划'],['memo','📒 备忘录']].forEach(([k,t])=>{
     const btn=document.createElement('button');btn.className='tab'+(state.plan.tab===k?' active':'');
     btn.textContent=t;
@@ -2065,6 +2377,17 @@ function renderPlan(box){
     tabs.appendChild(btn);
   });
   box.appendChild(tabs);
+
+  const waterTab=document.createElement('button');
+  waterTab.className='tab'+(state.plan.tab==='water'?' active':'');
+  waterTab.textContent='💧 喝水提醒';
+  waterTab.onclick=()=>{state.plan.tab='water';saveState();render();};
+  tabs.appendChild(waterTab);
+
+  if(state.plan.tab==='water'){
+    box.appendChild(renderWaterCard());
+    return;
+  }
 
   if(state.plan.tab==='habit'){
     box.appendChild(renderHabit());
@@ -5235,10 +5558,10 @@ function openPetShop(petId){
     const action=owned
       ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
       : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 💖</button>`;
-    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${{head:'头饰',collar:'项圈',toy:'玩具',room:'房间装饰'}[item.cat]} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    card.innerHTML=`<img src="./generated-images/${item.img}?v=80" alt="${esc(item.name)}" onerror="this.outerHTML='<span class=&quot;shop-img-fallback&quot;>🎀</span>'"><div><b>${esc(item.name)}</b><small>${{head:'头饰',collar:'项圈',toy:'玩具',room:'房间装饰'}[item.cat]} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
     body.appendChild(card);
   });
-  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal pet-shop-modal',render:m=>m.appendChild(body)});
 }
 function buyPetDecor(petId,itemId){
   ensureNurtureEconomy();
@@ -5492,10 +5815,10 @@ function openPetShop(petId){
       ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
       : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 爱心</button>`;
     const catText={head:'头饰',collar:'项圈',toy:'玩具',room:'房间装饰'}[item.cat]||'装饰';
-    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    card.innerHTML=`<img src="./generated-images/${item.img}?v=80" alt="${esc(item.name)}" onerror="this.outerHTML='<span class=&quot;shop-img-fallback&quot;>🎀</span>'"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
     body.appendChild(card);
   });
-  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal pet-shop-modal',render:m=>m.appendChild(body)});
 }
 function buyPetDecor(petId,itemId){
   ensureNurtureEconomy();
@@ -5613,7 +5936,7 @@ function petWearKey(p){
   };
   const collar=collarMap[decor.collar]||'';
   if(type==='cat'){
-    if(hasCrown&&['bow','heart','bell'].includes(collar))return `crown-${collar}`;
+    if(hasCrown&&['bow','heart','bell','lace-blue','lace-pink'].includes(collar))return `crown-${collar}`;
     if(collar)return collar;
     if(hasCrown)return 'crown';
     return '';
@@ -5637,10 +5960,10 @@ function openPetShop(petId){
       ? `<button class="${equipped?'':'primary'}" onclick="${equipped?`unequipPetDecor(${p.id},'${item.cat}')`:`equipPetDecor(${p.id},'${item.id}')`}">${equipped?'卸下':'装备'}</button>`
       : `<button class="primary" onclick="buyPetDecor(${p.id},'${item.id}')" ${(state.game.energy||0)<item.price?'disabled':''}>购买 ${item.price} 爱心</button>`;
     const catText={head:'头饰',collar:'项圈/围脖',toy:'玩具',room:'房间装饰'}[item.cat]||'装饰';
-    card.innerHTML=`<img src="./generated-images/${item.img}" alt="${esc(item.name)}"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
+    card.innerHTML=`<img src="./generated-images/${item.img}?v=80" alt="${esc(item.name)}" onerror="this.outerHTML='<span class=&quot;shop-img-fallback&quot;>🎀</span>'"><div><b>${esc(item.name)}</b><small>${catText} · ${owned?'已拥有':'未拥有'}</small>${action}</div>`;
     body.appendChild(card);
   });
-  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+  showModal({title:'🛍️ 宠物商店',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal pet-shop-modal',render:m=>m.appendChild(body)});
 }
 function buyPetDecor(petId,itemId){
   ensurePetShopV70();

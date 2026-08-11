@@ -99,7 +99,8 @@ export class Reminder {
   async send(title, body) {
     const reminder = await this.state.storage.get('reminder');
     if (!reminder?.subscription) return;
-    const payload = await buildPushPayload({ data: JSON.stringify({ title, body, url: '/' }), options: { ttl: 300 } }, reminder.subscription, {
+    // urgency: high + 唯一 tag，提高 iOS 到达概率，避免被当作旧通知替换
+    const payload = await buildPushPayload({ data: JSON.stringify({ title, body, url: '/' }), options: { ttl: 300, urgency: 'high', tag: 'water-' + Date.now() } }, reminder.subscription, {
       subject: this.env.VAPID_SUBJECT,
       publicKey: this.env.VAPID_PUBLIC_KEY,
       privateKey: this.env.VAPID_PRIVATE_JWK,

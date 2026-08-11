@@ -11,8 +11,7 @@ self.addEventListener('push', event => {
     body: data.body || '该喝几口水啦 💧',
     icon: './icon-192.png?v=89',
     badge: './icon-192.png?v=89',
-    tag: data.tag || 'water-reminder',
-    renotify: true,
+    tag: data.tag || ('water-reminder-'+Date.now()),
     data: { url: './index.html#plan' }
   };
   event.waitUntil(self.registration.showNotification(title, options));

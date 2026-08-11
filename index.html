@@ -1435,6 +1435,8 @@
   .water-notify-toggle.on{background:#dff3ff;border-color:#79c6ed;color:#3289b9;}
   .water-notify-toggle::before{content:'○';font-size:18px;line-height:1;}
   .water-notify-toggle.on::before{content:'●';}
+  .water-notify-test{margin-left:auto;border:1px solid #cde3f2;background:#fff;color:#5aa1cb;border-radius:999px;padding:7px 14px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;align-self:center;}
+  .water-notify-test:active{transform:translateY(1px);}
   .water-notify-switch{display:flex!important;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:7px 12px!important;min-height:52px!important;border-radius:14px!important;}
   .water-notify-switch>span{display:flex;flex-direction:column;gap:2px;line-height:1.1;}
   .water-notify-switch b{font-size:14px;color:#5b9fc4;}
@@ -2221,9 +2223,9 @@ function renderWaterCard(){
     <div class="water-setting-row"><span>每次喝</span>${[3,5,8].map(n=>`<button class="water-pill ${w.sipsPerReminder===n?'on':''}" onclick="setWaterOption('sipsPerReminder',${n})">${n} 口</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('sipsPerReminder')">自定义</button></div>
     <div class="water-setting-row"><span>提醒间隔</span>${[30,60,90].map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('intervalMin')">自定义</button></div>
     <div class="water-setting-row"><span>每日目标</span>${[30,40,50].map(n=>`<button class="water-pill ${w.goalSips===n?'on':''}" onclick="setWaterOption('goalSips',${n})">${n} 口</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('goalSips')">自定义</button></div>
-    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button></div>
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button><button class="water-notify-test" onclick="testWaterPush()" title="测试后台推送">测试</button></div>
     <div class="water-quick"><button onclick="logWater(3)">我喝了 3 口</button><button onclick="logWater(5)">我喝了 5 口</button><button onclick="logWater(8)">我喝了 8 口</button></div>
-    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击“开启弹出通知”。页面保持打开时也会正常倒计时提醒。'}</div>
+    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击"开启弹出通知"。页面保持打开时也会正常倒计时提醒。'}</div>
     <div class="water-records"><div class="water-records-head"><span>今日记录 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,5).map(row=>`<div class="water-record"><span>${row.time} · ${row.sips} 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝几口水吧 💧</div>'}</div>`;
   startWaterTicker();
   return card;
@@ -2257,14 +2259,31 @@ function waterNotify(){
   const w=ensureWaterState();
   const title='💧 喝水提醒';const body='喝一口水，再继续今天的事情吧。';
   if(typeof Notification==='undefined'||Notification.permission!=='granted')return;
-  if(navigator.serviceWorker?.ready)navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,icon:'./icon-192.png?v=87',tag:'water-reminder',renotify:true})).catch(()=>{});
-  else try{new Notification(title,{body,icon:'./icon-192.png?v=87',tag:'water-reminder'});}catch(_){ }
+  // 用带时间戳的唯一 tag，避免 iOS 把新通知当作旧通知的替换而不弹
+  const tag='water-reminder-'+Date.now();
+  if(navigator.serviceWorker?.ready)navigator.serviceWorker.ready.then(reg=>reg.showNotification(title,{body,icon:'./icon-192.png?v=89',tag,data:{url:'./index.html#plan'}})).catch(()=>{});
+  else try{new Notification(title,{body,icon:'./icon-192.png?v=89',tag});}catch(_){ }
   if(navigator.vibrate)navigator.vibrate([80,60,80]);
+}
+// 前台补偿：App 重新回到前台/被打开时，把错过的提醒补回来（iOS 后台被系统杀掉 SW 时的兜底）
+let _missedReminderShown=false;
+function checkMissedReminders(){
+  const w=ensureWaterState();
+  if(!w.active||!w.nextReminderAt)return;
+  if(Date.now()>=w.nextReminderAt){
+    // 错过的提醒，立即补一次本地通知
+    waterNotify();
+    w.nextReminderAt=Date.now()+w.intervalMin*60000;saveState();syncRemoteReminder();
+    if(!_missedReminderShown){
+      _missedReminderShown=true;
+      showModal({title:'💧 该喝水啦',body:'刚刚错过了一次后台提醒，已经为你补上。快喝一口水，再继续今天的事情吧～',noCancel:true});
+    }
+  }
 }
 async function requestWaterNotifications(){
   if(typeof Notification==='undefined')return showModal({title:'当前设备不支持',body:'这个浏览器没有通知能力，可以继续使用页面倒计时和喝水记录。',noCancel:true});
   const standalone=window.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone;
-  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!standalone)return showModal({title:'先添加到主屏幕',body:'请点击 Safari 的分享按钮，选择“添加到主屏幕”，再从桌面打开治愈花园并开启通知。iPhone 的网页通知需要主屏幕网页应用。',noCancel:true});
+  if(/iPhone|iPad|iPod/i.test(navigator.userAgent)&&!standalone)return showModal({title:'先添加到主屏幕',body:'请点击 Safari 的分享按钮，选择"添加到主屏幕"，再从桌面打开治愈花园并开启通知。iPhone 的网页通知需要主屏幕网页应用。',noCancel:true});
   const permission=await Notification.requestPermission();
   const w=ensureWaterState();
   if(permission==='granted'){
@@ -2281,15 +2300,27 @@ async function toggleWaterNotifications(){
   }
   await requestWaterNotifications();
 }
+async function testWaterPush(){
+  const w=ensureWaterState();
+  if(!w.pushSubscribed)return showModal({title:'先开启通知',body:'请先点“开启通知”完成订阅，再测试后台推送。',noCancel:true});
+  try{
+    const res=await fetch(`${PUSH_API}/devices/${encodeURIComponent(w.deviceId)}/test`,{method:'POST'});
+    if(!res.ok)throw new Error('测试请求返回 '+res.status);
+    showModal({title:'已发送测试推送',body:'如果 1-2 秒内没有弹出通知，说明当前环境（如 iOS 已划掉 App）后台推送不稳定，请保持页面打开或依赖重新打开时的补提醒。',noCancel:true});
+  }catch(err){showModal({title:'测试失败',body:err.message+'。可以继续使用页面内提醒。',noCancel:true});}
+}
 function startWaterTicker(){
   if(waterTicker)return;
   waterTicker=setInterval(()=>{
     const w=ensureWaterState();
-    if(w.active&&w.nextReminderAt&&Date.now()>=w.nextReminderAt){waterNotify();w.nextReminderAt=Date.now()+w.intervalMin*60000;saveState();}
+    if(w.active&&w.nextReminderAt&&Date.now()>=w.nextReminderAt){waterNotify();w.nextReminderAt=Date.now()+w.intervalMin*60000;saveState();syncRemoteReminder();}
     const el=document.getElementById('waterCountdown');
     if(el)el.textContent=w.active&&w.nextReminderAt> Date.now()?waterTime(w.nextReminderAt-Date.now()):'--:--';
   },1000);
 }
+// 页面回到前台时立即检查并补上错过的提醒
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){_missedReminderShown=false;checkMissedReminders();}});
+window.addEventListener('focus',()=>{_missedReminderShown=false;checkMissedReminders();});
 
 /* v82: simple one-sip water tab */
 function renderWaterCard(){
@@ -2304,10 +2335,10 @@ function renderWaterCard(){
     <div class="card-sub">默认每次喝一口，想起来就点一下</div>
     <div class="water-hero"><div><span>距离下次喝水</span><strong class="water-countdown" id="waterCountdown">${running?waterTime(w.nextReminderAt-Date.now()):'--:--'}</strong><small>每 ${w.intervalMin} 分钟提醒一次</small></div><div class="water-drop">💧</div></div>
     <div class="water-setting-row water-interval-row"><span>提醒间隔</span>${[30,60,90].map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill" onclick="customWaterSetting('intervalMin')">自定义</button></div>
-    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-toggle ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}">${notifyReady?'通知已开启':'开启通知'}</button></div>
-    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后，当前版本无法保证后台弹出。'}</div>
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-toggle ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}">${notifyReady?'通知已开启':'开启通知'}</button><button class="water-notify-test" onclick="testWaterPush()" title="测试后台推送">测试</button></div>
+    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后 iOS 可能不弹，但重新打开时会自动补上错过的提醒。'}</div>
     <button class="water-drink-button" onclick="logWater()">💧 我喝了</button>
-    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击“开启弹出通知”。'}</div>
+    <div class="water-notify-note">${notifyReady?'已允许系统通知；在 iPhone 上请从主屏幕打开治愈花园。':'iPhone 请先点分享 → 添加到主屏幕，再点击"开启弹出通知"。'}</div>
     <div class="water-records"><div class="water-records-head"><span>今日已喝 · ${total} 口 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,8).map(row=>`<div class="water-record"><span>${row.time} · 1 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝一口水吧 💧</div>'}</div>`;
   startWaterTicker();
   return card;
@@ -2359,8 +2390,8 @@ function renderWaterCard(){
     <div class="water-hero"><div><span>距离下次喝水</span><strong class="water-countdown" id="waterCountdown">${running?waterTime(w.nextReminderAt-Date.now()):'--:--'}</strong><small>每 ${w.intervalMin} 分钟提醒一次</small></div><div class="water-drop">💧</div></div>
     <div class="water-setting-row water-interval-row"><span>提醒间隔</span>${presets.map(n=>`<button class="water-pill ${w.intervalMin===n?'on':''}" onclick="setWaterOption('intervalMin',${n})">${n} 分钟</button>`).join('')}<button class="water-pill ${!isPreset||w.customOpen?'on':''}" onclick="toggleWaterCustom()">自定义</button></div>
     ${w.customOpen?`<div class="water-custom-row"><input id="waterCustomValue" type="number" min="1" value="${isPreset?'60':w.customUnit==='hour'?Math.max(1,Math.round(w.intervalMin/60)):w.intervalMin}" inputmode="numeric"><select id="waterCustomUnit"><option value="min" ${w.customUnit!=='hour'?'selected':''}>分钟</option><option value="hour" ${w.customUnit==='hour'?'selected':''}>小时</option></select><button onclick="applyWaterCustom()">应用</button></div>`:''}
-    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button></div>
-    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后，当前版本无法保证后台弹出。'}</div>
+    <div class="water-reminder-actions"><button class="primary" onclick="toggleWaterReminder()">${running?'暂停提醒':'开始提醒'}</button><button class="water-notify-switch ${notifyReady?'on':''}" onclick="toggleWaterNotifications()" aria-pressed="${notifyReady}"><span><b>弹出通知</b><small>${notifyReady?'已开启':'未开启'}</small></span><i aria-hidden="true"></i></button><button class="water-notify-test" onclick="testWaterPush()" title="测试后台推送">测试</button></div>
+    <div class="water-notify-note">${ios&&!standalone?'iPhone 请先添加到主屏幕，再从桌面打开并开启通知。':'提醒会在页面保持运行时触发；完全退出 App 后 iOS 可能不弹，但重新打开时会自动补上错过的提醒。'}</div>
     <button class="water-drink-button" onclick="logWater()">💧 我喝了</button>
     <div class="water-records"><div class="water-records-head"><span>今日已喝 · ${total} 口 · ${w.records.length} 次</span><button onclick="resetWaterRecords()">清空今日记录</button></div>${w.records.length?w.records.slice().reverse().slice(0,8).map(row=>`<div class="water-record"><span>${row.time} · 1 口</span><button onclick="undoWaterLog(${row.id})" title="撤销">×</button></div>`).join(''):'<div class="empty-tip">还没有记录，先喝一口水吧 💧</div>'}</div>`;
   startWaterTicker();

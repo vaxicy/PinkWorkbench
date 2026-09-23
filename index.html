@@ -538,6 +538,17 @@
   .scene-floating-top>*{pointer-events:auto;}
   .scene-floating-top .pet-level-badge{position:static;left:auto;top:auto;display:inline-flex;align-items:center;justify-content:center;flex:none;}
   .scene-bubble{background:rgba(255,255,255,.9);border:2px solid #ffb8cb;border-radius:14px;padding:7px 10px;color:var(--pink-4);font-size:12px;font-weight:900;box-shadow:3px 3px 0 rgba(255,184,203,.38);backdrop-filter:blur(3px);}
+  /* 沉浸式宠物聊天：场景内输入框 + 气泡 */
+  .scene-bubbles{position:absolute;inset:0;z-index:5;pointer-events:none;}
+  .scene-chat-bubble{position:absolute;max-width:64%;padding:7px 11px;border-radius:14px;font-size:12px;font-weight:700;line-height:1.3;word-break:break-word;opacity:0;transform:translateY(6px) scale(.96);transition:opacity .25s ease,transform .25s ease;box-shadow:2px 2px 0 rgba(0,0,0,.06);}
+  .scene-chat-bubble.show{opacity:1;transform:translateY(0) scale(1);}
+  .scene-chat-bubble .typing::after{content:'▋';animation:blink 1s steps(2) infinite;}
+  .scene-chat-bubble.pet-bubble{left:50%;top:18%;transform:translate(-50%,6px) scale(.96);background:rgba(255,255,255,.94);border:2px solid #ffb8cb;color:var(--pink-4);text-align:center;}
+  .scene-chat-bubble.pet-bubble.show{transform:translate(-50%,0) scale(1);}
+  .scene-chat-bubble.user-bubble{right:10px;bottom:64px;max-width:52%;background:var(--pink-3);color:#fff;text-align:right;}
+  .scene-chat-bar{position:absolute;left:8px;right:8px;bottom:8px;z-index:5;display:flex;gap:6px;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(6px);border:2px solid #ffb8cb;border-radius:16px;padding:6px 8px;box-shadow:0 4px 12px rgba(255,143,170,.25);}
+  .scene-chat-bar input{flex:1;min-width:0;border:none;background:rgba(255,255,255,.88);border-radius:12px;padding:8px 10px;font-family:var(--font);font-size:13px;outline:none;}
+  .scene-chat-bar button{border:none;border-radius:12px;padding:0 14px;height:36px;background:var(--pink-3);color:#fff;font-weight:800;cursor:pointer;flex:none;}
   .pet-switcher{display:flex;gap:8px;padding:12px 16px 0;overflow-x:auto;scrollbar-width:none;}
   .pet-switcher::-webkit-scrollbar{display:none;}
   .pet-chip{border:1.5px solid var(--pink-1);background:#fff;color:var(--brown-light);border-radius:999px;padding:7px 11px;font-family:var(--font);font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;}
@@ -3527,9 +3538,11 @@ const PET_CHAT_PERSONA={
 };
 function buildPetSystemPrompt(p){
   const owner=state.profile.name||'主人';
+  const ownerTitle=(p.ownerTitle&&p.ownerTitle.trim())||'主人';
   const persona=(PET_CHAT_PERSONA[p.type]||{tone:'可爱软萌'}).tone;
+  const genderTxt={girl:'你是一只小母宠物（妹妹），温柔爱撒娇',boy:'你是一只小公宠物（哥哥），活泼帅气',secret:'你是一只软萌的小宠物'}[p.gender]||'你是一只可爱的小宠物';
   const mood=p.happiness>=60?'心情很好':(p.happiness>=30?'心情一般':'有点低落，需要主人哄一哄');
-  return `你是「${p.name}」，一只${p.typeName||'小宠物'}。你住在主人的治愈花园里，是主人最贴心的伙伴。${persona}。请用可爱、温柔、简短（1-3句话）的口吻和主人聊天，像真宠物一样会撒娇、关心主人、偶尔卖萌。主人叫「${owner}」，你现在是${p.level}级，${mood}。注意：不要以助手/AI/模型自称，不要输出 markdown 或表情代码块，用自然口语化的中文，偶尔带一两个 emoji 即可。`;
+  return `你是「${p.name}」，${genderTxt}，住在主人的治愈花园里。${persona}。请用可爱、温柔、简短的口吻聊天，像真宠物一样会撒娇、关心主人。你称呼主人为「${ownerTitle}」，主人的名字叫「${owner}」。你现在${p.level}级，${mood}。注意：不要以助手/AI/模型自称，不要输出 markdown 或表情代码块，用自然口语化的中文。在场景里说话要非常短（最好 1~2 句话、不超过 25 字），偶尔带一两个 emoji 即可。`;
 }
 function showPetChatModal(id){
   const p=state.pet.owned.find(x=>x.id===id); if(!p)return;
@@ -3572,17 +3585,11 @@ function renderChatMsgs(p){
   box.innerHTML=p.chat.map(m=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who">${m.role==='user'?(esc(state.profile.name)||'我'):esc(p.name)}</span>${esc(m.content)}</div>`).join('');
   box.scrollTop=box.scrollHeight;
 }
-async function petChatSend(id,text){
-  const p=currentChatPet(); if(!p)return;
-  const input=window.__petChatInput, send=window.__petChatSend;
-  if(input)input.disabled=true; if(send)send.disabled=true;
+/* 共享的流式回复核心：把用户消息推入 p.chat，调用 /api/chat，逐字回调 onToken */
+async function petChatStream(id,text,onToken){
+  const p=currentChatPet(); if(!p)return '呀，找不到这只宠物～';
+  if(!Array.isArray(p.chat))p.chat=[];
   p.chat.push({role:'user',content:text});
-  renderChatMsgs(p);
-  const box=document.getElementById('chatMsgs');
-  const placeholder=document.createElement('div');
-  placeholder.className='chat-msg pet';
-  placeholder.innerHTML='<span class="who">'+esc(p.name)+'</span><span class="typing">正在想怎么回你…</span>';
-  box.appendChild(placeholder); box.scrollTop=box.scrollHeight;
   const assistant={role:'assistant',content:''};
   try{
     const payloadMessages=[{role:'system',content:buildPetSystemPrompt(p)}]
@@ -3603,20 +3610,101 @@ async function petChatSend(id,text){
         if(!t.startsWith('data:'))continue;
         const data=t.slice(5).trim();
         if(data==='[DONE]')continue;
-        try{ const j=JSON.parse(data); const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content; if(d){ assistant.content+=d; placeholder.querySelector('.typing').textContent=assistant.content; box.scrollTop=box.scrollHeight; } }catch(_){}
+        try{ const j=JSON.parse(data); const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content; if(d){ assistant.content+=d; if(onToken)onToken(assistant.content); } }catch(_){}
       }
     }
     if(!assistant.content)assistant.content='呜…（好像没听到）';
   }catch(e){
     assistant.content='呀，连接出了点小问题～'+e.message;
   }
-  placeholder.querySelector('.typing').textContent=assistant.content;
   p.chat.push(assistant);
   if(p.chat.length>40)p.chat=p.chat.slice(-40);
   saveState();
+  return assistant.content;
+}
+/* 弹窗聊天（查看历史记录）版本 */
+async function petChatSend(id,text){
+  const p=currentChatPet(); if(!p)return;
+  if(!Array.isArray(p.chat))p.chat=[];
+  const input=window.__petChatInput, send=window.__petChatSend;
+  if(input)input.disabled=true; if(send)send.disabled=true;
+  renderChatMsgs(p);
+  const box=document.getElementById('chatMsgs');
+  const placeholder=document.createElement('div');
+  placeholder.className='chat-msg pet';
+  placeholder.innerHTML='<span class="who">'+esc(p.name)+'</span><span class="typing">正在想怎么回你…</span>';
+  box.appendChild(placeholder); box.scrollTop=box.scrollHeight;
+  const final=await petChatStream(id,text,txt=>{placeholder.querySelector('.typing').textContent=txt;box.scrollTop=box.scrollHeight;});
+  placeholder.querySelector('.typing').textContent=final;
   if(input)input.disabled=false; if(send)send.disabled=false;
 }
+/* ===== 场景内沉浸式聊天 ===== */
+function scenePetSay(scene,text){
+  const layer=scene.querySelector('.scene-bubbles')||scene;
+  const b=document.createElement('div');
+  b.className='scene-chat-bubble pet-bubble';
+  b.innerHTML='<span class="typing">'+(text||'…')+'</span>';
+  layer.appendChild(b);
+  requestAnimationFrame(()=>b.classList.add('show'));
+  return {
+    update(t){ b.querySelector('.typing').textContent=t||'…'; b.classList.add('show'); },
+    done(t){ b.querySelector('.typing').textContent=t||'…'; clearTimeout(b._h); b._h=setTimeout(()=>{b.classList.remove('show');setTimeout(()=>b.remove(),300);},9000); }
+  };
+}
+function sceneUserSay(scene,text){
+  const layer=scene.querySelector('.scene-bubbles')||scene;
+  const b=document.createElement('div');
+  b.className='scene-chat-bubble user-bubble';
+  b.textContent=text;
+  layer.appendChild(b);
+  requestAnimationFrame(()=>b.classList.add('show'));
+  clearTimeout(b._h); b._h=setTimeout(()=>{b.classList.remove('show');setTimeout(()=>b.remove(),300);},5000);
+}
+async function petSceneSend(id){
+  const scene=getPetRoom(id); if(!scene)return;
+  const input=scene.querySelector('#petSceneInput'); if(!input)return;
+  const text=input.value.trim(); if(!text)return;
+  input.value='';
+  window.__petChatId=id;
+  const p=(state.pet.owned||[]).find(x=>x.id===id); if(!p)return;
+  if(!Array.isArray(p.chat))p.chat=[];
+  sceneUserSay(scene,text);
+  const bubble=scenePetSay(scene,'');
+  playPetSpriteAction(id,'happy','is-happy');
+  const final=await petChatStream(id,text,txt=>bubble.update(txt));
+  bubble.done(final);
+}
 
+/* 宠物设置：性别 + 它怎么称呼你 */
+function openPetSettings(petId){
+  const p=(state.pet.owned||[]).find(x=>x.id===petId); if(!p)return;
+  const g=(p.gender||'secret');
+  const t=(p.ownerTitle||'');
+  const body=div('nurture-form-modal');
+  const genders=[['girl','👧 妹妹'],['boy','🧒 哥哥'],['secret','🤫 小秘密']];
+  body.innerHTML=`
+    <div class="form-row"><label style="font-size:13px;color:var(--brown);font-weight:800;">性别</label>
+      <div class="chip-grid" id="petGenderGrid" style="margin-top:6px;">${genders.map(x=>`<span class="gender-chip ${x[0]===g?'active':''}" data-g="${x[0]}">${x[1]}</span>`).join('')}</div>
+    </div>
+    <div class="form-row" style="margin-top:12px;"><label style="font-size:13px;color:var(--brown);font-weight:800;">它怎么称呼你</label>
+      <div class="chip-grid" id="petTitleGrid" style="margin-top:6px;">${['主人','哥哥','姐姐','铲屎官'].map(x=>`<span class="title-chip ${x===t?'active':''}" data-t="${x}">${x}</span>`).join('')}</div>
+      <input id="petOwnerTitleInput" placeholder="自定义称呼，如：麻麻" value="${esc(t)}" style="margin-top:8px;width:100%;border:1.5px solid var(--pink-1);border-radius:12px;padding:9px 12px;font-family:var(--font);font-size:13px;outline:none;" />
+    </div>`;
+  const okBtn=document.createElement('button');okBtn.className='btn-pink';okBtn.textContent='保存';
+  okBtn.style.marginTop='14px';
+  okBtn.onclick=()=>{
+    const selG=body.querySelector('#petGenderGrid .active');
+    const selT=body.querySelector('#petTitleGrid .active');
+    const custom=body.querySelector('#petOwnerTitleInput').value.trim();
+    p.gender=selG?selG.dataset.g:'secret';
+    p.ownerTitle=custom||(selT?selT.dataset.t:'主人');
+    saveState();render();hideModal();
+  };
+  body.appendChild(okBtn);
+  showModal({title:'⚙️ '+esc(p.name)+' 的设置',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
+  body.querySelectorAll('#petGenderGrid .gender-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petGenderGrid .gender-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');});
+  body.querySelectorAll('#petTitleGrid .title-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petTitleGrid .title-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');body.querySelector('#petOwnerTitleInput').value='';});
+}
 /* v35 soft-pixel nurture panels: overrides only garden/pet rendering and actions. */
 const NURTURE_PLANT_TYPES=[
   {id:'succulent',icon:'🌵',name:'多肉'},
@@ -4094,7 +4182,7 @@ function addPet(){
   if(!name){showModal({title:'提示',body:'先给宠物取个名字吧',noCancel:true});return false;}
   if((state.game.energy||0)<50){showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能领养啦',noCancel:true});return false;}
   addEnergy(-50);
-  state.pet.owned.push({id:Date.now(),createdAt:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,hunger:80,happiness:80,interactLog:{}});
+  state.pet.owned.push({id:Date.now(),createdAt:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,hunger:80,happiness:80,interactLog:{},chat:[],gender:'secret',ownerTitle:''});
   if(!state.pet.activeId)state.pet.activeId=state.pet.owned[state.pet.owned.length-1].id;
   saveState();render();return true;
 }
@@ -5730,13 +5818,18 @@ function renderTreePet(box){
   const status=petNurtureStatus(p,today);
   card.innerHTML=`<div class="nurture-head">
     <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
-    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="showPetChatModal(${p.id})">💬 聊天</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetSettings(${p.id})">⚙️ 设置</button><button class="resource-pill" onclick="showPetChatModal(${p.id})">💬 聊天</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
   </div>
   ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
   <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
     <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status}</span></div>
+    <div class="scene-bubbles"></div>
     <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="${esc(p.name)}" />
     ${petDecorationHtml(p)}
+    <div class="scene-chat-bar" onclick="event.stopPropagation()">
+      <input id="petSceneInput" maxlength="200" placeholder="和${esc(p.name)}说点什么…" onkeydown="if(event.key==='Enter'){event.preventDefault();petSceneSend(${p.id});}" />
+      <button onclick="petSceneSend(${p.id})">发送</button>
+    </div>
   </div>
   <div class="pet-stats">
     <div class="pet-stat"><b>🍚 饱腹</b><div class="pixel-track"><i style="width:${hunger}%;background:linear-gradient(90deg,#8fd67a,#57bd72)"></i></div><span>${hunger}/100</span></div>

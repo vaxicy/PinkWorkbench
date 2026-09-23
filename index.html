@@ -3534,6 +3534,7 @@ function buildPetSystemPrompt(p){
 function showPetChatModal(id){
   const p=state.pet.owned.find(x=>x.id===id); if(!p)return;
   if(!Array.isArray(p.chat))p.chat=[];
+  window.__petChatId=id;
   let ov=document.getElementById('petChatOverlay');
   if(!ov){
     ov=document.createElement('div');ov.id='petChatOverlay';
@@ -3545,10 +3546,10 @@ function showPetChatModal(id){
     document.body.appendChild(ov);
     ov.querySelector('.close').onclick=hidePetChat;
     ov.addEventListener('click',e=>{if(e.target===ov)hidePetChat();});
-    ov.querySelector('.chat-clear').onclick=()=>{ p.chat=[]; saveState(); renderChatMsgs(p); };
+    ov.querySelector('.chat-clear').onclick=()=>{ const cp=currentChatPet(); if(!cp)return; cp.chat=[]; saveState(); renderChatMsgs(cp); };
     const input=ov.querySelector('#chatInput');
     const send=ov.querySelector('#chatSend');
-    const doSend=()=>{ const text=input.value.trim(); if(!text)return; input.value=''; petChatSend(p,text); };
+    const doSend=()=>{ const text=input.value.trim(); if(!text)return; input.value=''; petChatSend(window.__petChatId,text); };
     send.onclick=doSend;
     input.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();doSend();} });
     window.__petChatInput=input; window.__petChatSend=send;
@@ -3561,6 +3562,7 @@ function showPetChatModal(id){
   setTimeout(()=>{ const i=document.getElementById('chatInput'); if(i)i.focus(); },50);
 }
 function hidePetChat(){ const ov=document.getElementById('petChatOverlay'); if(ov)ov.classList.remove('show'); }
+function currentChatPet(){ return state.pet.owned.find(x=>x.id===window.__petChatId); }
 function renderChatMsgs(p){
   const box=document.getElementById('chatMsgs'); if(!box)return;
   if(!p.chat.length){
@@ -3570,7 +3572,8 @@ function renderChatMsgs(p){
   box.innerHTML=p.chat.map(m=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who">${m.role==='user'?(esc(state.profile.name)||'我'):esc(p.name)}</span>${esc(m.content)}</div>`).join('');
   box.scrollTop=box.scrollHeight;
 }
-async function petChatSend(p,text){
+async function petChatSend(id,text){
+  const p=currentChatPet(); if(!p)return;
   const input=window.__petChatInput, send=window.__petChatSend;
   if(input)input.disabled=true; if(send)send.disabled=true;
   p.chat.push({role:'user',content:text});

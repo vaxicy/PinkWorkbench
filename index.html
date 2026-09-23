@@ -108,6 +108,12 @@
   .card{background:var(--surface);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);border:1px solid var(--pink-1);margin-bottom:16px;}
   .card-title{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--pink-4);position:relative;}
   .set-gear{margin-left:auto;font-size:14px;opacity:.55;cursor:pointer;transition:opacity .2s;filter:grayscale(.2);}
+  .tabs .right-tools{margin-left:auto;display:flex;align-items:center;gap:14px;}
+  .tabs .right-tools .set-gear{margin-left:0;}
+  .ai-tutor-btn{padding:7px 15px;border-radius:999px;border:1.5px solid var(--english-accent);background:var(--english-card);color:var(--english-accent);font-family:var(--font);font-size:13px;font-weight:800;cursor:pointer;transition:.2s;}
+  .ai-tutor-btn:hover{background:var(--english-accent);color:#fff;}
+  #engChatOverlay .tutor-rename{border:none;background:none;cursor:pointer;font-size:12px;opacity:.55;padding:0 2px;line-height:1;}
+  #engChatOverlay .tutor-rename:hover{opacity:1;}
   .set-gear:hover{opacity:1;}
   .card-sub{font-size:12px;color:var(--brown-light);margin-bottom:14px;}
 
@@ -1594,6 +1600,7 @@ function migrateData(){
   // 兼容新模块字段
   if(state.english && !('finishDate' in state.english))state.english.finishDate='';
   if(state.english && !Array.isArray(state.english.aiChat))state.english.aiChat=[];
+  if(state.english && !state.english.tutorName)state.english.tutorName='Luna';
   if(!state.game)state.game={energy:0,lastCheckin:'',streak:0};
   if(!state.game.v41EnergyReset){
     state.game.energy=999;
@@ -2709,14 +2716,17 @@ function renderEnglish(box){
     btn.onclick=()=>{state.english.tab=k;saveState();render();};
     tabs.appendChild(btn);
   });
+  const tools=document.createElement('span');
+  tools.className='right-tools';
   const gear=document.createElement('span');
   gear.className='set-gear';gear.title='设置每日数量';gear.textContent='⚙️';
   gear.onclick=openEnglishCountSetting;
-  tabs.appendChild(gear);
+  tools.appendChild(gear);
   const aiBtn=document.createElement('button');
-  aiBtn.className='tab';aiBtn.textContent='💬 AI 陪练';
+  aiBtn.className='ai-tutor-btn';aiBtn.textContent='💬 AI 陪练';
   aiBtn.onclick=showEnglishChatModal;
-  tabs.appendChild(aiBtn);
+  tools.appendChild(aiBtn);
+  tabs.appendChild(tools);
   box.appendChild(tabs);
   const card=div('card');
   const isWords=state.english.tab==='words';
@@ -3785,11 +3795,25 @@ function openPetSettings(petId){
   body.querySelectorAll('#petGenderGrid .gender-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petGenderGrid .gender-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');});
   body.querySelectorAll('#petTitleGrid .title-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petTitleGrid .title-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');body.querySelector('#petOwnerTitleInput').value='';});
 }
-/* ===== AI 英语陪练（同款流式代理，独立对话记录） ===== */
-const ENG_TUTOR_NAME='Luna';
+/* ===== AI 英语陪练（同款流式代理，独立对话记录，可取名） ===== */
+function engTutorName(){return (state.english&&state.english.tutorName)||'Luna';}
+function updateEngTutorTitle(){
+  const b=document.getElementById('engTutorTitle');
+  if(b)b.textContent=engTutorName()+' · AI 英语陪练';
+}
+function openEngTutorRename(){
+  showModal({title:'✏️ 给英语陪练取名',input:true,inputValue:engTutorName(),placeholder:'最多 8 个字'}).then(val=>{
+    if(val===null)return;
+    const v=(val||'').trim().slice(0,8);
+    state.english.tutorName=v||'Luna';
+    saveState();
+    updateEngTutorTitle();
+    renderEngMsgs();
+  });
+}
 function buildEnglishTutorPrompt(){
   const name=state.profile.name||'朋友';
-  return `你是 AI 英语陪练「${ENG_TUTOR_NAME}」，正在陪用户「${name}」练英语。
+  return `你是 AI 英语陪练「${engTutorName()}」，正在陪用户「${name}」练英语。
 规则：
 1. 主要用简单、地道、口语化的英语回复（难度 A2~B1），句子要短。
 2. 用户用中文说话时，先用英语回应，并在结尾温柔鼓励他试着用英语再说一遍。
@@ -3815,7 +3839,7 @@ async function aiChatFetch(messages,onToken){
         try{const j=JSON.parse(data);const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(d){out+=d;if(onToken)onToken(out);}}catch(_){}
       }
     }
-    return out||'（Luna 好像走神了，再说一次吧）';
+    return out||'（'+engTutorName()+' 好像走神了，再说一次吧）';
   }catch(e){return '连接出了点小问题～'+e.message;}
 }
 function showEnglishChatModal(){
@@ -3824,12 +3848,14 @@ function showEnglishChatModal(){
   if(!ov){
     ov=document.createElement('div');ov.id='engChatOverlay';
     ov.innerHTML=`<div id="engChatBox">
-      <div class="chat-head"><div class="avatar">🌺</div><div class="meta"><b>${ENG_TUTOR_NAME} · AI 英语陪练</b><small>用英语聊天，说错会温柔纠正 · 可删单条记录</small></div><button class="close" aria-label="关闭">×</button></div>
+      <div class="chat-head"><div class="avatar">🌺</div><div class="meta"><b id="engTutorTitle"></b><button class="tutor-rename" title="给它改名">✏️</button><small>用英语聊天，说错会温柔纠正 · 可删单条记录</small></div><button class="close" aria-label="关闭">×</button></div>
       <div class="chat-msgs" id="engMsgs"></div>
       <div class="chat-input"><button class="chat-clear">清空对话</button><input id="engInput" placeholder="Try in English… 或直接说中文" /><button class="send" id="engSend">发送</button></div>
     </div>`;
     document.body.appendChild(ov);
     ov.querySelector('.close').onclick=hideEnglishChat;
+    ov.querySelector('.tutor-rename').onclick=openEngTutorRename;
+    updateEngTutorTitle();
     ov.addEventListener('click',e=>{if(e.target===ov)hideEnglishChat();});
     ov.querySelector('.chat-clear').onclick=()=>{state.english.aiChat=[];saveState();renderEngMsgs();};
     const input=ov.querySelector('#engInput');
@@ -3847,8 +3873,8 @@ function deleteEngMsg(i){state.english.aiChat.splice(i,1);saveState();renderEngM
 function renderEngMsgs(){
   const box=document.getElementById('engMsgs');if(!box)return;
   const chat=state.english.aiChat||[];
-  if(!chat.length){box.innerHTML='<div class="chat-empty" style="text-align:center;color:var(--brown-light);font-size:12px;margin:auto;">和 Luna 用英语聊聊今天吧～ 🌷</div>';return;}
-  box.innerHTML=chat.map((m,i)=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who"><span>${m.role==='user'?(esc(state.profile.name)||'我'):ENG_TUTOR_NAME}</span><button class="msg-del" title="删除这条记录" onclick="deleteEngMsg(${i})">删除</button></span>${esc(m.content)}</div>`).join('');
+  if(!chat.length){box.innerHTML='<div class="chat-empty" style="text-align:center;color:var(--brown-light);font-size:12px;margin:auto;">和 '+engTutorName()+' 用英语聊聊今天吧～ 🌷</div>';return;}
+  box.innerHTML=chat.map((m,i)=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who"><span>${m.role==='user'?(esc(state.profile.name)||'我'):esc(engTutorName())}</span><button class="msg-del" title="删除这条记录" onclick="deleteEngMsg(${i})">删除</button></span>${esc(m.content)}</div>`).join('');
   box.scrollTop=box.scrollHeight;
 }
 async function englishChatSend(text){
@@ -3860,7 +3886,7 @@ async function englishChatSend(text){
   const box=document.getElementById('engMsgs');
   const placeholder=document.createElement('div');
   placeholder.className='chat-msg pet';
-  placeholder.innerHTML='<span class="who"><span>'+ENG_TUTOR_NAME+'</span></span><span class="typing">Luna is typing…</span>';
+  placeholder.innerHTML='<span class="who"><span>'+esc(engTutorName())+'</span></span><span class="typing">'+esc(engTutorName())+' is typing…</span>';
   box.appendChild(placeholder);box.scrollTop=box.scrollHeight;
   const payload=[{role:'system',content:buildEnglishTutorPrompt()}]
     .concat(chat.slice(-20).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content})));

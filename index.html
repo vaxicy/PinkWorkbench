@@ -5457,7 +5457,7 @@ function renderTreePet(box){
   const status=petNurtureStatus(p,today);
   card.innerHTML=`<div class="nurture-head">
     <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
-    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">＋ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="showPetChatModal(${p.id})">💬 聊天</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">＋ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
   </div>
   ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
   <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
@@ -5730,7 +5730,7 @@ function renderTreePet(box){
   const status=petNurtureStatus(p,today);
   card.innerHTML=`<div class="nurture-head">
     <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
-    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="showPetChatModal(${p.id})">💬 聊天</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
   </div>
   ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
   <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">

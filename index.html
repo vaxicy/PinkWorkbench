@@ -1470,6 +1470,8 @@
   @keyframes dressedJump{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}35%{transform:translateX(-50%) translateY(-24px) scale(1.03,.98);}70%{transform:translateX(-50%) translateY(2px) scale(.98,1.03);}}
 
 </style>
+<link rel="stylesheet" href="./pet-outings.css?v=103" />
+<script src="./pet-outings-core.js?v=103"></script>
 </head>
 <body>
 <div class="app">
@@ -2004,9 +2006,8 @@ if(location.search.includes('autoRoll=1')||location.hash.includes('autoRoll=1'))
 const _initPage=_parseHashPage();
 const _initSub=_parseHashSub();
 if(_initSub==='fortune'||_initSub==='tarot'||_initSub==='dice')state.oracleTab=_initSub;
-if(_initPage)switchPage(_initPage);
-// 开发态自动转盘(URL 带 autoRoll=1 时触发,生产无影响)
-if(window._autoRoll&&currentPage==='oracle'&&state.oracleTab==='dice'){setTimeout(()=>{spinWheel();},500);}
+// Apply the initial route after all pet modules have initialized.
+
 
 function render(){
   const box=document.getElementById('contentBox');box.innerHTML='';
@@ -3202,6 +3203,7 @@ function showEnergyGuide(){
     ['🌳 写一篇心事','+3'],
     ['✨ 习惯打卡','+5'],
     ['🏃 运动打卡','+10'],
+    ['🧳 宠物出游归来','+10～70'],
   ];
   const body=div('energy-guide');
   items.forEach(([label,val])=>{
@@ -3711,6 +3713,7 @@ async function petChatStream(id,text,onToken){
 }
 /* 弹窗聊天（查看历史记录）版本 */
 async function petChatSend(id,text){
+  if(outingAway(id))return showModal({title:'宠物出门啦',body:'等它回家，再一起聊天吧。',noCancel:true});
   const p=currentChatPet(); if(!p)return;
   if(!Array.isArray(p.chat))p.chat=[];
   const input=window.__petChatInput, send=window.__petChatSend;
@@ -3750,6 +3753,7 @@ function sceneUserSay(scene,text){
   clearTimeout(b._h); b._h=setTimeout(()=>{b.classList.remove('show');setTimeout(()=>b.remove(),300);},5000);
 }
 async function petSceneSend(id){
+  if(outingAway(id))return;
   const scene=getPetRoom(id); if(!scene)return;
   const input=scene.querySelector('#petSceneInput'); if(!input)return;
   const text=input.value.trim(); if(!text)return;
@@ -4190,6 +4194,7 @@ function removePlant(id,e){
   });
 }
 function abandonPet(id,e){
+  if(PetOutings.trip(outingPet(id)))return showModal({title:'先结束出游吧',body:'请先让宠物回家并领取出游收获。',noCancel:true});
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
   showConfirm(`确定弃养「${esc(p.name)}」吗？这个操作不能撤销。`).then(yes=>{
@@ -4852,6 +4857,7 @@ function renderTreePet(box){
   setTimeout(()=>schedulePetIdle(p.id),60);
 }
 function tapPetRoom(id,e){
+  if(outingAway(id))return;
   e?.stopPropagation?.();
   triggerPetRoom(id,'pet-pulse','💗',3);
   playPetSpriteAction(id,'tail','is-tail');
@@ -5842,6 +5848,7 @@ function sunPlant(id,e){
   },30);
 }
 function feedPet(id,e){
+  if(outingAway(id))return;
   e?.stopPropagation?.();
   if((state.game.energy||0)<3)return showModal({title:'爱心值不足',body:'喂食需要 3 爱心，先领取每日爱心或完成任务吧。',noCancel:true});
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
@@ -5857,6 +5864,7 @@ function feedPet(id,e){
   },30);
 }
 function petPet(id,e){
+  if(outingAway(id))return;
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
   const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};
@@ -5873,6 +5881,7 @@ function petPet(id,e){
   },30);
 }
 function playPet(id,e){
+  if(outingAway(id))return;
   e?.stopPropagation?.();
   const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
   const t=todayKey();if(!p.interactLog)p.interactLog={};if(!p.interactLog[t])p.interactLog[t]={};if((p.interactLog[t].play||0)>=3)return;
@@ -6007,34 +6016,39 @@ function renderTreePet(box){
   const happiness=Math.round(p.happiness??80);
   const intimacy=Math.min(100,Math.round((p.level/6)*72+(today.pet||0)*4+nurtureDays(p)));
   const roomType=['cat','dog','rabbit','fox'].includes(p.type)?p.type:'cat';
-  const status=petNurtureStatus(p,today);
+  const outingStatus=PetOutings.status(p);
+  const away=outingStatus==='away';
+  const status=away?'出门啦，很快回来！':petNurtureStatus(p,today);
   card.innerHTML=`<div class="nurture-head">
     <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
     <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetSettings(${p.id})">⚙️ 设置</button><button class="resource-pill" onclick="showPetChatModal(${p.id})">📜 记录</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
   </div>
   ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
-  <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
+  <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room ${away?'is-away':''}" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
     <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status} · 💞 Lv.${favorLevelOf(p.favor||0)}</span></div>
-    <div class="scene-bubbles"></div>
-    <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="${esc(p.name)}" />
+    ${away?'<div class="outing-door-sign">🧳 出门啦<br>很快回来！</div>':''}
+    ${away?'':`<div class="scene-bubbles"></div>
+    <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="${esc(p.name)}" />`}
     ${petDecorationHtml(p)}
-    <div class="scene-chat-bar" onclick="event.stopPropagation()">
+    ${outingStatus==='ready'?`<button class="outing-return-gift" onclick="event.stopPropagation();showPetOuting(${p.id})">🎒 我回来啦！<br>打开收获</button>`:''}
+    ${away?'':`<div class="scene-chat-bar" onclick="event.stopPropagation()">
       <input id="petSceneInput" maxlength="200" placeholder="和${esc(p.name)}说点什么…" onkeydown="if(event.key==='Enter'){event.preventDefault();petSceneSend(${p.id});}" />
       <button onclick="petSceneSend(${p.id})">发送</button>
-    </div>
+    </div>`}
   </div>
+  ${outingHomeHtml(p)}
   <div class="pet-stats">
     <div class="pet-stat"><b>🍚 饱腹</b><div class="pixel-track"><i style="width:${hunger}%;background:linear-gradient(90deg,#8fd67a,#57bd72)"></i></div><span>${hunger}/100</span></div>
     <div class="pet-stat"><b>💗 心情</b><div class="pixel-track"><i style="width:${happiness}%;background:linear-gradient(90deg,#ff8fab,#ff5f91)"></i></div><span>${happiness}/100</span></div>
     <div class="pet-stat"><b>🫶 亲密度</b><div class="pixel-track"><i style="width:${intimacy}%;background:linear-gradient(90deg,#d5a8ff,#a879ff)"></i></div><span>${intimacy}/100</span></div>
   </div>
-  <div class="pet-actions">
+  ${away?'':`<div class="pet-actions">
     <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 3 爱心</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5 · +2</small></button>
     <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3 · +2</small></button>
-  </div>`;
+  </div>`}`;
   box.appendChild(card);
-  setTimeout(()=>schedulePetIdle(p.id),60);
+  if(!away)setTimeout(()=>schedulePetIdle(p.id),60);
 }
 
 function ensurePetShopV70(){
@@ -6151,7 +6165,12 @@ function playPetSpriteAction(id,action='idle',cls=''){
   },1120);
 }
 
-render();
+</script>
+<script src="./pet-outings.js?v=103"></script>
+<script>
+if(_initPage)switchPage(_initPage);else render();
+// Preserve development auto-roll after applying the initial route.
+if(window._autoRoll&&currentPage==='oracle'&&state.oracleTab==='dice'){setTimeout(()=>{spinWheel();},500);}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 </script>
 </body>

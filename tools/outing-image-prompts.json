@@ -1,0 +1,36 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-09-23",
+  "assets": [
+    {
+      "id": "cafe",
+      "prompt": "Use case: illustration-story. Generate one landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: a street corner café interior, rose pink walls, warm wooden tables and chairs along the sides, pastry display on right, big sunlit window on left, tiny flower vases, cream and dusty rose colors with sage accents. Detailed crisp pixel art, warm soft sunlight, eye-level slightly elevated front view, rounded cozy furnishings. Keep the lower center floor open with a small pale pink cushion at 65% height for a separately composited pet. Entire room empty of people and animals. No text, logos, labels, UI, borders or watermark. Full bleed scene, consistent retro pixel game illustration, not photorealistic.",
+      "path": "generated-images/outing-cafe-v1.png"
+    },
+    {
+      "id": "garden",
+      "prompt": "Use case: illustration-story. Asset: one full bleed landscape 16:9 background for a cozy pastel pixel-art virtual pet game. Scene: A flower garden with white wooden bench on left, daisies and pink tulips, a little winding stone path, white picket fence, butterflies, trees and blue sky. Lower center has open short grass for pet. Style: detailed crisp pixel art matching a cozy pink pixel pet bedroom, rounded cute forms, dusty rose, cream, sage and scene-appropriate colors, warm soft sunlight, eye-level slightly elevated front view. Composition: scenery around sides and upper half, leave lower center uncluttered for separately composited small pet standing around 65-72% image height. No people, no animals, no pets, no text, no logos, no UI, no borders, no watermark. A single coherent scene, not a collage.",
+      "path": "generated-images/outing-garden-v1.png"
+    },
+    {
+      "id": "forest",
+      "prompt": "Use case: illustration-story. Asset: one full bleed landscape 16:9 background for a cozy pastel pixel-art virtual pet game. Scene: An inviting woodland clearing, leafy green canopy with warm sunbeams, giant rounded trees, small red and cream mushrooms, a tiny stream along right edge with stepping stones, a winding trail. Lower center has open mossy grass for pet. Style: detailed crisp pixel art matching a cozy pink pixel pet bedroom, rounded cute forms, dusty rose, cream, sage and scene-appropriate colors, warm soft sunlight, eye-level slightly elevated front view. Composition: scenery around sides and upper half, leave lower center uncluttered for separately composited small pet standing around 65-72% image height. No people, no animals, no pets, no text, no logos, no UI, no borders, no watermark. A single coherent scene, not a collage.",
+      "path": "generated-images/outing-forest-v1.png"
+    },
+    {
+      "id": "gym",
+      "prompt": "Use case: illustration-story. Asset: one full bleed landscape 16:9 background for a cozy pastel pixel-art virtual pet game. Scene: A cute miniature gym interior with rose pink and cream walls, big bright windows, a compact treadmill on left, rounded pastel dumbbells on rack at right, exercise balls at side. Lower center has an unobstructed pale pink yoga mat for pet. Style: detailed crisp pixel art matching a cozy pink pixel pet bedroom, rounded cute forms, dusty rose, cream, sage and scene-appropriate colors, warm soft sunlight, eye-level slightly elevated front view. Composition: scenery around sides and upper half, leave lower center uncluttered for separately composited small pet standing around 65-72% image height. No people, no animals, no pets, no text, no logos, no UI, no borders, no watermark. A single coherent scene, not a collage.",
+      "path": "generated-images/outing-gym-v1.png"
+    },
+    {
+      "id": "mall",
+      "prompt": "Use case: illustration-story. Asset: one full bleed landscape 16:9 background for a cozy pastel pixel-art virtual pet game. Scene: A charming indoor shopping mall with pastel pink and cream boutique storefronts on both sides, windows displaying small hats and gift boxes, flower planters and a bench at the sides, glass skylight, wide polished cream walkway. Lower center walkway empty for pet. All storefront signs blank with no lettering. Style: detailed crisp pixel art matching a cozy pink pixel pet bedroom, rounded cute forms, dusty rose, cream, sage and scene-appropriate colors, warm soft sunlight, eye-level slightly elevated front view. Composition: scenery around sides and upper half, leave lower center uncluttered for separately composited small pet standing around 65-72% image height. No people, no animals, no pets, no text, no logos, no UI, no borders, no watermark. A single coherent scene, not a collage.",
+      "path": "generated-images/outing-mall-v1.png"
+    },
+    {
+      "id": "beach",
+      "prompt": "Use case: illustration-story. Asset: one full bleed landscape 16:9 background for a cozy pastel pixel-art virtual pet game. Scene: A peaceful seaside with pale turquoise ocean, gentle white surf, blue sky and fluffy clouds, pink parasol and striped deckchair at left edge, tiny sandcastle and shells at right edge. Lower center is broad open warm sand for pet. Style: detailed crisp pixel art matching a cozy pink pixel pet bedroom, rounded cute forms, dusty rose, cream, sage and scene-appropriate colors, warm soft sunlight, eye-level slightly elevated front view. Composition: scenery around sides and upper half, leave lower center uncluttered for separately composited small pet standing around 65-72% image height. No people, no animals, no pets, no text, no logos, no UI, no borders, no watermark. A single coherent scene, not a collage.",
+      "path": "generated-images/outing-beach-v1.png"
+    }
+  ]
+}

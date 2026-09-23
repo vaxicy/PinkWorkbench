@@ -14,3 +14,6 @@ generated-images/*
 # 构建缓存
 .wrangler/
 node_modules/
+
+# GPT-generated outing backgrounds used by the app
+!generated-images/outing-*-v1.png

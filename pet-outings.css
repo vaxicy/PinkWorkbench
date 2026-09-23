@@ -1,0 +1,61 @@
+.outing-entry,.outing-status{margin:12px 16px;padding:16px 18px;border:1px solid var(--pink-1);border-radius:18px;background:var(--panel);display:flex;align-items:center;justify-content:space-between;gap:14px;}
+.outing-entry b,.outing-status b{display:block;color:var(--brown);font-size:15px;}
+.outing-entry p,.outing-status p{font-size:12px;line-height:1.7;color:var(--brown-light);margin-top:4px;}
+.outing-button{border:1px solid var(--pink-1);background:var(--surface);color:var(--brown);border-radius:12px;padding:11px 16px;font:700 13px var(--font);cursor:pointer;min-height:44px;}
+.outing-button.primary{background:var(--pink-4);color:#fff;border-color:transparent;}
+.outing-button:disabled{opacity:.55;cursor:default;}
+.outing-button:focus-visible,.outing-destination:focus-visible{outline:3px solid var(--pink-4);outline-offset:3px;}
+.outing-status{align-items:stretch;flex-wrap:wrap;}
+.outing-status-copy{flex:1;min-width:180px;}
+.outing-status-actions{display:flex;align-items:center;gap:8px;}
+.outing-time{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--pink-4);}
+.outing-progress{width:100%;height:7px;margin-top:10px;accent-color:var(--pink-4);border:0;border-radius:9px;overflow:hidden;background:var(--pink-1);}
+.outing-progress::-webkit-progress-bar{background:var(--pink-1);border-radius:9px;}
+.outing-progress::-webkit-progress-value{background:var(--pink-4);border-radius:9px;}
+.outing-progress::-moz-progress-bar{background:var(--pink-4);border-radius:9px;}
+.pet-room.is-away{cursor:default;}
+.outing-door-sign{position:absolute;left:4%;top:36%;z-index:5;max-width:130px;padding:10px 12px;background:#fff5de;color:#93644e;border:2px solid #ceaa83;box-shadow:0 4px 0 #93644e24;border-radius:8px;transform:rotate(-5deg);font-size:12px;font-weight:700;text-align:center;}
+.outing-return-gift{position:absolute;left:64%;top:50%;z-index:7;border:2px solid var(--pink-2);border-radius:16px;background:var(--surface);padding:9px 12px;color:var(--brown);font:700 12px var(--font);cursor:pointer;box-shadow:var(--shadow);animation:outingBob 2.8s ease-in-out infinite;}
+.modal.outing-modal{width:min(900px,94vw);max-width:900px;max-height:calc(100dvh - 32px);display:flex;flex-direction:column;padding:25px;}
+.outing-modal .modal-title{padding-right:28px;flex-shrink:0;}
+.outing-modal .modal-body{max-height:none;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin-bottom:0;color:var(--brown);}
+.outing-modal .modal-actions{display:none;}
+.outing-intro{color:var(--brown-light);font-size:13px;line-height:1.8;margin:0 0 16px;}
+.outing-destinations{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;}
+.outing-destination{text-align:left;display:flex;flex-direction:column;padding:0;border:1px solid var(--pink-1);border-radius:16px;background:var(--panel);overflow:hidden;color:var(--brown);font-family:var(--font);cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.outing-destination:hover{transform:translateY(-3px);box-shadow:var(--shadow);}
+.outing-destination img{width:100%;aspect-ratio:16/10;object-fit:cover;image-rendering:auto;}
+.outing-card-copy{padding:12px;display:flex;flex-direction:column;gap:7px;flex:1;}
+.outing-card-copy b{font-size:15px;}
+.outing-card-copy small{font-size:11px;color:var(--brown-light);line-height:1.6;}
+.outing-card-meta{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;font-size:12px;margin-top:auto;}
+.outing-card-cta{display:block;text-align:center;padding:7px;border-radius:8px;color:var(--pink-4);background:var(--surface);font-size:12px;font-weight:700;}
+.outing-scene{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:16px;background:var(--cream);isolation:isolate;}
+.outing-scene-bg{position:absolute;width:100%;height:100%;object-fit:cover;inset:0;}
+.outing-scene-pet{position:absolute;left:50%;bottom:24%;width:24%;height:42%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 6px 3px #68443328);transform:translateX(-50%);animation:outingPetBob 3s ease-in-out infinite;}
+.outing-scene-label{position:absolute;top:12px;left:12px;background:#fff9eeec;color:#886350;padding:6px 11px;border-radius:999px;font-size:12px;}
+.outing-detail-copy{margin:18px 0;line-height:1.8;}
+.outing-detail-copy h3{font-size:20px;color:var(--brown);margin-bottom:5px;}
+.outing-detail-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+.outing-detail-meta span{padding:6px 12px;background:var(--panel);border-radius:999px;font-size:13px;}
+.outing-detail-actions{display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-top:16px;}
+.outing-detail-actions .primary{flex:1;}
+.outing-reward{text-align:center;padding:16px;border:1px solid var(--pink-1);background:var(--panel);border-radius:16px;margin-top:16px;}
+.outing-reward strong{display:block;font-size:30px;color:var(--pink-4);margin-bottom:7px;}
+.outing-reward p{font-size:13px;line-height:1.9;}
+.outing-flying-heart{position:fixed;z-index:10001;pointer-events:none;animation:outingHeartFlight .95s cubic-bezier(.2,.7,.3,1) forwards;font-size:22px;}
+@keyframes outingHeartFlight{0%{transform:translate(0,0) scale(.8);opacity:1;}70%{opacity:1;}100%{transform:translate(var(--fly-x),var(--fly-y)) scale(.4);opacity:0;}}
+@keyframes outingBob{50%{transform:translateY(-5px);}}
+@keyframes outingPetBob{50%{transform:translate(-50%,-4px) rotate(1deg);}}
+@media(max-width:600px){
+  .modal.outing-modal{padding:20px 14px;width:94vw;max-width:94vw;max-height:calc(100dvh - 24px);}
+  .outing-destinations{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .outing-card-copy{padding:10px;}.outing-card-copy b{font-size:13px;}
+  .outing-entry,.outing-status{margin:10px 8px;padding:13px;gap:10px;}
+  .outing-entry{flex-wrap:wrap;}.outing-entry .outing-button{flex:1;}
+  .outing-status-actions{width:100%;}.outing-status-actions button{flex:1;}
+  .outing-scene{aspect-ratio:4/3;}.outing-scene-pet{width:30%;height:40%;}
+  .outing-detail-copy h3{font-size:18px;}.outing-door-sign{font-size:10px;padding:7px;max-width:95px;}
+  .outing-return-gift{left:61%;font-size:10px;padding:8px;}
+}
+@media(prefers-reduced-motion:reduce){.outing-scene-pet,.outing-return-gift,.outing-flying-heart{animation:none;}.outing-destination{transition:none;}}

@@ -1,0 +1,5 @@
+feat: 宠物AI聊天接入硅基流动免费模型(经 Pages Function 代理)
+
+- 新增 functions/api/chat.js：同域代理硅基流动，key 存 Pages Secret 不进代码
+- 宠物卡片新增「聊聊天」按钮，弹窗式 AI 对话(流式打字机)
+- 对话历史按宠物ID存 localStorage，含人设 system prompt

@@ -481,6 +481,28 @@
   .pixel-track i{display:block;height:100%;border-radius:999px;box-shadow:inset 0 3px 0 rgba(255,255,255,.35);}
   .pet-stat span{display:block;text-align:center;margin-top:5px;font-size:12px;font-weight:800;color:var(--brown);}
   .pet-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:14px 16px 16px;}
+  /* 宠物 AI 聊天弹窗 */
+  #petChatOverlay{display:none;}
+  #petChatOverlay.show{display:flex;position:fixed;inset:0;background:rgba(138,98,104,.35);z-index:120;justify-content:center;align-items:center;padding:20px;}
+  #petChatBox{width:380px;max-width:100%;max-height:82vh;background:var(--surface);border-radius:var(--radius);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 18px 50px rgba(255,143,171,.35);border:1px solid var(--pink-1);animation:modalIn .2s ease;}
+  #petChatOverlay .chat-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--pink-1);}
+  #petChatOverlay .chat-head .avatar{font-size:26px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:var(--cream);border-radius:50%;border:2px solid var(--pink-1);flex:none;}
+  #petChatOverlay .chat-head .meta b{font-size:15px;color:var(--brown);}
+  #petChatOverlay .chat-head .meta small{display:block;color:var(--brown-light);font-size:11px;margin-top:2px;}
+  #petChatOverlay .chat-head .close{margin-left:auto;border:none;background:none;font-size:24px;line-height:1;color:var(--brown-light);cursor:pointer;}
+  #petChatOverlay .chat-msgs{flex:1 1 auto;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:240px;max-height:54vh;scrollbar-width:none;}
+  #petChatOverlay .chat-msgs::-webkit-scrollbar{display:none;}
+  #petChatOverlay .chat-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word;}
+  #petChatOverlay .chat-msg .who{display:block;font-size:10px;opacity:.7;margin-bottom:3px;}
+  #petChatOverlay .chat-msg.pet{align-self:flex-start;background:var(--pink-1);color:var(--brown);border-bottom-left-radius:4px;}
+  #petChatOverlay .chat-msg.me{align-self:flex-end;background:var(--pink-4);color:#fff;border-bottom-right-radius:4px;}
+  #petChatOverlay .chat-msg .typing::after{content:'▋';animation:blink 1s steps(2) infinite;}
+  #petChatOverlay .chat-input{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--pink-1);align-items:center;}
+  #petChatOverlay .chat-input .chat-clear{background:none;border:none;color:var(--brown-light);font-size:11px;cursor:pointer;padding:0;white-space:nowrap;}
+  #petChatOverlay .chat-input input{flex:1;border:1.5px solid var(--pink-1);border-radius:12px;padding:9px 12px;font-family:var(--font);font-size:13px;outline:none;min-width:0;}
+  #petChatOverlay .chat-input button.send{border:none;border-radius:12px;padding:0 16px;height:38px;background:var(--pink-3);color:#fff;font-weight:800;cursor:pointer;flex:none;}
+  #petChatOverlay .chat-input button.send:disabled{opacity:.5;cursor:not-allowed;}
+  @keyframes blink{50%{opacity:0;}}
   .pixel-action{min-height:70px;border:2px solid #ffb8cb;border-radius:14px;background:#fff7fa;color:var(--pink-4);font-family:var(--font);font-size:15px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #ffd6e0;transition:transform .15s,box-shadow .15s;}
   .pixel-action small{display:block;margin-top:3px;font-size:11px;color:var(--brown-light);}
   .pixel-action:hover:not(:disabled){transform:translate(-1px,-1px);box-shadow:5px 5px 0 #ffd6e0;background:#fff0f5;}
@@ -1586,6 +1608,7 @@ function migrateData(){
       if(typeof p.hunger!=='number')p.hunger=80;
       if(typeof p.happiness!=='number')p.happiness=80;
       if(!p.lastPetTick)p.lastPetTick=Date.now();
+      if(!Array.isArray(p.chat))p.chat=[];
       if(p.type==='cat'){p.typeName='狸花猫';p.icon='🐾';}
     });
   }
@@ -1595,7 +1618,7 @@ function migrateData(){
     state.garden.v39EmptyStart=true;
   }
   if(state.pet && Array.isArray(state.pet.owned)&&!state.pet.owned.length){
-    state.pet.owned.push({id:Date.now()+1,name:'小咪',icon:'🐱',type:'cat',typeName:'小猫咪',level:1,exp:0,hunger:80,happiness:80,lastPetTick:Date.now(),interactLog:{}});
+    state.pet.owned.push({id:Date.now()+1,name:'小咪',icon:'🐱',type:'cat',typeName:'小猫咪',level:1,exp:0,hunger:80,happiness:80,lastPetTick:Date.now(),interactLog:{},chat:[]});
     state.pet.activeId=state.pet.owned[0].id;
   }
   else if(!state.tree.tab)state.tree.tab='diary';
@@ -3414,6 +3437,7 @@ function renderTreePet(box){
       <div class="game-actions">
         <button class="btn-small" onclick="feedPet(${p.id},event)">🍖 喂食 -5</button>
         <button class="btn-small" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸</button>
+        <button class="btn-small" onclick="showPetChatModal(${p.id})">💬 聊聊天</button>
       </div>`;
     card.appendChild(row);enableTilt(row);
   });
@@ -3451,7 +3475,7 @@ function addPet(){
   if(!name){showModal({title:'提示',body:'先给宠物取个名字吧',noCancel:true});return false;}
   if((state.game.energy||0)<50){showModal({title:'爱心值不足',body:'再完成一些习惯打卡就能领养啦',noCancel:true});return false;}
   addEnergy(-50);
-  state.pet.owned.push({id:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,hunger:80,happiness:80,interactLog:{}});
+  state.pet.owned.push({id:Date.now(),name,icon:type.icon,type:type.id,typeName:type.name,level:1,exp:0,hunger:80,happiness:80,interactLog:{},chat:[]});
   if(!state.pet.activeId)state.pet.activeId=state.pet.owned[state.pet.owned.length-1].id;
   saveState();render();return true;
 }
@@ -3493,6 +3517,102 @@ function petPet(id,e){
   playActor(document.querySelector('.game-card[data-pet-id="'+id+'"]'),'do-wobble',1100);
 }
 function levelUpPet(p){const need=petNeedExp(p.level);while(p.exp>=need&&p.level<6){p.exp-=need;p.level++;}}
+/* ============ 宠物 AI 聊天（硅基流动免费模型，经 Pages Function /api/chat 代理） ============ */
+const PET_CHAT_MODEL='Qwen/Qwen2.5-7B-Instruct';
+const PET_CHAT_PERSONA={
+  cat:{tone:'傲娇但心软，嘴上说不要身体很诚实，喜欢被夸'},
+  dog:{tone:'热情黏人，永远开心，把主人当全世界'},
+  rabbit:{tone:'软萌害羞，说话轻轻的，爱撒娇'},
+  fox:{tone:'古灵精怪，有点小聪明，偶尔调皮'},
+};
+function buildPetSystemPrompt(p){
+  const owner=state.profile.name||'主人';
+  const persona=(PET_CHAT_PERSONA[p.type]||{tone:'可爱软萌'}).tone;
+  const mood=p.happiness>=60?'心情很好':(p.happiness>=30?'心情一般':'有点低落，需要主人哄一哄');
+  return `你是「${p.name}」，一只${p.typeName||'小宠物'}。你住在主人的治愈花园里，是主人最贴心的伙伴。${persona}。请用可爱、温柔、简短（1-3句话）的口吻和主人聊天，像真宠物一样会撒娇、关心主人、偶尔卖萌。主人叫「${owner}」，你现在是${p.level}级，${mood}。注意：不要以助手/AI/模型自称，不要输出 markdown 或表情代码块，用自然口语化的中文，偶尔带一两个 emoji 即可。`;
+}
+function showPetChatModal(id){
+  const p=state.pet.owned.find(x=>x.id===id); if(!p)return;
+  if(!Array.isArray(p.chat))p.chat=[];
+  let ov=document.getElementById('petChatOverlay');
+  if(!ov){
+    ov=document.createElement('div');ov.id='petChatOverlay';
+    ov.innerHTML=`<div id="petChatBox">
+      <div class="chat-head"><div class="avatar"></div><div class="meta"><b></b><small>🤖 由 AI 暖心陪伴 · 免费模型</small></div><button class="close" aria-label="关闭">×</button></div>
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-input"><button class="chat-clear">清空对话</button><input id="chatInput" placeholder="说点什么…" /><button class="send" id="chatSend">发送</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector('.close').onclick=hidePetChat;
+    ov.addEventListener('click',e=>{if(e.target===ov)hidePetChat();});
+    ov.querySelector('.chat-clear').onclick=()=>{ p.chat=[]; saveState(); renderChatMsgs(p); };
+    const input=ov.querySelector('#chatInput');
+    const send=ov.querySelector('#chatSend');
+    const doSend=()=>{ const text=input.value.trim(); if(!text)return; input.value=''; petChatSend(p,text); };
+    send.onclick=doSend;
+    input.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault();doSend();} });
+    window.__petChatInput=input; window.__petChatSend=send;
+  }
+  ov.querySelector('.avatar').textContent=p.icon||'🐱';
+  ov.querySelector('.meta b').textContent=p.name;
+  ov.querySelector('#chatInput').placeholder='和'+p.name+'说点什么…';
+  ov.classList.add('show');
+  renderChatMsgs(p);
+  setTimeout(()=>{ const i=document.getElementById('chatInput'); if(i)i.focus(); },50);
+}
+function hidePetChat(){ const ov=document.getElementById('petChatOverlay'); if(ov)ov.classList.remove('show'); }
+function renderChatMsgs(p){
+  const box=document.getElementById('chatMsgs'); if(!box)return;
+  if(!p.chat.length){
+    box.innerHTML='<div class="chat-empty" style="text-align:center;color:var(--brown-light);font-size:12px;margin:auto;">和'+esc(p.name)+'打个招呼吧～ 💕</div>';
+    return;
+  }
+  box.innerHTML=p.chat.map(m=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who">${m.role==='user'?(esc(state.profile.name)||'我'):esc(p.name)}</span>${esc(m.content)}</div>`).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function petChatSend(p,text){
+  const input=window.__petChatInput, send=window.__petChatSend;
+  if(input)input.disabled=true; if(send)send.disabled=true;
+  p.chat.push({role:'user',content:text});
+  renderChatMsgs(p);
+  const box=document.getElementById('chatMsgs');
+  const placeholder=document.createElement('div');
+  placeholder.className='chat-msg pet';
+  placeholder.innerHTML='<span class="who">'+esc(p.name)+'</span><span class="typing">正在想怎么回你…</span>';
+  box.appendChild(placeholder); box.scrollTop=box.scrollHeight;
+  const assistant={role:'assistant',content:''};
+  try{
+    const payloadMessages=[{role:'system',content:buildPetSystemPrompt(p)}]
+      .concat(p.chat.slice(-20).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content})));
+    const res=await fetch('/api/chat',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({model:PET_CHAT_MODEL, messages:payloadMessages})
+    });
+    if(!res.ok){ const err=await res.text().catch(()=>''); throw new Error('('+res.status+')'+err.slice(0,80)); }
+    const reader=res.body.getReader(); const dec=new TextDecoder(); let buf='';
+    while(true){
+      const {done,value}=await reader.read(); if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n'); buf=lines.pop();
+      for(const raw of lines){
+        const t=raw.trim();
+        if(!t.startsWith('data:'))continue;
+        const data=t.slice(5).trim();
+        if(data==='[DONE]')continue;
+        try{ const j=JSON.parse(data); const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content; if(d){ assistant.content+=d; placeholder.querySelector('.typing').textContent=assistant.content; box.scrollTop=box.scrollHeight; } }catch(_){}
+      }
+    }
+    if(!assistant.content)assistant.content='呜…（好像没听到）';
+  }catch(e){
+    assistant.content='呀，连接出了点小问题～'+e.message;
+  }
+  placeholder.querySelector('.typing').textContent=assistant.content;
+  p.chat.push(assistant);
+  if(p.chat.length>40)p.chat=p.chat.slice(-40);
+  saveState();
+  if(input)input.disabled=false; if(send)send.disabled=false;
+}
 
 /* v35 soft-pixel nurture panels: overrides only garden/pet rendering and actions. */
 const NURTURE_PLANT_TYPES=[

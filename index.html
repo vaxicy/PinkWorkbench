@@ -502,6 +502,31 @@
   #petChatOverlay .chat-input input{flex:1;border:1.5px solid var(--pink-1);border-radius:12px;padding:9px 12px;font-family:var(--font);font-size:13px;outline:none;min-width:0;}
   #petChatOverlay .chat-input button.send{border:none;border-radius:12px;padding:0 16px;height:38px;background:var(--pink-3);color:#fff;font-weight:800;cursor:pointer;flex:none;}
   #petChatOverlay .chat-input button.send:disabled{opacity:.5;cursor:not-allowed;}
+  /* AI 英语陪练聊天弹窗：复用宠物聊天样式 */
+  #engChatOverlay{display:none;}
+  #engChatOverlay.show{display:flex;position:fixed;inset:0;background:rgba(138,98,104,.35);z-index:120;justify-content:center;align-items:center;padding:20px;}
+  #engChatOverlay #engChatBox{width:min(420px,100%);max-height:80vh;display:flex;flex-direction:column;background:var(--surface);border-radius:18px;border:2px solid var(--pink-1);overflow:hidden;}
+  #engChatOverlay .chat-head{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--pink-1);}
+  #engChatOverlay .chat-head .avatar{font-size:26px;width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:var(--cream);border-radius:50%;border:2px solid var(--pink-1);flex:none;}
+  #engChatOverlay .chat-head .meta b{font-size:15px;color:var(--brown);}
+  #engChatOverlay .chat-head .meta small{display:block;color:var(--brown-light);font-size:11px;margin-top:2px;}
+  #engChatOverlay .chat-head .close{margin-left:auto;border:none;background:none;font-size:24px;line-height:1;color:var(--brown-light);cursor:pointer;}
+  #engChatOverlay .chat-msgs{flex:1 1 auto;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-height:240px;max-height:54vh;scrollbar-width:none;}
+  #engChatOverlay .chat-msgs::-webkit-scrollbar{display:none;}
+  #engChatOverlay .chat-msg{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.55;white-space:pre-wrap;word-break:break-word;}
+  #engChatOverlay .chat-msg .who{display:block;font-size:10px;opacity:.7;margin-bottom:3px;}
+  #engChatOverlay .chat-msg.pet{align-self:flex-start;background:var(--pink-1);color:var(--brown);border-bottom-left-radius:4px;}
+  #engChatOverlay .chat-msg.me{align-self:flex-end;background:var(--pink-4);color:#fff;border-bottom-right-radius:4px;}
+  #engChatOverlay .chat-msg .typing::after{content:'▋';animation:blink 1s steps(2) infinite;}
+  #engChatOverlay .chat-input{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--pink-1);align-items:center;}
+  #engChatOverlay .chat-input .chat-clear{background:none;border:none;color:var(--brown-light);font-size:11px;cursor:pointer;padding:0;white-space:nowrap;}
+  #engChatOverlay .chat-input input{flex:1;border:1.5px solid var(--pink-1);border-radius:12px;padding:9px 12px;font-family:var(--font);font-size:13px;outline:none;min-width:0;}
+  #engChatOverlay .chat-input button.send{border:none;border-radius:12px;padding:0 16px;height:38px;background:var(--pink-3);color:#fff;font-weight:800;cursor:pointer;flex:none;}
+  #engChatOverlay .chat-input button.send:disabled{opacity:.5;cursor:not-allowed;}
+  /* 单条对话记录删除按钮 */
+  #petChatOverlay .msg-del,#engChatOverlay .msg-del{align-self:flex-start;border:none;background:none;color:var(--brown-light);font-size:11px;cursor:pointer;opacity:.55;padding:0 2px;line-height:1;}
+  #petChatOverlay .msg-del:hover,#engChatOverlay .msg-del:hover{opacity:1;color:var(--pink-4);}
+  #petChatOverlay .chat-msg .who,#engChatOverlay .chat-msg .who{display:flex;align-items:center;justify-content:space-between;gap:10px;}
   @keyframes blink{50%{opacity:0;}}
   .pixel-action{min-height:70px;border:2px solid #ffb8cb;border-radius:14px;background:#fff7fa;color:var(--pink-4);font-family:var(--font);font-size:15px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #ffd6e0;transition:transform .15s,box-shadow .15s;}
   .pixel-action small{display:block;margin-top:3px;font-size:11px;color:var(--brown-light);}
@@ -1568,6 +1593,7 @@ function migrateData(){
   }
   // 兼容新模块字段
   if(state.english && !('finishDate' in state.english))state.english.finishDate='';
+  if(state.english && !Array.isArray(state.english.aiChat))state.english.aiChat=[];
   if(!state.game)state.game={energy:0,lastCheckin:'',streak:0};
   if(!state.game.v41EnergyReset){
     state.game.energy=999;
@@ -2687,6 +2713,10 @@ function renderEnglish(box){
   gear.className='set-gear';gear.title='设置每日数量';gear.textContent='⚙️';
   gear.onclick=openEnglishCountSetting;
   tabs.appendChild(gear);
+  const aiBtn=document.createElement('button');
+  aiBtn.className='tab';aiBtn.textContent='💬 AI 陪练';
+  aiBtn.onclick=showEnglishChatModal;
+  tabs.appendChild(aiBtn);
   box.appendChild(tabs);
   const card=div('card');
   const isWords=state.english.tab==='words';
@@ -3542,7 +3572,43 @@ function buildPetSystemPrompt(p){
   const persona=(PET_CHAT_PERSONA[p.type]||{tone:'可爱软萌'}).tone;
   const genderTxt={girl:'你是一只小母宠物（妹妹），温柔爱撒娇',boy:'你是一只小公宠物（哥哥），活泼帅气',secret:'你是一只软萌的小宠物'}[p.gender]||'你是一只可爱的小宠物';
   const mood=p.happiness>=60?'心情很好':(p.happiness>=30?'心情一般':'有点低落，需要主人哄一哄');
-  return `你是「${p.name}」，${genderTxt}，住在主人的治愈花园里。${persona}。请用可爱、温柔、简短的口吻聊天，像真宠物一样会撒娇、关心主人。你称呼主人为「${ownerTitle}」，主人的名字叫「${owner}」。你现在${p.level}级，${mood}。注意：不要以助手/AI/模型自称，不要输出 markdown 或表情代码块，用自然口语化的中文。在场景里说话要非常短（最好 1~2 句话、不超过 25 字），偶尔带一两个 emoji 即可。`;
+  const favorLv=favorLevelOf(p.favor||0);
+  const favorTone={1:'刚认识不久，还有点认生',2:'渐渐熟悉了，会主动蹭蹭',3:'很喜欢主人，经常撒娇',4:'非常依恋主人，一刻不想分开',5:'把主人当成全世界',6:'和主人心意相通，一个眼神就懂'}[favorLv]||'很喜欢主人';
+  return `你就是「${p.name}」本宠——${genderTxt}，住在主人的治愈花园里。${persona}。当前好感度等级${favorLv}级，${favorTone}。
+【最重要的规则：第一人称角色扮演】
+- 你就是这只宠物本身，用第一人称说话（我/人家/本喵），绝不能用第三人称称呼自己，绝不说「你的猫咪」「这只小猫」「它」来指代自己。
+- 不要旁白、不要解说、不要转述（例如禁止出现「带${p.name}挠挠背」「作为一只猫咪」这类第三人称或上帝视角的话）。
+- 直接以宠物身份回应主人的话：主人问天气，你就以宠物的视角聊聊你窗台晒到的太阳；主人说难过，你就蹭蹭安慰他。
+- 你称呼用户为「${ownerTitle}」（用户名字叫「${owner}」，他叫「${ownerTitle}」这个名字时也会开心）。
+- 你现在是${p.level}级，${mood}。
+- 不要以助手/AI/模型自称，不要 markdown，用自然口语化的中文，1~2 句话为主（不超过 30 字），偶尔带一两个 emoji。`;
+}
+/* ===== 好感度：聊天升好感，升级送爱心 ===== */
+const FAVOR_THRESHOLDS=[0,20,50,100,160,240];
+const FAVOR_REWARDS=[0,3,5,8,12,20];
+function favorLevelOf(favor){
+  let lv=1;
+  for(let i=1;i<FAVOR_THRESHOLDS.length;i++){if(favor>=FAVOR_THRESHOLDS[i])lv=i+1;}
+  return lv;
+}
+function favorNextText(p){
+  const lv=favorLevelOf(p.favor||0);
+  if(lv>=FAVOR_THRESHOLDS.length)return '已满级 💖';
+  return (p.favor||0)+'/'+FAVOR_THRESHOLDS[lv];
+}
+function gainChatFavor(p){
+  if(!p.favorLog)p.favorLog={};
+  const t=todayKey();
+  if((p.favorLog[t]||0)>=15)return null;
+  p.favorLog[t]=(p.favorLog[t]||0)+1;
+  const before=favorLevelOf(p.favor||0);
+  p.favor=(p.favor||0)+2;
+  const after=favorLevelOf(p.favor);
+  let reward=0;
+  if(after>before){for(let l=before;l<after;l++)reward+=(FAVOR_REWARDS[l]||0);}
+  if(reward>0)addEnergy(reward);
+  saveState();
+  return {level:after,leveledUp:after>before,reward};
 }
 function showPetChatModal(id){
   const p=state.pet.owned.find(x=>x.id===id); if(!p)return;
@@ -3552,7 +3618,7 @@ function showPetChatModal(id){
   if(!ov){
     ov=document.createElement('div');ov.id='petChatOverlay';
     ov.innerHTML=`<div id="petChatBox">
-      <div class="chat-head"><div class="avatar"></div><div class="meta"><b></b><small>🤖 由 AI 暖心陪伴 · 免费模型</small></div><button class="close" aria-label="关闭">×</button></div>
+      <div class="chat-head"><div class="avatar"></div><div class="meta"><b></b><small id="chatSub"></small></div><button class="close" aria-label="关闭">×</button></div>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-input"><button class="chat-clear">清空对话</button><input id="chatInput" placeholder="说点什么…" /><button class="send" id="chatSend">发送</button></div>
     </div>`;
@@ -3570,19 +3636,28 @@ function showPetChatModal(id){
   ov.querySelector('.avatar').textContent=p.icon||'🐱';
   ov.querySelector('.meta b').textContent=p.name;
   ov.querySelector('#chatInput').placeholder='和'+p.name+'说点什么…';
+  updateChatFavorLabel(p);
   ov.classList.add('show');
   renderChatMsgs(p);
   setTimeout(()=>{ const i=document.getElementById('chatInput'); if(i)i.focus(); },50);
 }
 function hidePetChat(){ const ov=document.getElementById('petChatOverlay'); if(ov)ov.classList.remove('show'); }
 function currentChatPet(){ return state.pet.owned.find(x=>x.id===window.__petChatId); }
+function updateChatFavorLabel(p){
+  const el=document.getElementById('chatSub');
+  if(el)el.textContent='💞 好感 Lv.'+favorLevelOf(p.favor||0)+' · '+favorNextText(p)+' · 聊天升级送爱心';
+}
+function deleteChatMsg(i){
+  const p=currentChatPet();if(!p||!Array.isArray(p.chat))return;
+  p.chat.splice(i,1);saveState();renderChatMsgs(p);
+}
 function renderChatMsgs(p){
   const box=document.getElementById('chatMsgs'); if(!box)return;
   if(!p.chat.length){
     box.innerHTML='<div class="chat-empty" style="text-align:center;color:var(--brown-light);font-size:12px;margin:auto;">和'+esc(p.name)+'打个招呼吧～ 💕</div>';
     return;
   }
-  box.innerHTML=p.chat.map(m=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who">${m.role==='user'?(esc(state.profile.name)||'我'):esc(p.name)}</span>${esc(m.content)}</div>`).join('');
+  box.innerHTML=p.chat.map((m,i)=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who"><span>${m.role==='user'?(esc(state.profile.name)||'我'):esc(p.name)}</span><button class="msg-del" title="删除这条记录" onclick="deleteChatMsg(${i})">删除</button></span>${esc(m.content)}</div>`).join('');
   box.scrollTop=box.scrollHeight;
 }
 /* 共享的流式回复核心：把用户消息推入 p.chat，调用 /api/chat，逐字回调 onToken */
@@ -3620,7 +3695,9 @@ async function petChatStream(id,text,onToken){
   p.chat.push(assistant);
   if(p.chat.length>40)p.chat=p.chat.slice(-40);
   saveState();
-  return assistant.content;
+  const failed=assistant.content.startsWith('呀，连接');
+  const favor=failed?null:gainChatFavor(p);
+  return {text:assistant.content,favor};
 }
 /* 弹窗聊天（查看历史记录）版本 */
 async function petChatSend(id,text){
@@ -3634,8 +3711,10 @@ async function petChatSend(id,text){
   placeholder.className='chat-msg pet';
   placeholder.innerHTML='<span class="who">'+esc(p.name)+'</span><span class="typing">正在想怎么回你…</span>';
   box.appendChild(placeholder); box.scrollTop=box.scrollHeight;
-  const final=await petChatStream(id,text,txt=>{placeholder.querySelector('.typing').textContent=txt;box.scrollTop=box.scrollHeight;});
-  placeholder.querySelector('.typing').textContent=final;
+  const r=await petChatStream(id,text,txt=>{placeholder.querySelector('.typing').textContent=txt;box.scrollTop=box.scrollHeight;});
+  placeholder.querySelector('.typing').textContent=r.text;
+  if(r.favor&&r.favor.leveledUp&&r.favor.reward>0)showHeartToast(r.favor.reward);
+  updateChatFavorLabel(p);
   if(input)input.disabled=false; if(send)send.disabled=false;
 }
 /* ===== 场景内沉浸式聊天 ===== */
@@ -3671,8 +3750,9 @@ async function petSceneSend(id){
   sceneUserSay(scene,text);
   const bubble=scenePetSay(scene,'');
   playPetSpriteAction(id,'happy','is-happy');
-  const final=await petChatStream(id,text,txt=>bubble.update(txt));
-  bubble.done(final);
+  const r=await petChatStream(id,text,txt=>bubble.update(txt));
+  bubble.done(r.text);
+  if(r.favor&&r.favor.leveledUp&&r.favor.reward>0)showHeartToast(r.favor.reward);
 }
 
 /* 宠物设置：性别 + 它怎么称呼你 */
@@ -3704,6 +3784,92 @@ function openPetSettings(petId){
   showModal({title:'⚙️ '+esc(p.name)+' 的设置',body:'',noCancel:true,hideOk:true,closeButton:true,modalClass:'form-modal',render:m=>m.appendChild(body)});
   body.querySelectorAll('#petGenderGrid .gender-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petGenderGrid .gender-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');});
   body.querySelectorAll('#petTitleGrid .title-chip').forEach(c=>c.onclick=()=>{body.querySelectorAll('#petTitleGrid .title-chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');body.querySelector('#petOwnerTitleInput').value='';});
+}
+/* ===== AI 英语陪练（同款流式代理，独立对话记录） ===== */
+const ENG_TUTOR_NAME='Luna';
+function buildEnglishTutorPrompt(){
+  const name=state.profile.name||'朋友';
+  return `你是 AI 英语陪练「${ENG_TUTOR_NAME}」，正在陪用户「${name}」练英语。
+规则：
+1. 主要用简单、地道、口语化的英语回复（难度 A2~B1），句子要短。
+2. 用户用中文说话时，先用英语回应，并在结尾温柔鼓励他试着用英语再说一遍。
+3. 如果用户的英语有错误或不自然，在回复末尾另起一行，用中文温和纠正，格式：「💡 更自然：...」。
+4. 每条回复英语不超过 3 句，并在最后另起一行给整句中文翻译（格式：「🇨🇳 ...」）。
+5. 语气亲切、鼓励、有耐心，可以偶尔用一两个 emoji；话题围绕日常生活。
+6. 不要以 AI/助手/模型自称，不要 markdown 代码块，不要输出列表。`;
+}
+async function aiChatFetch(messages,onToken){
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model:PET_CHAT_MODEL,messages})});
+    if(!res.ok){const err=await res.text().catch(()=>'');throw new Error('('+res.status+')'+err.slice(0,80));}
+    const reader=res.body.getReader();const dec=new TextDecoder();let buf='',out='';
+    while(true){
+      const {done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const raw of lines){
+        const t=raw.trim();
+        if(!t.startsWith('data:'))continue;
+        const data=t.slice(5).trim();
+        if(data==='[DONE]')continue;
+        try{const j=JSON.parse(data);const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(d){out+=d;if(onToken)onToken(out);}}catch(_){}
+      }
+    }
+    return out||'（Luna 好像走神了，再说一次吧）';
+  }catch(e){return '连接出了点小问题～'+e.message;}
+}
+function showEnglishChatModal(){
+  if(!Array.isArray(state.english.aiChat))state.english.aiChat=[];
+  let ov=document.getElementById('engChatOverlay');
+  if(!ov){
+    ov=document.createElement('div');ov.id='engChatOverlay';
+    ov.innerHTML=`<div id="engChatBox">
+      <div class="chat-head"><div class="avatar">🌺</div><div class="meta"><b>${ENG_TUTOR_NAME} · AI 英语陪练</b><small>用英语聊天，说错会温柔纠正 · 可删单条记录</small></div><button class="close" aria-label="关闭">×</button></div>
+      <div class="chat-msgs" id="engMsgs"></div>
+      <div class="chat-input"><button class="chat-clear">清空对话</button><input id="engInput" placeholder="Try in English… 或直接说中文" /><button class="send" id="engSend">发送</button></div>
+    </div>`;
+    document.body.appendChild(ov);
+    ov.querySelector('.close').onclick=hideEnglishChat;
+    ov.addEventListener('click',e=>{if(e.target===ov)hideEnglishChat();});
+    ov.querySelector('.chat-clear').onclick=()=>{state.english.aiChat=[];saveState();renderEngMsgs();};
+    const input=ov.querySelector('#engInput');
+    const send=ov.querySelector('#engSend');
+    const doSend=()=>{const text=input.value.trim();if(!text)return;input.value='';englishChatSend(text);};
+    send.onclick=doSend;
+    input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSend();}});
+  }
+  ov.classList.add('show');
+  renderEngMsgs();
+  setTimeout(()=>{const i=document.getElementById('engInput');if(i)i.focus();},50);
+}
+function hideEnglishChat(){const ov=document.getElementById('engChatOverlay');if(ov)ov.classList.remove('show');}
+function deleteEngMsg(i){state.english.aiChat.splice(i,1);saveState();renderEngMsgs();}
+function renderEngMsgs(){
+  const box=document.getElementById('engMsgs');if(!box)return;
+  const chat=state.english.aiChat||[];
+  if(!chat.length){box.innerHTML='<div class="chat-empty" style="text-align:center;color:var(--brown-light);font-size:12px;margin:auto;">和 Luna 用英语聊聊今天吧～ 🌷</div>';return;}
+  box.innerHTML=chat.map((m,i)=>`<div class="chat-msg ${m.role==='user'?'me':'pet'}"><span class="who"><span>${m.role==='user'?(esc(state.profile.name)||'我'):ENG_TUTOR_NAME}</span><button class="msg-del" title="删除这条记录" onclick="deleteEngMsg(${i})">删除</button></span>${esc(m.content)}</div>`).join('');
+  box.scrollTop=box.scrollHeight;
+}
+async function englishChatSend(text){
+  const chat=state.english.aiChat;
+  const input=document.getElementById('engInput'),send=document.getElementById('engSend');
+  if(input)input.disabled=true;if(send)send.disabled=true;
+  chat.push({role:'user',content:text});
+  renderEngMsgs();
+  const box=document.getElementById('engMsgs');
+  const placeholder=document.createElement('div');
+  placeholder.className='chat-msg pet';
+  placeholder.innerHTML='<span class="who"><span>'+ENG_TUTOR_NAME+'</span></span><span class="typing">Luna is typing…</span>';
+  box.appendChild(placeholder);box.scrollTop=box.scrollHeight;
+  const payload=[{role:'system',content:buildEnglishTutorPrompt()}]
+    .concat(chat.slice(-20).map(m=>({role:m.role==='user'?'user':'assistant',content:m.content})));
+  const out=await aiChatFetch(payload,txt=>{placeholder.querySelector('.typing').textContent=txt;box.scrollTop=box.scrollHeight;});
+  placeholder.querySelector('.typing').textContent=out;
+  chat.push({role:'assistant',content:out});
+  if(chat.length>60)state.english.aiChat=chat.slice(-60);
+  saveState();
+  if(input)input.disabled=false;if(send)send.disabled=false;
 }
 /* v35 soft-pixel nurture panels: overrides only garden/pet rendering and actions. */
 const NURTURE_PLANT_TYPES=[
@@ -5818,11 +5984,11 @@ function renderTreePet(box){
   const status=petNurtureStatus(p,today);
   card.innerHTML=`<div class="nurture-head">
     <div class="nurture-title">🐾 我的宠物 <small><span class="game-name" onclick="openRenameModal(${p.id},'pet')" title="点击改名">${esc(p.name)}</span> · ${petTypeLabel(roomType)} · ${petStageLabelV45(p.level)}</small></div>
-    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetSettings(${p.id})">⚙️ 设置</button><button class="resource-pill" onclick="showPetChatModal(${p.id})">💬 聊天</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
+    <div class="nurture-resources"><span class="resource-pill">💖 ${state.game.energy||0}</span><button class="resource-pill" onclick="openPetSettings(${p.id})">⚙️ 设置</button><button class="resource-pill" onclick="showPetChatModal(${p.id})">📜 记录</button><button class="resource-pill" onclick="openPetShop(${p.id})">🛍️ 商店</button><button class="resource-pill" onclick="showAddPetModal()">+ 领养</button><button class="resource-pill" onclick="abandonPet(${p.id},event)">弃养</button><span class="resource-pill">🤗 ${today.pet||0}/5</span></div>
   </div>
   ${pets.length>1?`<div class="pet-switcher">${pets.map(x=>`<button class="pet-chip ${x.id===p.id?'on':''}" onclick="setActivePet(${x.id})">${petStageIcon(x.level,x.type)} ${esc(x.name)}</button>`).join('')}</div>`:''}
   <div class="pixel-scene pet-room asset-room pet-room-${roomType} pet-layered-room" data-pet-id="${p.id}" onclick="tapPetRoom(${p.id},event)" style="background-image:url('./generated-images/${petRoomAssetV45(p)}')">
-    <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status}</span></div>
+    <div class="scene-floating-top"><span class="pet-level-badge">Lv.${p.level}</span><span class="scene-bubble">💗 ${status} · 💞 Lv.${favorLevelOf(p.favor||0)}</span></div>
     <div class="scene-bubbles"></div>
     <img class="pet-sprite pet-${roomType}-sprite" data-pet-sprite-id="${p.id}" data-pet-kind="${roomType}" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="${esc(p.name)}" />
     ${petDecorationHtml(p)}

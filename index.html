@@ -1274,22 +1274,28 @@
   .tarot-stage.sm.empty-slot{display:flex;align-items:center;justify-content:center;}
   .slot-ph{width:120px;height:180px;border-radius:14px;border:2px dashed var(--pink-1);opacity:.5;box-sizing:border-box;}
   .tarot-slots.mini{justify-content:center;}
-  .tarot-slots.mini .tarot-stage{width:104px;height:156px;margin:0;}
-  .tarot-slots.mini .tarot-card{width:104px;height:156px;}
+  .tarot-slots.mini .tarot-stage{margin:0;}
   .tarot-slots.mini .tarot-front .tarot-symbol{font-size:40px;margin-bottom:6px;}
   .tarot-slots.mini .tarot-front .tarot-name{font-size:13px;letter-spacing:1px;margin-bottom:2px;}
   .tarot-slots.mini .tarot-front .tarot-en{font-size:8px;margin-bottom:8px;}
   .tarot-slots.mini .tarot-front .tarot-pos{font-size:9px;padding:3px 9px;}
   .tarot-slots.mini .tarot-face{padding:12px;}
+  /* 牌面尺寸按张数自适应（张数越少，牌越大） */
+  .tarot-slots.mini.n1 .tarot-stage,.tarot-slots.mini.n1 .tarot-card{width:196px;height:294px;}
+  .tarot-slots.mini.n3 .tarot-stage,.tarot-slots.mini.n3 .tarot-card{width:140px;height:210px;}
+  .tarot-slots.mini.n5 .tarot-stage,.tarot-slots.mini.n5 .tarot-card{width:120px;height:180px;}
+  .tarot-slots.mini.n1 .taro-plate b{font-size:16px;letter-spacing:3px;}
+  .tarot-slots.mini.n1 .taro-plate i{font-size:10px;}
+  .tarot-slots.mini.n1 .taro-badge,.tarot-slots.mini.n3 .taro-badge{font-size:10px;padding:4px 10px;}
   .tarot-ai-box{width:100%;max-width:480px;min-height:10px;}
   .tarot-ai-in{background:linear-gradient(135deg,#fff0f3,#fdf6ff);border:1px solid var(--pink-1);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--brown);line-height:1.8;box-shadow:var(--shadow);}
   .tarot-ai-err{width:100%;max-width:480px;font-size:12px;color:#b45309;text-align:center;margin-bottom:6px;}
 
   /* —— 牌面：AI 插画 + 底部名牌（遮住生成水印） —— */
-  .tarot-front.taro-art{padding:0;background:#241a33;}
-  .taro-art-wrap{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:#241a33;
+  .tarot-front.taro-art{padding:0;background:#fff6fa;}
+  .taro-art-wrap{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:#fff6fa;
     box-shadow:inset 0 0 0 3px rgba(232,200,95,.9),inset 0 0 0 5px rgba(255,255,255,.45);}
-  .taro-art-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .taro-art-wrap img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
   .taro-art-wrap img.rev{transform:rotate(180deg);}
   .taro-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;letter-spacing:1px;z-index:2;}
   .taro-badge.upright{background:rgba(134,239,172,.94);color:#14532d;}
@@ -1330,9 +1336,10 @@
   .arc-hint{font-size:12px;color:var(--brown-light);text-align:center;margin-top:2px;}
 
   @media(max-width:480px){
-    .tarot-slots.mini .tarot-stage{width:88px;height:132px;}
-    .tarot-slots.mini .tarot-card{width:88px;height:132px;}
-    .tarot-slots.mini .taro-plate b{font-size:10px;letter-spacing:1px;}
+    .tarot-slots.mini.n1 .tarot-stage,.tarot-slots.mini.n1 .tarot-card{width:156px;height:234px;}
+    .tarot-slots.mini.n3 .tarot-stage,.tarot-slots.mini.n3 .tarot-card{width:100px;height:150px;}
+    .tarot-slots.mini.n5 .tarot-stage,.tarot-slots.mini.n5 .tarot-card{width:88px;height:132px;}
+    .tarot-slots.mini .taro-plate b{font-size:11px;letter-spacing:1px;}
     .tarot-slots.mini .taro-plate i{font-size:6px;}
     .arc-stage{height:326px;}
     .arc-card{width:74px;height:111px;margin-left:-37px;margin-top:-56px;}
@@ -5482,7 +5489,7 @@ function tarotStart(key,daily){
   if(daily&&TAR.spread.count===1){
     const r=pickTodayTarot();
     TAR.drawn=[{card:r.card,reversed:r.reversed}];
-    TAR.flipped=[false];
+    TAR.flipped=[true];
     TAR.phase='reveal';
   }else{
     TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]);
@@ -5490,6 +5497,7 @@ function tarotStart(key,daily){
     TAR.phase='draw';
   }
   renderTarot(tarotBox());
+  if(daily&&TAR.spread.count===1)setTimeout(()=>flipTarotAnim(document.querySelector('.tarot-slots .tarot-card')),80);
 }
 
 function tarotDailyOne(){ TAR.question=''; tarotStart('one',true); }
@@ -5580,7 +5588,7 @@ function arcTap(pos,srcEl){
   const from=srcEl?srcEl.getBoundingClientRect():null;
   TAR.fan.splice(pos,1);
   TAR.drawn.push({card:TAROT_DECK[cid],reversed:Math.random()<0.4});
-  TAR.flipped.push(false);
+  TAR.flipped.push(true);   // 抽到即亮牌面，无需再点一次
   TAR.arcCenter=arcClamp(TAR.arcCenter,0,Math.max(0,TAR.fan.length-1));
   const idx=TAR.drawn.length-1;
   if(TAR.drawn.length>=TAR.spread.count)TAR.phase='reveal';
@@ -5609,7 +5617,14 @@ function flyTarotCard(from,idx){
     fly.remove();
     slot.style.visibility='';
     if(slot.animate)slot.animate([{transform:'scale(.86)'},{transform:'scale(1)'}],{duration:230,easing:'cubic-bezier(.34,1.56,.64,1)'});
+    flipTarotAnim(slot.querySelector('.tarot-card'));
   },450);
+}
+/* 落位后播放一次翻牌动画（牌已按正面渲染，用 WAAPI 从背面转过来） */
+function flipTarotAnim(el){
+  if(!el||!el.animate)return;
+  el.animate([{transform:'rotateY(0deg)'},{transform:'rotateY(180deg)'}],
+    {duration:560,easing:'cubic-bezier(.34,1.2,.64,1)'});
 }
 
 function tarotShuffle(){
@@ -5628,7 +5643,7 @@ function renderTarotReveal(box){
   let html=`<div class="tarot-page">
     <div class="tarot-backbar"><button class="tarot-link" onclick="tarotBackDraw()">‹ 重新抽牌</button></div>
     <div class="tarot-sub">${TAR.spread.name}${TAR.question?(' · 你的问题：'+esc(TAR.question)):''}</div>
-    <div class="tarot-slots mini">`;
+    <div class="tarot-slots mini n${n}">`;
   for(let i=0;i<n;i++){
     const d=TAR.drawn[i],f=TAR.flipped[i],c=d.card,rev=d.reversed;
     html+=`<div class="tarot-stage sm">
@@ -5656,7 +5671,7 @@ function renderTarotReveal(box){
     if(!TAR.aiText && !TAR.aiLoading)html+=`<button class="tarot-redraw" onclick="tarotAIRead()">✨ 让 AI 解读</button>`;
     html+=`<button class="tarot-link ghost" onclick="tarotReRead()">🔄 重新解读</button>`;
   }else{
-    html+=`<div style="font-size:13px;color:var(--brown-light);text-align:center;">轻触卡牌逐一翻面</div>`;
+    html+=`<div style="font-size:13px;color:var(--brown-light);text-align:center;">轻触卡牌翻面看结果</div>`;
   }
   html+=`<button class="tarot-link ghost" onclick="tarotBackSelect()">‹ 换个牌阵</button></div>`;
   box.innerHTML=html;

@@ -1332,6 +1332,7 @@
   .arc-card{position:absolute;left:0;top:0;width:86px;height:129px;margin-left:-43px;margin-top:-64px;border-radius:11px;
     will-change:transform,filter;transition:filter .18s;}
   .arc-card .card-back-sm{width:100%;height:100%;border-radius:11px;position:relative;overflow:hidden;
+    color:#b08d4a;font-size:15px;font-weight:800;line-height:1;padding:7px 0 0 8px;text-shadow:0 1px 0 rgba(255,255,255,.7);
     background:#fdfaf4 url("tarot/back.webp") center/cover no-repeat;
     box-shadow:
       0 0 0 1px rgba(198,168,120,.9),
@@ -1347,6 +1348,7 @@
     transition:left .42s cubic-bezier(.22,.61,.36,1),top .42s cubic-bezier(.22,.61,.36,1),
       width .42s cubic-bezier(.22,.61,.36,1),height .42s cubic-bezier(.22,.61,.36,1),transform .42s ease;}
   .fly-card .card-back-sm{width:100%;height:100%;border-radius:11px;
+    color:#b08d4a;font-size:15px;font-weight:800;line-height:1;padding:7px 0 0 8px;
     background:#fdfaf4 url("tarot/back.webp") center/cover no-repeat;
     box-shadow:0 0 0 1px rgba(198,168,120,.9),inset 0 0 0 1px rgba(214,186,134,.55),0 12px 26px rgba(170,120,60,.3);}
   .arc-hint{font-size:12px;color:var(--brown-light);text-align:center;margin-top:2px;}
@@ -5370,7 +5372,7 @@ function renderFortune(box){
       <div class="fe-value" style="font-size:13px">宜：${(ai&&ai.yi)||'随缘'} · 忌：${(ai&&ai.ji)||'急躁'}</div>
     </div>
   </div>`;
-  html+=`<div class="fortune-tip">💫 <b>今日小贴士：</b>${f.tip}</div>`;
+  html+=`<div class="fortune-tip">💫 <b>今日小贴士：</b>${(ai&&ai.tip)?esc(ai.tip):f.tip}</div>`;
   html+=`<div class="fortune-actions">
     <button class="fortune-act" onclick="fortuneAIRead(true)">🔮 换个角度重新解读</button>
     <button class="fortune-act ghost" onclick="openFortuneProfile()">${(state.profile&&state.profile.birth)?'修改生日':'填写生日'}</button>
@@ -5455,7 +5457,7 @@ function fortuneEnergy(date){
 }
 /* ===== 今日运势 · AI 解读（自动生成 + 当天缓存 + 本地兜底） ===== */
 let FORTUNE_E=null, FORTUNE_BUSY=false, FORTUNE_FAIL='';
-function fortuneCacheKey(){ return todayKey()+'|'+((state.profile&&state.profile.birth)||'none')+'|v2'; }
+function fortuneCacheKey(){ return todayKey()+'|'+((state.profile&&state.profile.birth)||'none')+'|v3'; }
 function fortuneEnergyLine(e){
   return e.gz.gan+e.gz.zhi+'日 · '+e.dayElem+' · '+e.st+' · '+e.mp+(e.zod?(' · '+e.zod):'');
 }
@@ -5466,15 +5468,15 @@ function fortuneAIPrompt(e){
     +(e.zod?('；用户星座：'+e.zod+'（'+e.zElem+'象）；与当日五行关系：'+e.rel+(e.life?('；生命灵数：'+e.life):'')):'；用户未填生日，请给通用建议')
     +'。\n各维度分数(10 分制)：'+dims+'；综合 '+e.score.toFixed(1)+'/10。注意：分数是 10 分制，5 分是及格线，基调请保持温和正向，不要写得悲观。\n'
     +'严格按下面格式输出，不要多余文字、不要 markdown、不要标题符号：\n'
-    +'[总评]80~150字中文总评，结合五行能量与今日节气\n'
-    +FORTUNE_DIMS.map(d=>'['+d.name+']20~35字的具体建议').join('\n')
-    +'\n[宜]两个字\n[忌]两个字';
+    +'[总评]200~300字的中文总评：先说明今日干支五行与用户星座元素如何互动、对整体状态的影响，再分别从「情绪」「人际」「行动节奏」三个角度展开，最后给一句温暖有力的鼓励。\n'
+    +FORTUNE_DIMS.map(d=>'['+d.name+']40~60字的建议，要具体可执行（带时间、场景或做法，不要空话）').join('\n')
+    +'\n[宜]两个字\n[忌]两个字\n[小贴士]40~60字，一条具体可执行的生活小建议（饮食、作息、穿搭、开运小动作任选其一）';
 }
 function parseFortuneAI(txt){
   const norm=String(txt||'').replace(/【/g,'[').replace(/】/g,']').replace(/（/g,'[').replace(/）/g,']');
   const grab=k=>{const m=norm.match(new RegExp('\\[\\s*'+k+'\\s*\\]\\s*\\**\\s*([^\\[]*)'));return m?m[1].replace(/[\r\n]+/g,' ').replace(/^[:：\s]+/,'').trim():'';};
   const short=d=>d.name.replace(/运势|走势|灵感|活力/g,'');
-  const out={summary:grab('总评')||grab('今日总评')||grab('整体'),yi:grab('宜'),ji:grab('忌'),dims:{}};
+  const out={summary:grab('总评')||grab('今日总评')||grab('整体'),yi:grab('宜'),ji:grab('忌'),tip:grab('小贴士')||grab('贴士'),dims:{}};
   FORTUNE_DIMS.forEach(d=>{const v=grab(d.name)||grab(short(d));if(v)out.dims[d.key]=v;});
   if(!out.summary){
     const first=(norm.split(/\n+/).map(s=>s.trim()).filter(Boolean)[0]||'');

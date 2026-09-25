@@ -27,3 +27,4 @@ node_modules/
 # 塔罗生图原图（每张 ~3MB，不入库；只用 tarot/ 下的压缩 webp）
 tarot-sample/
 tarot-src/
+tarot-back/

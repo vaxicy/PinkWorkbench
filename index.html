@@ -1325,7 +1325,7 @@
   .taro-plate i{display:block;font-size:8px;font-style:italic;color:#a2849b;letter-spacing:1px;margin-top:1px;}
 
   /* —— 圆弧牌堆（真实抽卡） —— */
-  .arc-stage{position:relative;width:100%;max-width:640px;height:384px;margin:2px auto 0;overflow:hidden;
+  .arc-stage{position:relative;width:100%;max-width:860px;height:384px;margin:2px auto 0;overflow:hidden;
     touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;}
   .arc-stage.grabbing{cursor:grabbing;}
   .arc-track{position:absolute;left:50%;bottom:0;width:1px;height:1px;}
@@ -5706,10 +5706,10 @@ function layoutArc(){
   const st=document.getElementById('arcStage'), track=document.getElementById('arcTrack');
   if(!st||!track)return;
   ARC.R=arcClamp(Math.min(st.clientWidth,window.innerWidth)*0.85,150,420);
-  const maxAng=ARC.step*(ARC.window+0.6)*Math.PI/180;
+  const maxAng=arcAngleOf(ARC.window+6)*Math.PI/180;
   const drop=ARC.R*(1-Math.cos(maxAng));
-  st.style.height=Math.round(drop+150)+'px';
-  track.style.bottom=(-(ARC.R-drop-78)).toFixed(0)+'px';
+  st.style.height=Math.round(drop+168)+'px';
+  track.style.bottom=(-(ARC.R-drop-84)).toFixed(0)+'px';
 }
 function bindArc(){
   const st=document.getElementById('arcStage'); if(!st)return;
@@ -5742,21 +5742,32 @@ function bindArc(){
   st.addEventListener('pointerout',e=>{ const c=e.target.closest&&e.target.closest('.arc-card'); if(c)setArcHover(c,false); });
 }
 function arcSchedule(){ if(ARC.raf)return; ARC.raf=requestAnimationFrame(()=>{ARC.raf=0;updateArc();}); }
+/* 角度映射：中间均匀展开，两端逐渐收拢成牌沓（消除硬切边） */
+function arcAngleOf(k){
+  const a=Math.abs(k), w=ARC.window, s=ARC.step;
+  let ang;
+  if(a<=w)ang=a*s;
+  else ang=w*s+s*0.9*6*(1-Math.exp(-(a-w)/4.2));
+  return k<0?-ang:ang;
+}
 function updateArc(){
   const track=document.getElementById('arcTrack'); if(!track)return;
-  const c=TAR.arcCenter||0, R=ARC.R, step=ARC.step;
+  const c=TAR.arcCenter||0, R=ARC.R, w=ARC.window;
   [...track.children].forEach((el,i)=>{
-    const dd=(i-c)*step, ad=Math.abs(dd);
-    if(ad>step*(ARC.window+0.6)){ el.style.visibility='hidden'; return; }
+    const k=i-c, a=Math.abs(k);
+    if(a>w+6){ el.style.visibility='hidden'; return; }
     el.style.visibility='visible';
-    const base='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)';
+    const dd=arcAngleOf(k), over=Math.max(0,a-w);
+    const sc=1-Math.min(0.14,over*0.03);
+    const base='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)'+(sc<0.999?' scale('+sc.toFixed(3)+')':'');
     el.dataset.base=base;
-    const z=String(900-Math.round(ad*10));
+    const z=String(900-Math.round(dd*10));
     el.dataset.z=z;
+    const dim=1-Math.min(0.17,a/470)-Math.min(0.1,over*0.02);
+    const f='brightness('+dim.toFixed(3)+')';
+    el.dataset.filter=f;
     el.style.zIndex=el.classList.contains('hover')?'990':z;
     el.style.transform=base+(el.classList.contains('hover')?' translateY(-13px) scale(1.08)':'');
-    const f='brightness('+(1-Math.min(0.17,ad/470)).toFixed(3)+')';
-    el.dataset.filter=f;
     if(!el.classList.contains('hover'))el.style.filter=f;
   });
 }

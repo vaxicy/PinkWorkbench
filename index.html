@@ -1305,18 +1305,29 @@
   .arc-stage.grabbing{cursor:grabbing;}
   .arc-track{position:absolute;left:50%;bottom:0;width:1px;height:1px;}
   .arc-card{position:absolute;left:0;top:0;width:86px;height:129px;margin-left:-43px;margin-top:-64px;border-radius:11px;
-    will-change:transform,opacity;transition:box-shadow .2s,filter .2s,opacity .18s;}
-  .arc-card .card-back-sm{width:100%;height:100%;border-radius:11px;display:flex;align-items:center;justify-content:center;
-    color:rgba(255,255,255,.9);font-size:20px;
-    background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.3),transparent 44%),
-      repeating-linear-gradient(45deg,rgba(255,255,255,.09) 0 6px,transparent 6px 13px),
-      linear-gradient(150deg,#8b6cf0,#e86aa6 62%,#f8a1c4);
-    box-shadow:0 8px 18px rgba(28,10,40,.4),inset 0 0 0 2px rgba(255,255,255,.55),inset 0 0 0 7px rgba(255,255,255,.14);}
-  .arc-card.focus{box-shadow:0 18px 34px rgba(236,72,153,.55);filter:brightness(1.06);}
+    will-change:transform,filter;transition:filter .18s;}
+  .arc-card .card-back-sm{width:100%;height:100%;border-radius:11px;position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.92);font-size:20px;
+    background:
+      repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 5px,rgba(255,255,255,0) 5px 11px),
+      linear-gradient(150deg,#8f70f2 0%,#e86aa6 62%,#f9a8c8 100%);
+    box-shadow:
+      1px 1px 0 rgba(92,44,116,.42),
+      2px 2px 0 rgba(92,44,116,.22),
+      inset 0 0 0 2px rgba(255,255,255,.82),
+      inset 0 0 0 7px rgba(255,255,255,.16);}
+  .arc-card .card-back-sm::after{content:'';position:absolute;inset:15%;border-radius:7px;border:1px solid rgba(255,255,255,.5);}
+  .arc-card.focus .card-back-sm{box-shadow:
+      0 16px 30px rgba(180,60,140,.42),
+      inset 0 0 0 2px rgba(255,255,255,.96),
+      inset 0 0 0 8px rgba(255,255,255,.2);}
+  .fly-card{position:fixed;z-index:9999;pointer-events:none;border-radius:11px;
+    transition:left .42s cubic-bezier(.22,.61,.36,1),top .42s cubic-bezier(.22,.61,.36,1),
+      width .42s cubic-bezier(.22,.61,.36,1),height .42s cubic-bezier(.22,.61,.36,1),transform .42s ease;}
+  .fly-card .card-back-sm{width:100%;height:100%;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,.92);font-size:20px;background:linear-gradient(150deg,#8f70f2,#e86aa6 62%,#f9a8c8);
+    box-shadow:inset 0 0 0 2px rgba(255,255,255,.85),0 12px 26px rgba(180,60,140,.45);}
   .arc-hint{font-size:12px;color:var(--brown-light);text-align:center;margin-top:2px;}
-  /* 抽入槽位的卡出现动画 */
-  @keyframes slotPop{from{transform:translateY(-16px) scale(.82);opacity:0;}to{transform:none;opacity:1;}}
-  .tarot-slots .tarot-stage.sm{animation:slotPop .32s cubic-bezier(.34,1.56,.64,1);}
 
   @media(max-width:480px){
     .tarot-slots.mini .tarot-stage{width:88px;height:132px;}
@@ -5483,8 +5494,8 @@ function tarotStart(key,daily){
 
 function tarotDailyOne(){ TAR.question=''; tarotStart('one',true); }
 
-/* —— 圆弧牌堆：滑动浏览 + 点选抽牌 —— */
-const ARC={drag:null,moved:false,R:280,step:2.2,raf:0};
+/* —— 圆弧牌堆：滑动浏览 + 点选抽牌（实色牌堆 + 飞牌动画） —— */
+const ARC={drag:null,moved:false,R:280,step:2.0,raf:0};
 function arcClamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
 function renderTarotDraw(box){
@@ -5494,7 +5505,7 @@ function renderTarotDraw(box){
     <div class="tarot-sub">左右滑动浏览牌堆，点击你感应到的那张牌</div>
     <div class="arc-stage" id="arcStage"><div class="arc-track" id="arcTrack">`;
   TAR.fan.forEach((cid,pos)=>{
-    html+='<div class="arc-card" data-pos="'+pos+'" onclick="arcTap('+pos+')"><div class="card-back-sm">✶</div></div>';
+    html+='<div class="arc-card" data-pos="'+pos+'"><div class="card-back-sm">✶</div></div>';
   });
   html+=`</div></div>
     <div class="arc-hint">← 滑动浏览 · 点击抽牌 →</div>
@@ -5514,18 +5525,38 @@ function renderTarotDraw(box){
 
 function bindArc(){
   const st=document.getElementById('arcStage'); if(!st)return;
-  ARC.R=arcClamp(st.clientWidth*0.55,170,300);
+  ARC.R=arcClamp(Math.min(st.clientWidth,window.innerWidth)*0.42,120,300);
+  st.style.height=Math.round(ARC.R+112)+'px';
+  if(!ARC.resizeBound){ ARC.resizeBound=true;
+    window.addEventListener('resize',()=>{
+      if(TAR.phase!=='draw')return;
+      const s=document.getElementById('arcStage'); if(!s)return;
+      ARC.R=arcClamp(Math.min(s.clientWidth,window.innerWidth)*0.42,120,300);
+      s.style.height=Math.round(ARC.R+112)+'px';
+      updateArc();
+    });
+  }
   const down=e=>{ ARC.drag={x:e.clientX,c:TAR.arcCenter}; ARC.moved=false; st.classList.add('grabbing');
     try{st.setPointerCapture(e.pointerId);}catch(_){} };
   const move=e=>{ if(!ARC.drag)return;
-    const dx=e.clientX-ARC.drag.x; if(Math.abs(dx)>8)ARC.moved=true;
+    const dx=e.clientX-ARC.drag.x; if(Math.abs(dx)>10)ARC.moved=true;
     TAR.arcCenter=arcClamp(ARC.drag.c-dx/26,0,TAR.fan.length-1);
     arcSchedule(); };
-  const up=()=>{ ARC.drag=null; st.classList.remove('grabbing'); };
+  const up=e=>{
+    const wasDrag=ARC.moved;
+    ARC.drag=null; st.classList.remove('grabbing');
+    if(wasDrag)return;
+    // setPointerCapture 会把 click 的目标改到 stage 上，所以这里自己做命中测试
+    const el=document.elementFromPoint(e.clientX,e.clientY);
+    const card=el&&el.closest?el.closest('.arc-card'):null;
+    if(!card)return;
+    ARC.moved=false;
+    arcTap(Number(card.dataset.pos),card);
+  };
   st.addEventListener('pointerdown',down);
   st.addEventListener('pointermove',move);
   st.addEventListener('pointerup',up);
-  st.addEventListener('pointercancel',up);
+  st.addEventListener('pointercancel',()=>{ ARC.drag=null; st.classList.remove('grabbing'); });
 }
 function arcSchedule(){ if(ARC.raf)return; ARC.raf=requestAnimationFrame(()=>{ARC.raf=0;updateArc();}); }
 function updateArc(){
@@ -5533,23 +5564,52 @@ function updateArc(){
   const c=TAR.arcCenter||0, R=ARC.R, step=ARC.step;
   [...track.children].forEach((el,i)=>{
     const dd=(i-c)*step, ad=Math.abs(dd);
-    if(ad>62){ el.style.opacity=0; el.style.pointerEvents='none'; return; }
-    el.style.transform='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)';
-    el.style.opacity=String(Math.max(0,1-ad/44).toFixed(2));
+    if(ad>82){ el.style.visibility='hidden'; return; }
+    el.style.visibility='visible';
+    const focus=ad<step*0.62;
+    el.style.transform='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)'+(focus?' translateY(-9px) scale(1.09)':'');
     el.style.zIndex=String(900-Math.round(ad*10));
-    el.classList.toggle('focus',ad<1.2);
+    el.style.filter=focus?'none':'brightness('+(1-Math.min(0.17,ad/470)).toFixed(3)+')';
+    el.classList.toggle('focus',focus);
   });
 }
-function arcTap(pos){
+function arcTap(pos,srcEl){
   if(ARC.moved)return;
   if(TAR.drawn.length>=TAR.spread.count)return;
   const cid=TAR.fan[pos]; if(cid==null)return;
+  const from=srcEl?srcEl.getBoundingClientRect():null;
   TAR.fan.splice(pos,1);
   TAR.drawn.push({card:TAROT_DECK[cid],reversed:Math.random()<0.4});
   TAR.flipped.push(false);
   TAR.arcCenter=arcClamp(TAR.arcCenter,0,Math.max(0,TAR.fan.length-1));
+  const idx=TAR.drawn.length-1;
   if(TAR.drawn.length>=TAR.spread.count)TAR.phase='reveal';
   renderTarot(tarotBox());
+  if(from&&from.width)flyTarotCard(from,idx);
+}
+/* 抽中的牌沿弧线飞进槽位 */
+function flyTarotCard(from,idx){
+  const slot=[...document.querySelectorAll('.tarot-slots .tarot-stage.sm')][idx];
+  if(!slot)return;
+  const to=slot.getBoundingClientRect();
+  if(!to.width)return;
+  const fly=document.createElement('div');
+  fly.className='fly-card';
+  fly.style.left=from.left+'px'; fly.style.top=from.top+'px';
+  fly.style.width=from.width+'px'; fly.style.height=from.height+'px';
+  fly.innerHTML='<div class="card-back-sm">✶</div>';
+  document.body.appendChild(fly);
+  slot.style.visibility='hidden';
+  requestAnimationFrame(()=>{
+    fly.style.left=to.left+'px'; fly.style.top=to.top+'px';
+    fly.style.width=to.width+'px'; fly.style.height=to.height+'px';
+    fly.style.transform='rotate(360deg)';
+  });
+  setTimeout(()=>{
+    fly.remove();
+    slot.style.visibility='';
+    if(slot.animate)slot.animate([{transform:'scale(.86)'},{transform:'scale(1)'}],{duration:230,easing:'cubic-bezier(.34,1.56,.64,1)'});
+  },450);
 }
 
 function tarotShuffle(){
@@ -6441,6 +6501,17 @@ if(location.search.includes('tarotDemo')){
       const n=TAR.spread.count;
       for(let i=0;i<n-1;i++){const cid=TAR.fan.pop();TAR.drawn.push({card:TAROT_DECK[cid],reversed:i%2===1});TAR.flipped.push(false);}
       renderTarot(tarotBox());
+    }else if(location.search.includes('tapDemo')){
+      setTimeout(()=>{
+        const st=document.getElementById('arcStage'); if(!st)return;
+        const cards=[...st.querySelectorAll('.arc-card')];
+        const target=cards.find(c=>c.classList.contains('focus'))||cards[Math.floor(cards.length/2)];
+        if(!target)return;
+        const r=target.getBoundingClientRect();
+        const o={bubbles:true,cancelable:true,clientX:r.left+r.width/2,clientY:r.top+r.height/2,pointerId:1,pointerType:'mouse',isPrimary:true,buttons:1};
+        st.dispatchEvent(new PointerEvent('pointerdown',o));
+        st.dispatchEvent(new PointerEvent('pointerup',Object.assign({},o,{buttons:0})));
+      },400);
     }
   },120);
 }

@@ -1,0 +1,36 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-09-25",
+  "assets": [
+    {
+      "id": "kibble",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: A low round dusty-pink ceramic pet bowl with a small cream paw emblem, filled with golden brown tiny kibble pellets. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-kibble-v1.png"
+    },
+    {
+      "id": "meat",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: A shallow cream ceramic plate with a rose-pink rim, heaped with appetizing small golden cooked meat cubes. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-meat-v1.png"
+    },
+    {
+      "id": "rice",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: A small cream plate with three plump round rice balls, mixed with tiny pastel green vegetable and orange carrot cubes. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-rice-v1.png"
+    },
+    {
+      "id": "cookies",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: A little rose-pink ceramic plate holding exactly three golden paw-print shaped pet biscuits. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-cookies-v1.png"
+    },
+    {
+      "id": "pudding",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: A cream-colored heart-shaped ceramic dish holding a soft pale yellow domed pet pudding, topped with a tiny pink heart decoration. No chocolate. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-pudding-v1.png"
+    },
+    {
+      "id": "bento",
+      "prompt": "Use case: illustration-story. Asset: standalone transparent-background food sprite for a cozy pastel pixel-art virtual pet game, also used on menu cards. Subject: An open pastel pink lunch box with rounded corners and four compartments of rice, cooked meat pieces, vegetable cubes and a little paw-print biscuit. Style: beautifully detailed crisp pixel art, cute rounded shapes, warm cream and dusty pink palette, soft upper-left lighting, consistent slightly elevated three-quarter view looking down at food. One complete dish only, centered and occupying about 80% of square canvas width. True transparent alpha background everywhere outside the dish; no room, no table, no solid backdrop, no checkerboard pattern, no text, no labels, no prices, no UI, no animals, no watermark. Clean silhouette, restrained tiny shadow beneath dish, ready to composite onto a game room.",
+      "path": "generated-images/food-bento-v1.png"
+    }
+  ]
+}

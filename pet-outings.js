@@ -9,10 +9,10 @@ function outingStep(p){
 function outingHomeHtml(p){
   const t=PetOutings.trip(p),s=PetOutings.scene(t?.sceneId),status=PetOutings.status(p);
   if(t){
-    const ready=status==='ready';
+    const ready=status==='ready',reward=PetOutings.terms(p).reward;
     return `<section class="outing-status" data-outing-home="${p.id}" data-outing-status="${status}">
       <div class="outing-status-copy"><b>${ready?'🎒 '+esc(p.name)+'回来啦！':s.icon+' '+esc(p.name)+'正在'+s.name}</b>
-      <p>${ready?'带回了新鲜见闻，还有 '+s.reward+' 爱心等你领取。':`<span data-outing-step="${p.id}">${outingStep(p)}</span>`}</p>
+      <p>${ready?'带回了新鲜见闻，还有 '+reward+' 爱心等你领取。':`<span data-outing-step="${p.id}">${outingStep(p)}</span>`}</p>
       ${ready?'':`<p>距离回家 <time class="outing-time" data-outing-time="${p.id}">${PetOutings.remaining(p)}</time></p><progress class="outing-progress" data-outing-progress="${p.id}" max="1" value="${PetOutings.progress(p)}" aria-label="出游进度"></progress>`}</div>
       <div class="outing-status-actions"><button class="outing-button primary" onclick="showPetOuting(${p.id})">${ready?'打开出游收获':'去看看'}</button>${ready?'':`<button class="outing-button" onclick="recallPetOuting(${p.id})">提前回家</button>`}</div>
     </section>`;
@@ -21,24 +21,48 @@ function outingHomeHtml(p){
   return `<section class="outing-entry"><div><b>🧳 今天想去哪里？</b><p>${other?esc(other.name)+(PetOutings.status(other)==='away'?'正在出游，等它回来再一起计划吧。':'的出游收获还没领取。'):'花园散步、咖啡馆小憩，带着爱心回家。'}</p></div>
     <button class="outing-button primary" onclick="${other?`showPetOuting(${other.id})`:`showPetDestinations(${p.id})`}">${other?'查看行程':'出去玩'}</button></section>`;
 }
-function outingModal(title,body){
-  showModal({title,body,noCancel:true,hideOk:true,closeButton:true,modalClass:'outing-modal'});
+function outingModal(title,body,footer=''){
+  showModal({title,body,noCancel:true,hideOk:true,closeButton:true,modalClass:'outing-modal',render:(_body,extra)=>{extra.innerHTML=footer;}});
+}
+function outingImageHtml(s,thumbnail=false){
+  const src=thumbnail?s.thumbnail:s.image;
+  return `<div class="outing-image-wrap ${thumbnail?'thumb':'full'}"><img class="${thumbnail?'':'outing-scene-bg'}" src="${src}" data-image-src="${src}" alt="${s.name}的像素风景" decoding="async" onload="this.parentElement.classList.add('loaded');this.parentElement.classList.remove('failed')" onerror="this.parentElement.classList.add('failed');this.parentElement.classList.remove('loaded')" /><span class="outing-image-loading">${s.icon} 正在装好风景…</span><button class="outing-image-retry" type="button" onclick="event.stopPropagation();retryOutingImage(this)">图片未加载 · 点此重试</button></div>`;
+}
+function retryOutingImage(button){
+  const wrap=button.parentElement,img=wrap.querySelector('img');
+  wrap.classList.remove('failed','loaded');img.src=img.dataset.imageSrc+'?retry='+Date.now();
 }
 function outingSceneHtml(s,p){
-  return `<div class="outing-scene"><img class="outing-scene-bg" src="${s.image}" alt="${s.name}的像素风景" />${p?`<img class="outing-scene-pet" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="正在${s.name}的${esc(p.name)}" />`:''}<span class="outing-scene-label">${s.icon} ${s.tag}</span></div>`;
+  return `<div class="outing-scene">${outingImageHtml(s)}${p?`<img class="outing-scene-pet" src="./generated-images/${petOutfitSpriteAsset(p,'idle')}" alt="正在${s.name}的${esc(p.name)}" />`:''}<span class="outing-scene-label">${s.icon} ${s.tag}</span></div>`;
 }
-function showPetDestinations(id){
+let outingCategory='all';
+let outingSelection=null;
+function showPetDestinations(id,category=outingCategory){
   if(!outingPet(id))return;
-  const pending=PetOutings.pending(state);
-  if(pending)return showPetOuting(pending.id);
-  outingModal('🧳 今天想去哪里？',`<p class="outing-intro">给${esc(outingPet(id).name)}安排一场小旅行。全部场景免费开放，关闭页面也会继续计时。</p>
-    <div class="outing-destinations">${PetOutings.scenes.map(s=>`<button class="outing-destination" onclick="previewPetOuting(${id},'${s.id}')"><img src="${s.image}" alt="${s.name}" loading="lazy" /><span class="outing-card-copy"><b>${s.icon} ${s.name}</b><small>${s.description}</small><span class="outing-card-meta"><span>🕒 ${outingDuration(s)}</span><span>❤️ ${s.reward}</span></span><span class="outing-card-cta">去这里 →</span></span></button>`).join('')}</div>`);
+  const pending=PetOutings.pending(state);if(pending)return showPetOuting(pending.id);
+  outingCategory=['all','city','nature','holiday'].includes(category)?category:'all';
+  const scenes=PetOutings.scenes.filter(s=>outingCategory==='all'||s.category===outingCategory);
+  outingModal('🧳 今天想去哪里？',`<div class="outing-catalog-header"><p class="outing-intro">12 个目的地 · 15 分钟～12 小时 · 按时长排列 · 免费出发</p><div class="outing-filters" aria-label="地点分类">${[['all','全部'],['city','城市'],['nature','自然'],['holiday','度假']].map(([key,label])=>`<button class="outing-button" aria-pressed="${outingCategory===key}" onclick="showPetDestinations(${id},'${key}')">${label}</button>`).join('')}<span>${scenes.length} 个地点 · 向下滑动探索</span></div></div>
+    <div class="outing-destinations">${scenes.map(s=>`<article class="outing-destination" onclick="previewPetOuting(${id},'${s.id}')">${outingImageHtml(s,true)}<button class="outing-card-select" type="button"><span class="outing-card-copy"><b>${s.icon} ${s.name}</b><small>${s.description}</small><span class="outing-card-meta"><span>🕒 ${outingDuration(s)}</span><span>❤️ ${s.reward}</span></span><span class="outing-card-cta">去这里 →</span></span></button></article>`).join('')}</div>`);
+  document.getElementById('modalBody').scrollTop=0;
 }
 function previewPetOuting(id,sceneId){
   const p=outingPet(id),s=PetOutings.scene(sceneId);if(!p||!s)return;
   const pending=PetOutings.pending(state);if(pending)return showPetOuting(pending.id);
-  outingModal(s.icon+' '+s.name,`${outingSceneHtml(s)}<div class="outing-detail-copy"><h3>${s.tag}，就从这里开始</h3><p>${s.description}</p><div class="outing-detail-meta"><span>🕒 ${outingDuration(s)}</span><span>❤️ 回家可领 ${s.reward} 爱心</span><span>免费出发</span></div></div>
-    <p class="outing-intro">出发后${esc(p.name)}会暂时离开房间。提前回家不会获得本次奖励。</p><div class="outing-detail-actions"><button class="outing-button" onclick="showPetDestinations(${id})">← 换个地方</button><button class="outing-button primary" onclick="startPetOuting(${id},'${s.id}',this)">出发 · 预计 ${outingDuration(s)}</button></div>`);
+  outingSelection={petId:id,sceneId};
+  outingModal(s.icon+' '+s.name,`${outingSceneHtml(s)}<div class="outing-detail-copy"><h3>${s.tag}，就从这里开始</h3><p>${s.description}</p></div>
+    <div class="outing-detail-meta"><span>🕒 固定时长 ${outingDuration(s)}</span><span>❤️ 完成可领 ${s.reward} 爱心</span></div>
+    <p class="outing-intro">出发后${esc(p.name)}会暂时离开房间。关闭页面继续计时；提前回家不获得奖励。</p>`,
+    `<div class="outing-departure-footer"><div class="outing-plan-summary" aria-live="polite"><b id="outingRewardPreview"></b><span id="outingArrivalPreview"></span></div><div class="outing-detail-actions"><button class="outing-button" onclick="showPetDestinations(${id})">← 换个地方</button><button id="outingDepart" class="outing-button primary" onclick="startPetOuting(${id},'${s.id}',this)"></button></div></div>`);
+  updateOutingPlan();document.getElementById('modalBody').scrollTop=0;
+}
+function updateOutingPlan(){
+  if(!outingSelection||!document.querySelector('#modalOverlay.show #outingDepart'))return;
+  const s=PetOutings.scene(outingSelection.sceneId),now=new Date(),arrival=new Date(now.getTime()+s.minutes*60000);
+  const day=arrival.toDateString()===now.toDateString()?'今天':'明天';
+  document.getElementById('outingRewardPreview').textContent='❤️ 预计获得 '+s.reward+' 爱心';
+  document.getElementById('outingArrivalPreview').textContent='预计'+day+' '+arrival.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false})+' 回家';
+  document.getElementById('outingDepart').textContent='出发 · '+outingDuration(s);
 }
 
 let outingWriting=false;
@@ -64,19 +88,19 @@ async function mutatePetOuting(change){
 }
 async function startPetOuting(id,sceneId,button){
   if(button)button.disabled=true;
-  const result=await mutatePetOuting(data=>PetOutings.start(data,id,sceneId));
+  const result=await mutatePetOuting(data=>PetOutings.start(data,id,sceneId,Date.now(),Math.random()));
   if(result.ok){clearTimeout(window._petIdleTimer);hideModal();render();}
   else if(result.reason==='pending'){render();showPetOuting(PetOutings.pending(state).id);}
   if(button)button.disabled=false;
 }
 function showPetOuting(id){
   const p=outingPet(id),t=PetOutings.trip(p);if(!t)return;
-  const s=PetOutings.scene(t.sceneId),ready=PetOutings.status(p)==='ready';
+  const s=PetOutings.scene(t.sceneId),ready=PetOutings.status(p)==='ready',terms=PetOutings.terms(p);
   const story=s.stories[t.storyIndex]||s.stories[0];
   outingModal(ready?'🎒 '+p.name+'的出游收获':s.icon+' '+p.name+'正在'+s.name,
     `<div data-outing-detail="${id}" data-outing-status="${ready?'ready':'away'}">${outingSceneHtml(s,ready?null:p)}
-    ${ready?`<div class="outing-reward"><strong>❤️ +${s.reward}</strong><p>${esc(p.name)}${story}</p><p>已回到房间 · ${s.name} · ${outingDuration(s)}</p></div><div class="outing-detail-actions"><button class="outing-button primary" onclick="claimPetOuting(${id},this)">收下 ${s.reward} 爱心</button></div>`:
-    `<div class="outing-detail-copy"><h3 data-outing-step="${id}">${outingStep(p)}</h3><p>距离回家 <time class="outing-time" data-outing-time="${id}">${PetOutings.remaining(p)}</time></p><progress class="outing-progress" data-outing-progress="${id}" max="1" value="${PetOutings.progress(p)}" aria-label="出游进度"></progress><div class="outing-detail-meta"><span>❤️ 完成可领 ${s.reward} 爱心</span><span>关掉页面也会继续</span></div></div><div class="outing-detail-actions"><button class="outing-button" onclick="recallPetOuting(${id})">提前回家</button><button class="outing-button primary" onclick="hideModal()">让它再玩一会儿</button></div>`}</div>`);
+    ${ready?`<div class="outing-reward"><strong>❤️ +${terms.reward}</strong><p>${esc(p.name)}${story}</p><p>已回到房间 · ${s.name} · ${outingDuration(terms)}</p></div><div class="outing-detail-actions"><button class="outing-button primary" onclick="claimPetOuting(${id},this)">收下 ${terms.reward} 爱心</button></div>`:
+    `<div class="outing-detail-copy"><h3 data-outing-step="${id}">${outingStep(p)}</h3><p>距离回家 <time class="outing-time" data-outing-time="${id}">${PetOutings.remaining(p)}</time></p><progress class="outing-progress" data-outing-progress="${id}" max="1" value="${PetOutings.progress(p)}" aria-label="出游进度"></progress><div class="outing-detail-meta"><span>❤️ 完成可领 ${terms.reward} 爱心</span><span>关掉页面也会继续</span></div></div><div class="outing-detail-actions"><button class="outing-button" onclick="recallPetOuting(${id})">提前回家</button><button class="outing-button primary" onclick="hideModal()">让它再玩一会儿</button></div>`}</div>`);
 }
 async function recallPetOuting(id){
   const p=outingPet(id),t=PetOutings.trip(p);if(!t)return;
@@ -111,6 +135,7 @@ async function claimPetOuting(id,button){
 }
 function updatePetOutingClock(){
   if(document.hidden)return;
+  updateOutingPlan();
   let refreshHome=false;
   document.querySelectorAll('[data-outing-home]').forEach(el=>{
     if(PetOutings.status(outingPet(Number(el.dataset.outingHome)))!==el.dataset.outingStatus)refreshHome=true;

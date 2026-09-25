@@ -1470,8 +1470,9 @@
   @keyframes dressedJump{0%,100%{transform:translateX(-50%) translateY(0) scale(1);}35%{transform:translateX(-50%) translateY(-24px) scale(1.03,.98);}70%{transform:translateX(-50%) translateY(2px) scale(.98,1.03);}}
 
 </style>
-<link rel="stylesheet" href="./pet-outings.css?v=103" />
-<script src="./pet-outings-core.js?v=103"></script>
+<link rel="stylesheet" href="./pet-outings.css?v=108" />
+<link rel="stylesheet" href="./pet-food.css?v=106" />
+<script src="./pet-outings-core.js?v=108"></script>
 </head>
 <body>
 <div class="app">
@@ -5766,7 +5767,7 @@ function renderTreePet(box){
     <div class="pet-stat"><b>🫶 亲密度</b><div class="pixel-track"><i style="width:${intimacy}%;background:linear-gradient(90deg,#d5a8ff,#a879ff)"></i></div><span>${intimacy}/100</span></div>
   </div>
   <div class="pet-actions">
-    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 3 爱心</small></button>
+    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>选一份好吃的</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5 · +2</small></button>
     <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3 · +2</small></button>
   </div>`;
@@ -5857,21 +5858,10 @@ function sunPlant(id,e){
   },30);
 }
 function feedPet(id,e){
-  if(outingAway(id))return;
   e?.stopPropagation?.();
-  if((state.game.energy||0)<3)return showModal({title:'爱心值不足',body:'喂食需要 3 爱心，先领取每日爱心或完成任务吧。',noCancel:true});
-  const p=state.pet.owned.find(x=>x.id===id);if(!p)return;
-  const before=p.level;
-  addEnergy(-3);
-  p.hunger=Math.min(100,(p.hunger??80)+22);p.happiness=Math.min(100,(p.happiness??80)+10);p.exp+=10;
-  p.lastPetTick=Date.now();levelUpPet(p);
-  saveState();render();
-  setTimeout(()=>{
-    triggerPetRoom(id,p.level>before?'pet-hop':'pet-pulse','🍚',4);
-    playPetSpriteAction(id,'feed','is-feed');
-    if(p.level>before){popLevelUp(getPetRoom(id));petalRain(getPetRoom(id));}
-  },30);
+  showPetFoodMenu(id);
 }
+
 function petPet(id,e){
   if(outingAway(id))return;
   e?.stopPropagation?.();
@@ -6052,7 +6042,7 @@ function renderTreePet(box){
     <div class="pet-stat"><b>🫶 亲密度</b><div class="pixel-track"><i style="width:${intimacy}%;background:linear-gradient(90deg,#d5a8ff,#a879ff)"></i></div><span>${intimacy}/100</span></div>
   </div>
   ${away?'':`<div class="pet-actions">
-    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>消耗 3 爱心</small></button>
+    <button class="pixel-action" onclick="feedPet(${p.id},event)">🍚 喂食<small>选一份好吃的</small></button>
     <button class="pixel-action" onclick="petPet(${p.id},event)" ${(today.pet||0)>=5?'disabled':''}>🤗 抚摸<small>今日 ${today.pet||0}/5 · +2</small></button>
     <button class="pixel-action" onclick="playPet(${p.id},event)"${(today.play||0)>=3?' disabled':''}>🧶 陪玩<small>今日 ${today.play||0}/3 · +2</small></button>
   </div>`}`;
@@ -6175,7 +6165,9 @@ function playPetSpriteAction(id,action='idle',cls=''){
 }
 
 </script>
-<script src="./pet-outings.js?v=103"></script>
+<script src="./pet-outings.js?v=108"></script>
+<script src="./pet-food-core.js?v=106"></script>
+<script src="./pet-food.js?v=106"></script>
 <script>
 if(_initPage)switchPage(_initPage);else render();
 // Preserve development auto-roll after applying the initial route.

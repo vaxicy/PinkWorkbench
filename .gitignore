@@ -17,3 +17,9 @@ node_modules/
 
 # GPT-generated outing backgrounds used by the app
 !generated-images/outing-*-v1.png
+
+# GPT food sprites used in feeding menu and room
+!generated-images/food-*-v1.png
+
+# Lightweight outing backgrounds and card thumbnails
+!generated-images/outing-*-v2.webp

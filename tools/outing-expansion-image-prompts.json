@@ -1,0 +1,48 @@
+{
+  "generator": "Built-in image_gen",
+  "date": "2026-09-26",
+  "assets": [
+    {
+      "id": "bookstore",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A cozy afternoon bookstore, tall wooden bookshelves along the sides, bright tall window, dusty pink reading cushions, small reading tables, trailing plants. Center foreground clear wooden floor and one pale pink reading mat. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-bookstore-v1.png",
+      "detail": "generated-images/outing-bookstore-v2.webp",
+      "thumbnail": "generated-images/outing-bookstore-thumb-v2.webp"
+    },
+    {
+      "id": "amusement",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A candy-colored amusement park, pink Ferris wheel in background, pastel carousel to left, balloons and flowering shrubs along the sides, warm blue sky. Broad clear cream-colored plaza in foreground. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-amusement-v1.png",
+      "detail": "generated-images/outing-amusement-v2.webp",
+      "thumbnail": "generated-images/outing-amusement-thumb-v2.webp"
+    },
+    {
+      "id": "camp",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A magical starry campsite at twilight, small pink and cream tent to left, warm string lights, dark sage pine trees framing a beautiful starry violet sky, picnic basket and blankets at the sides. Clear grass in center foreground, no fire in foreground. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-camp-v1.png",
+      "detail": "generated-images/outing-camp-v2.webp",
+      "thumbnail": "generated-images/outing-camp-thumb-v2.webp"
+    },
+    {
+      "id": "hotspring",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A tranquil cherry blossom hot spring garden with a rounded stone pool in middle background, pale steam, bamboo fence, pink flowering trees and petals, warm wooden bathhouse on right. Wide dry flat stone terrace in center foreground for a pet to stand on, pool behind the terrace. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-hotspring-v1.png",
+      "detail": "generated-images/outing-hotspring-v2.webp",
+      "thumbnail": "generated-images/outing-hotspring-thumb-v2.webp"
+    },
+    {
+      "id": "aquarium",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A dreamy blue aquarium interior with a huge glass tank behind showing small colorful fish, jellyfish, corals and soft blue light, a curved underwater tunnel at one side, cream and pastel pink benches along edges. Clear dry walkway in center foreground for pet. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-aquarium-v1.png",
+      "detail": "generated-images/outing-aquarium-v2.webp",
+      "thumbnail": "generated-images/outing-aquarium-thumb-v2.webp"
+    },
+    {
+      "id": "snow",
+      "prompt": "Use case: illustration-story. One full-bleed landscape 16:9 game background for a cozy pastel pixel-art virtual pet game. Scene: A cozy snowy village with small wood cabins, warm glowing windows, pink dusk sky, a cute snowman near the right edge, frosted pine trees, soft snow and lampposts. Broad clear pale snow foreground, inviting warm atmosphere. Detailed crisp pixel art matching a pink pixel pet bedroom, soft dusty rose and cream palette with scene-appropriate colors, rounded furnishings, warm gentle light, slightly elevated eye-level perspective. Leave lower center uncluttered for a separately composited small pet standing at 75% image height. No pets, people or characters, no text, labels, logos, UI, frames or watermark. Single coherent scene, not a collage.",
+      "original": "generated-images/outing-snow-v1.png",
+      "detail": "generated-images/outing-snow-v2.webp",
+      "thumbnail": "generated-images/outing-snow-thumb-v2.webp"
+    }
+  ]
+}

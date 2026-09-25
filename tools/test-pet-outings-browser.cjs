@@ -13,7 +13,7 @@ const server=http.createServer((req,res)=>{
   if(!file.startsWith(root+path.sep)){res.writeHead(403);return res.end();}
   fs.readFile(file,(err,data)=>{
     if(err){res.writeHead(404);return res.end();}
-    res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'})[path.extname(file)]||'application/octet-stream');
+    res.setHeader('Content-Type',({'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.webp':'image/webp','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'})[path.extname(file)]||'application/octet-stream');
     res.end(data);
   });
 });
@@ -29,11 +29,18 @@ const server=http.createServer((req,res)=>{
     await page.goto(url);
     await page.getByRole('button',{name:'🐾 我的宠物',exact:true}).click();
     await page.getByRole('button',{name:'出去玩',exact:true}).click();
-    assert.equal(await page.locator('.outing-destination').count(),6);
+    assert.equal(await page.locator('.outing-destination').count(),12);
+    for(const [name,count] of [['城市',5],['自然',3],['度假',4],['全部',12]]){
+      await page.getByRole('button',{name,exact:true}).click();assert.equal(await page.locator('.outing-destination').count(),count);
+    }
     await page.locator('.outing-destination img').evaluateAll(async imgs=>{await Promise.all(imgs.map(i=>i.decode()));});
     await page.screenshot({animations:'disabled',path:path.join(shots,'01-destinations-desktop.png')});
     await page.locator('.outing-destination').filter({hasText:'街角咖啡馆'}).click();
-    await page.getByRole('button',{name:'出发 · 预计 30 分钟',exact:true}).click();
+    assert.equal(await page.locator('#outingHours').count(),0);
+    assert.match(await page.locator('#outingRewardPreview').textContent(),/18/);
+    await page.locator('.outing-scene-bg').evaluate(i=>i.decode());
+    await page.screenshot({path:path.join(shots,'10-duration-desktop.png'),animations:'disabled'});
+    await page.getByRole('button',{name:'出发 · 30 分钟',exact:true}).click();
     await page.waitForSelector('.pet-room.is-away');
     assert.equal(await page.locator('.pet-room .pet-sprite').count(),0);
     assert.equal(await page.locator('.pet-actions').count(),0);
@@ -80,6 +87,20 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.locator('#modalTitle').textContent(),'这次没有保存成功');
     assert.equal(await page.evaluate(id=>PetOutings.status(outingPet(id)),petId),'home');
     await page.evaluate(()=>{Storage.prototype.setItem=window.testOriginalSet;hideModal();});
+    // Failed thumbnails offer a working retry without selecting the destination.
+    await page.route('**/outing-garden-thumb-v2.webp*',route=>route.abort());
+    await page.evaluate(id=>showPetDestinations(id,'all'),petId);
+    await page.waitForSelector('.outing-image-wrap.failed');
+    await page.unroute('**/outing-garden-thumb-v2.webp*');
+    await page.locator('.outing-image-wrap.failed .outing-image-retry').click();
+    await page.waitForSelector('.outing-destination:first-child .outing-image-wrap.loaded');
+    assert.equal(await page.locator('.outing-destination').count(),12);
+    // Existing thirty-minute trips still display and grant their original reward.
+    await page.evaluate(id=>{hideModal();const end=Date.now()-1000;outingPet(id).outing={id:'legacy',sceneId:'cafe',startedAt:end-1800000,endsAt:end,storyIndex:0};saveState();render();showPetOuting(id);},petId);
+    assert.equal(await page.getByRole('button',{name:'收下 18 爱心',exact:true}).count(),1);
+    await page.getByRole('button',{name:'收下 18 爱心',exact:true}).click();
+    await page.waitForSelector('.outing-entry');
+    assert.equal(await page.evaluate(()=>state.game.energy),balance+36);
     // Mobile cards, detail, dressed pet, empty room, dark mode.
     await page.setViewportSize({width:390,height:844});
     await page.getByRole('button',{name:'出去玩',exact:true}).click();
@@ -92,8 +113,14 @@ const server=http.createServer((req,res)=>{
     }
     await page.locator('.outing-destination').last().scrollIntoViewIfNeeded();
     await page.locator('.outing-destination').last().click();
-    await page.getByRole('button',{name:'出发 · 预计 3 小时',exact:true}).scrollIntoViewIfNeeded();
-    assert.equal(await page.getByRole('button',{name:'出发 · 预计 3 小时',exact:true}).isVisible(),true);
+    await page.getByRole('button',{name:'出发 · 12 小时',exact:true}).scrollIntoViewIfNeeded();
+    assert.equal(await page.getByRole('button',{name:'出发 · 12 小时',exact:true}).isVisible(),true);
+    await page.screenshot({animations:'disabled',path:path.join(shots,'11-duration-mobile.png')});
+    await page.getByRole('button',{name:'出发 · 12 小时',exact:true}).click();
+    await page.waitForSelector('.pet-room.is-away');
+    await page.reload();await page.waitForSelector('.pet-room.is-away');
+    assert.equal(await page.evaluate(id=>{const t=outingPet(id).outing;return t.endsAt-t.startedAt;},petId),43200000);
+    await page.evaluate(id=>{delete outingPet(id).outing;saveState();render();},petId);
     await page.evaluate(()=>hideModal());
     await page.evaluate(id=>{const p=outingPet(id);p.decor={head:'crown-gold',collar:'lace-pink',room:'rug-flower'};saveState();render();},petId);
     await page.evaluate(id=>startPetOuting(id,'gym'),petId);
@@ -107,7 +134,7 @@ const server=http.createServer((req,res)=>{
     await page.evaluate(()=>toggleTheme());
     await page.screenshot({animations:'disabled',path:path.join(shots,'08-gym-mobile-dark.png')});
     assert.deepEqual(errors,[]);assert.deepEqual(broken,[]);
-    console.log('PASS: 6 scene assets; desktop/mobile; empty room and guards; refresh; arrival; two-tab single claim; recall; failed storage; outfits; dark mode.');
+    console.log('PASS: 12 scene assets; category filters; fixed 15min-12h destinations; no slider; legacy rewards; desktop/mobile; empty room and guards; refresh; arrival; two-tab single claim; recall; failed storage; outfits; dark mode.');
     console.log('Screenshots: '+shots);
   }finally{await browser.close();server.close();}
 })().catch(err=>{console.error(err);server.close();process.exitCode=1;});

@@ -1,0 +1,36 @@
+.modal.food-modal{width:min(780px,94vw);max-width:780px;max-height:calc(100dvh - 28px);display:flex;flex-direction:column;padding:24px;}
+.food-modal .modal-title{padding-right:28px;flex-shrink:0;}
+.food-modal .modal-body{min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;margin-bottom:12px;}
+.food-modal .modal-actions{display:none;}
+.food-modal #modalExtra{flex-shrink:0;}
+.food-summary{position:sticky;top:0;z-index:3;background:var(--surface);padding:5px 0;display:flex;gap:8px;flex-wrap:wrap;margin-bottom:13px;font-size:12px;}
+.food-summary span{background:var(--panel);border:1px solid var(--pink-1);padding:7px 11px;border-radius:999px;color:var(--brown);}
+.food-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+.food-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 10px;border:2px solid var(--pink-1);border-radius:17px;background:var(--panel);font-family:var(--font);color:var(--brown);cursor:pointer;min-width:0;transition:border-color .15s,background .15s;}
+.food-card[aria-pressed="true"]{border-color:var(--pink-4);background:var(--cream);box-shadow:0 0 0 2px var(--surface) inset;}
+.food-card[aria-pressed="true"]::after{content:'✓';position:absolute;top:8px;right:8px;background:var(--pink-4);color:white;width:21px;height:21px;line-height:21px;border-radius:50%;}
+.food-card:focus-visible{outline:3px solid var(--pink-4);outline-offset:2px;}
+.food-card img{width:100%;height:116px;object-fit:contain;}
+.food-card b{font-size:15px;}.food-card small{font-size:11px;color:var(--brown-light);}
+.food-card .food-effects{font-size:12px;line-height:1.7;}
+.food-price{font-size:14px;font-weight:800;color:var(--pink-4);margin-top:2px;}
+.food-shortfall{font-size:11px;min-height:17px;color:var(--brown-light);}
+.food-footer{padding-top:12px;border-top:1px solid var(--pink-1);color:var(--brown);}
+.food-preview{font-size:13px;line-height:1.8;margin-bottom:8px;min-height:46px;}
+.food-preview b{color:var(--pink-4);}.food-preview span{display:inline-block;margin-right:12px;}
+.food-notice{font-size:12px;line-height:1.7;color:var(--brown-light);}
+.food-submit{width:100%;}
+.food-serving{position:absolute;z-index:8;left:56%;bottom:0;width:clamp(70px,14%,140px);pointer-events:none;animation:foodServe 3.2s ease both;}
+.pet-room.is-feeding .scene-chat-bar{visibility:hidden;}
+.food-serving img{width:100%;display:block;filter:drop-shadow(0 4px 3px #78463028);}
+.food-gains{position:absolute;z-index:9;left:50%;top:26%;padding:7px 11px;border-radius:12px;background:var(--surface);color:var(--pink-4);font-size:12px;font-weight:800;pointer-events:none;animation:foodGain 3.2s ease both;white-space:nowrap;}
+@keyframes foodServe{0%{opacity:0;transform:translateY(-18px) scale(.8);}15%,80%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(3px) scale(.92);}}
+@keyframes foodGain{0%,10%{opacity:0;transform:translate(-50%,12px);}25%,80%{opacity:1;transform:translate(-50%,0);}100%{opacity:0;transform:translate(-50%,-16px);}}
+@media(max-width:600px){
+ .modal.food-modal{padding:20px 14px;width:94vw;max-width:94vw;}
+ .food-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+ .food-card{padding:8px 6px;gap:3px;}.food-card img{height:85px;}.food-card b{font-size:13px;}
+ .food-summary{gap:5px;}.food-summary span{font-size:11px;padding:5px 7px;}
+ .food-preview{font-size:12px;}.food-card .food-effects{font-size:11px;}.food-serving{left:53%;}
+}
+@media(prefers-reduced-motion:reduce){.food-serving,.food-gains{animation:none;}.food-gains{transform:translateX(-50%);}.food-card{transition:none;}}

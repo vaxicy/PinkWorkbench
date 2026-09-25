@@ -5316,16 +5316,16 @@ function renderFortune(box){
   const now=new Date();
   const weekdays=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
   const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 · ${weekdays[now.getDay()]}`;
-  const score=Math.round(f.total/5*20);
-  const grade=score>=85?{c:'s',t:'极佳 · 闪闪发光'}:score>=70?{c:'a',t:'不错 · 稳稳幸福'}:score>=55?{c:'b',t:'平稳 · 小有波澜'}:{c:'c',t:'加油 · 蓄势待发'};
+  const score=f.score;
+  const grade=score>=9?{c:'s',t:'极佳 · 闪闪发光'}:score>=7.5?{c:'a',t:'不错 · 稳稳幸福'}:score>=6?{c:'b',t:'平稳 · 小有波澜'}:{c:'c',t:'加油 · 蓄势待发'};
   let html=`<div class="fortune-page">`;
   html+=`<div class="fortune-hero">
     <div class="fortune-hero-inner">
       <div class="fortune-date">${dateStr}</div>
       <div class="fortune-total-label">✨ 综合运势 ✨</div>
       <div class="fortune-total">
-        <div class="fortune-total-num">${score}</div>
-        <div class="fortune-total-unit">/ 100</div>
+        <div class="fortune-total-num">${score.toFixed(1)}</div>
+        <div class="fortune-total-unit">/ 10</div>
       </div>
       <div class="fortune-grade ${grade.c}">${grade.t}</div>
       <div class="fortune-energy" onclick="openFortuneProfile()" title="点击填写生日，让解读更懂你">
@@ -5342,9 +5342,9 @@ function renderFortune(box){
   }
   html+=`<div class="fortune-list">`;
   f.dims.forEach((d,i)=>{
-    const dimScore=(d.level*20-10+Math.floor((seedHash(todayKey()+d.key+i)*9)))/1;
-    const showScore=(d.level*20).toFixed(0);
-    const starStr='★'.repeat(d.level)+'<span class="empty">★</span>'.repeat(5-d.level);
+    const showScore=d.level;
+    const stars=Math.max(1,Math.min(5,Math.round(d.level/2)));
+    const starStr='★'.repeat(stars)+'<span class="empty">★</span>'.repeat(5-stars);
     html+=`<div class="fortune-row">
       <div class="fr-ico">${d.icon}</div>
       <div>
@@ -5352,7 +5352,7 @@ function renderFortune(box){
         <div class="fr-stars">${starStr}</div>
         <div class="fr-text">${(ai&&ai.dims&&ai.dims[d.key])?esc(ai.dims[d.key]):d.text}</div>
       </div>
-      <div class="fr-bar"><i data-w="${d.level*20}" style="width:0"></i><b>${showScore}</b></div>
+      <div class="fr-bar"><i data-w="${d.level*10}" style="width:0"></i><b>${showScore}</b></div>
     </div>`;
   });
   html+=`</div>`;
@@ -5441,29 +5441,31 @@ function fortuneEnergy(date){
   }
   const r=seededRandom(seedHash(todayKey())+77);
   const dims=FORTUNE_DIMS.map(dim=>{
-    const base=1+Math.floor(r()*5);
-    const lv=zElem?Math.max(1,Math.min(5,base+delta)):base;
-    return {...dim,level:lv,text:FORTUNE_TEXTS[dim.key][lv]};
+    const base=5+Math.floor(r()*6);                 // 5~10 分（10 分制，下限 5）
+    const lv=zElem?Math.max(5,Math.min(10,base+delta)):base;
+    const tk=Math.max(1,Math.min(5,Math.round((lv-5)*0.8)+1));
+    return {...dim,level:lv,text:FORTUNE_TEXTS[dim.key][tk]};
   });
   const color=LUCKY_COLORS[Math.floor(r()*LUCKY_COLORS.length)];
   const num=LUCKY_NUMS[Math.floor(r()*LUCKY_NUMS.length)];
   const tip=FORTUNE_TIPS[Math.floor(r()*FORTUNE_TIPS.length)];
   const total=dims.reduce((a,b)=>a+b.level,0);
+  const score=Math.round(total/dims.length*10)/10;
   return {date:todayKey(),gz,st:solarTermOf(d),mp:moonPhaseOf(d),dayElem,zod,zElem,rel,
-    life:lifePathOf(pro.birth),dims,total,score:Math.round(total/5*20),color,num,tip};
+    life:lifePathOf(pro.birth),dims,total,score,color,num,tip};
 }
 /* ===== 今日运势 · AI 解读（自动生成 + 当天缓存 + 本地兜底） ===== */
 let FORTUNE_E=null, FORTUNE_BUSY=false;
-function fortuneCacheKey(){ return todayKey()+'|'+((state.profile&&state.profile.birth)||'none'); }
+function fortuneCacheKey(){ return 'v2|'+todayKey()+'|'+((state.profile&&state.profile.birth)||'none'); }
 function fortuneEnergyLine(e){
   return e.gz.gan+e.gz.zhi+'日 · '+e.dayElem+' · '+e.st+' · '+e.mp+(e.zod?(' · '+e.zod):'');
 }
 function fortuneAIPrompt(e){
-  const dims=e.dims.map(d=>d.name+d.level*20+'分').join('、');
+  const dims=e.dims.map(d=>d.name+d.level+'/10分').join('、');
   return '你是温柔专业的运势解读师。根据以下命理数据写今日运势解读。\n'
     +'日期：'+e.date+'；干支日：'+e.gz.gan+e.gz.zhi+'；节气：'+e.st+'；月相：'+e.mp+'；当日五行：'+e.dayElem
     +(e.zod?('；用户星座：'+e.zod+'（'+e.zElem+'象）；与当日五行关系：'+e.rel+(e.life?('；生命灵数：'+e.life):'')):'；用户未填生日，请给通用建议')
-    +'。\n各维度分数(满分100)：'+dims+'；综合 '+e.score+' 分。\n'
+    +'。\n各维度分数(10 分制)：'+dims+'；综合 '+e.score.toFixed(1)+'/10。注意：分数是 10 分制，5 分是及格线，基调请保持温和正向，不要写得悲观。\n'
     +'严格按下面格式输出，不要多余文字、不要 markdown、不要标题符号：\n'
     +'[总评]80~150字中文总评，结合五行能量与今日节气\n'
     +FORTUNE_DIMS.map(d=>'['+d.name+']20~35字的具体建议').join('\n')

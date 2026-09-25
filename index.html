@@ -1313,20 +1313,16 @@
   .arc-card{position:absolute;left:0;top:0;width:86px;height:129px;margin-left:-43px;margin-top:-64px;border-radius:11px;
     will-change:transform,filter;transition:filter .18s;}
   .arc-card .card-back-sm{width:100%;height:100%;border-radius:11px;position:relative;overflow:hidden;
-    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.92);font-size:20px;
-    background:
-      repeating-linear-gradient(45deg,rgba(255,255,255,.13) 0 5px,rgba(255,255,255,0) 5px 11px),
-      linear-gradient(150deg,#8f70f2 0%,#e86aa6 62%,#f9a8c8 100%);
+    background:#f7e9f6 url("tarot/back.webp") center/cover no-repeat;
     box-shadow:
       1px 1px 0 rgba(92,44,116,.42),
       2px 2px 0 rgba(92,44,116,.22),
       inset 0 0 0 2px rgba(255,255,255,.82),
       inset 0 0 0 7px rgba(255,255,255,.16);}
-  .arc-card .card-back-sm::after{content:'';position:absolute;inset:15%;border-radius:7px;border:1px solid rgba(255,255,255,.5);}
-  .arc-card.focus .card-back-sm{box-shadow:
-      0 16px 30px rgba(180,60,140,.42),
-      inset 0 0 0 2px rgba(255,255,255,.96),
-      inset 0 0 0 8px rgba(255,255,255,.2);}
+  .arc-card.hover .card-back-sm{box-shadow:
+      0 0 0 2px rgba(255,214,102,.95),
+      0 0 22px 5px rgba(255,196,90,.7),
+      0 16px 30px rgba(180,60,140,.42);}
   .fly-card{position:fixed;z-index:9999;pointer-events:none;border-radius:11px;
     transition:left .42s cubic-bezier(.22,.61,.36,1),top .42s cubic-bezier(.22,.61,.36,1),
       width .42s cubic-bezier(.22,.61,.36,1),height .42s cubic-bezier(.22,.61,.36,1),transform .42s ease;}
@@ -5503,7 +5499,7 @@ function tarotStart(key,daily){
 function tarotDailyOne(){ TAR.question=''; tarotStart('one',true); }
 
 /* —— 圆弧牌堆：滑动浏览 + 点选抽牌（实色牌堆 + 飞牌动画） —— */
-const ARC={drag:null,moved:false,R:280,step:2.0,raf:0};
+const ARC={drag:null,moved:false,R:280,step:1.5,raf:0};
 function arcClamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
 function renderTarotDraw(box){
@@ -5565,6 +5561,8 @@ function bindArc(){
   st.addEventListener('pointermove',move);
   st.addEventListener('pointerup',up);
   st.addEventListener('pointercancel',()=>{ ARC.drag=null; st.classList.remove('grabbing'); });
+  st.addEventListener('pointerover',e=>{ if(ARC.drag)return; const c=e.target.closest&&e.target.closest('.arc-card'); if(c)setArcHover(c,true); });
+  st.addEventListener('pointerout',e=>{ const c=e.target.closest&&e.target.closest('.arc-card'); if(c)setArcHover(c,false); });
 }
 function arcSchedule(){ if(ARC.raf)return; ARC.raf=requestAnimationFrame(()=>{ARC.raf=0;updateArc();}); }
 function updateArc(){
@@ -5574,12 +5572,23 @@ function updateArc(){
     const dd=(i-c)*step, ad=Math.abs(dd);
     if(ad>82){ el.style.visibility='hidden'; return; }
     el.style.visibility='visible';
-    const focus=ad<step*0.62;
-    el.style.transform='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)'+(focus?' translateY(-9px) scale(1.09)':'');
-    el.style.zIndex=String(900-Math.round(ad*10));
-    el.style.filter=focus?'none':'brightness('+(1-Math.min(0.17,ad/470)).toFixed(3)+')';
-    el.classList.toggle('focus',focus);
+    const base='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)';
+    el.dataset.base=base;
+    const z=String(900-Math.round(ad*10));
+    el.dataset.z=z;
+    el.style.zIndex=el.classList.contains('hover')?'990':z;
+    el.style.transform=base+(el.classList.contains('hover')?' translateY(-13px) scale(1.08)':'');
+    const f='brightness('+(1-Math.min(0.17,ad/470)).toFixed(3)+')';
+    el.dataset.filter=f;
+    if(!el.classList.contains('hover'))el.style.filter=f;
   });
+}
+function setArcHover(el,on){
+  if(!el||!el.dataset.base)return;
+  el.classList.toggle('hover',on);
+  el.style.transform=el.dataset.base+(on?' translateY(-13px) scale(1.08)':'');
+  el.style.zIndex=on?'990':(el.dataset.z||'1');
+  el.style.filter=on?'none':(el.dataset.filter||'');
 }
 function arcTap(pos,srcEl){
   if(ARC.moved)return;
@@ -6520,13 +6529,15 @@ if(location.search.includes('tarotDemo')){
       setTimeout(()=>{
         const st=document.getElementById('arcStage'); if(!st)return;
         const cards=[...st.querySelectorAll('.arc-card')];
-        const target=cards.find(c=>c.classList.contains('focus'))||cards[Math.floor(cards.length/2)];
+        const target=cards[Math.floor(cards.length/2)];
         if(!target)return;
         const r=target.getBoundingClientRect();
         const o={bubbles:true,cancelable:true,clientX:r.left+r.width/2,clientY:r.top+r.height/2,pointerId:1,pointerType:'mouse',isPrimary:true,buttons:1};
         st.dispatchEvent(new PointerEvent('pointerdown',o));
         st.dispatchEvent(new PointerEvent('pointerup',Object.assign({},o,{buttons:0})));
       },400);
+    }else if(location.search.includes('hoverDemo')){
+      setTimeout(()=>{const st=document.getElementById('arcStage');if(!st)return;const cs=[...st.querySelectorAll('.arc-card')];setArcHover(cs[Math.floor(cs.length/2)+5]||cs[0],true);},500);
     }
   },120);
 }

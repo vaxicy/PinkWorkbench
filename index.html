@@ -1251,6 +1251,50 @@
   .tarot-redraw{background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;border:none;padding:11px 28px;border-radius:999px;font-size:14px;font-weight:800;cursor:pointer;box-shadow:0 8px 20px rgba(236,72,153,.3);font-family:inherit;letter-spacing:2px;transition:transform .2s;}
   .tarot-redraw:hover{transform:translateY(-2px);}
 
+  /* —— 塔罗新交互：选阵/牌堆/AI 解读 —— */
+  .tarot-title{font-size:20px;font-weight:900;color:var(--brown);letter-spacing:2px;}
+  .tarot-sub{font-size:13px;color:var(--brown-light);text-align:center;max-width:420px;line-height:1.6;}
+  .tarot-spreads{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;width:100%;max-width:460px;}
+  .spread-card{background:var(--surface);border:1.5px solid var(--pink-1);border-radius:16px;padding:14px 10px;cursor:pointer;text-align:center;transition:.2s;font-family:inherit;color:inherit;}
+  .spread-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(236,72,153,.18);border-color:var(--pink-3);}
+  .spread-icon{font-size:26px;}
+  .spread-name{font-size:15px;font-weight:800;color:var(--brown);margin-top:4px;}
+  .spread-count{font-size:11px;color:var(--pink-4);margin-top:2px;font-weight:700;}
+  .spread-slots{font-size:11px;color:var(--brown-light);margin-top:4px;line-height:1.4;}
+  .tarot-q-wrap{width:100%;max-width:460px;}
+  .tarot-q{width:100%;border:1.5px solid var(--pink-1);border-radius:14px;padding:10px 12px;font-family:inherit;font-size:13px;color:var(--brown);resize:none;background:var(--surface);box-sizing:border-box;}
+  .tarot-q:focus{outline:none;border-color:var(--pink-3);}
+  .tarot-link{background:none;border:none;color:var(--pink-4);font-family:inherit;font-size:13px;cursor:pointer;font-weight:700;padding:6px 4px;}
+  .tarot-link.ghost{color:var(--brown-light);}
+  .tarot-backbar{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:480px;}
+  .tarot-counter{font-size:13px;color:var(--brown-light);font-weight:700;}
+  .tarot-deck{position:relative;width:160px;height:230px;margin:10px auto;cursor:pointer;}
+  .deck-card{position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,#a78bfa,#ec4899);box-shadow:0 14px 32px rgba(167,139,250,.32),inset 0 0 0 2px rgba(255,255,255,.5);}
+  .deck-card.d1{transform:translate(0,0) rotate(0);}
+  .deck-card.d2{transform:translate(6px,-6px) rotate(-3deg);}
+  .deck-card.d3{transform:translate(-6px,-12px) rotate(3deg);}
+  .deck-tap{position:absolute;left:0;right:0;bottom:18px;text-align:center;color:#fff;font-size:13px;letter-spacing:3px;font-weight:700;background:rgba(255,255,255,.18);padding:6px 0;border-radius:999px;border:1px solid rgba(255,255,255,.4);}
+  .tarot-slots{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
+  .tarot-stage.sm{width:120px;height:180px;margin:0;flex-shrink:0;}
+  .tarot-stage.sm .tarot-card{width:120px;height:180px;}
+  .tarot-stage.sm.empty-slot{display:flex;align-items:center;justify-content:center;}
+  .slot-ph{width:120px;height:180px;border-radius:14px;border:2px dashed var(--pink-1);opacity:.5;box-sizing:border-box;}
+  .tarot-slots.mini{justify-content:center;}
+  .tarot-slots.mini .tarot-stage{width:104px;height:156px;margin:0;}
+  .tarot-slots.mini .tarot-card{width:104px;height:156px;}
+  .tarot-slots.mini .tarot-front .tarot-symbol{font-size:40px;margin-bottom:6px;}
+  .tarot-slots.mini .tarot-front .tarot-name{font-size:13px;letter-spacing:1px;margin-bottom:2px;}
+  .tarot-slots.mini .tarot-front .tarot-en{font-size:8px;margin-bottom:8px;}
+  .tarot-slots.mini .tarot-front .tarot-pos{font-size:9px;padding:3px 9px;}
+  .tarot-slots.mini .tarot-face{padding:12px;}
+  .tarot-ai-box{width:100%;max-width:480px;min-height:10px;}
+  .tarot-ai-in{background:linear-gradient(135deg,#fff0f3,#fdf6ff);border:1px solid var(--pink-1);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--brown);line-height:1.8;box-shadow:var(--shadow);}
+  .tarot-ai-err{width:100%;max-width:480px;font-size:12px;color:#b45309;text-align:center;margin-bottom:6px;}
+  @media(max-width:480px){
+    .tarot-slots.mini .tarot-stage{width:88px;height:132px;}
+    .tarot-slots.mini .tarot-card{width:88px;height:132px;}
+  }
+
   /* —— 转盘空状态 —— */
   .dice-empty{display:flex;flex-direction:column;align-items:center;gap:12px;padding:36px 20px;color:var(--brown-light);text-align:center;}
   .dice-empty .de-ico{font-size:56px;opacity:.55;animation:wheelIdle 3s ease-in-out infinite;}
@@ -1953,10 +1997,8 @@ function refreshCustomScrollbars(){document.querySelectorAll('.custom-scroll').f
 const pageIcons={plan:'📅',oracle:'🔮',english:'📚',sport:'🏃',money:'💰',period:'🌸',tree:'🌳'};
 const pageTitles={plan:'每日计划',english:'英语学习',sport:'运动打卡',money:'记账',period:'经期记录',tree:'治愈花园',oracle:'今日占卜'};
 let currentPage='plan';
-let tarotFlipped=false;
-let tarotOffset=0;
-let tarotTodayCard=null;
-let tarotTodayReversed=false;
+// 塔罗抽牌会话（选阵→抽牌→翻牌→AI 解读）
+const TAR={phase:'select',spread:null,question:'',fan:[],drawn:[],flipped:[],aiText:'',aiLoading:false,aiError:''};
 let diceRolling=false;
 
 function switchPage(page){
@@ -2002,7 +2044,7 @@ function _parseHashSub(){
   return seg[1]||null;
 }
 // 开发态自动翻塔罗牌(URL 带 autoFlip=1 时触发,生产无影响)——必须在 switchPage 之前设
-if(location.search.includes('autoFlip=1')){tarotFlipped=true;}
+if(location.search.includes('autoFlip=1')){TAR.phase='reveal';}
 if(location.search.includes('autoRoll=1')||location.hash.includes('autoRoll=1')){window._autoRoll=true;}
 const _initPage=_parseHashPage();
 const _initSub=_parseHashSub();
@@ -5193,7 +5235,7 @@ function switchOracleTab(k){
   state.oracleTab=k;
   saveState();
   // 重置子页状态
-  if(k==='tarot'){tarotFlipped=false;tarotOffset=0;}
+  if(k==='tarot'){TAR.phase='select';TAR.spread=null;TAR.drawn=[];TAR.flipped=[];TAR.aiText='';TAR.aiLoading=false;TAR.aiError='';}
   if(k==='dice'){diceRolling=false;}
   const box=document.getElementById('contentBox');
   if(box)renderOracle(box);
@@ -5337,76 +5379,211 @@ function pickTodayTarot(){
   return {card:TAROT_DECK[idx],reversed};
 }
 
+// 牌阵定义：支持 1 张 / 3 张（时间流·感情）/ 5 张
+const TAROT_SPREADS={
+  one:  {key:'one',  name:'每日指引', icon:'🌟', count:1, slots:['今日能量']},
+  three:{key:'three', name:'时间之流', icon:'⏳', count:3, slots:['过去','现在','未来']},
+  love: {key:'love', name:'感情三张', icon:'💕', count:3, slots:['你的心','对方的心','关系走向']},
+  five: {key:'five', name:'五芒星',   icon:'✨', count:5, slots:['现状','阻碍','建议','资源','结果']},
+};
+function tarotBox(){ return document.getElementById('oracleContent')||document.getElementById('contentBox'); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
 function renderTarot(box){
-  if(!tarotTodayCard){
-    const r=pickTodayTarot();
-    tarotTodayCard=r.card;
-    tarotTodayReversed=r.reversed;
-  }
-  const card=tarotTodayCard;
-  const rev=tarotTodayReversed;
-  let html=`<div class="tarot-page">`;
-  html+=`<div class="tarot-stage">
-    <div class="tarot-card ${tarotFlipped?'flipped':''}" id="tarotCard" onclick="flipTarotCard()">
-      <div class="tarot-face tarot-back">
-        <span class="tb-tap">轻触翻牌</span>
-      </div>
-      <div class="tarot-face tarot-front">
-        <div class="tarot-symbol">${rev?reverseSymbol(card.sym):card.sym}</div>
-        <div class="tarot-name">${card.name}</div>
-        <div class="tarot-en">${card.en}</div>
-        <div class="tarot-pos ${rev?'reversed':'upright'}">${rev?'逆 位 Reversed':'正 位 Upright'}</div>
-      </div>
-    </div>
+  if(TAR.phase==='select')return renderTarotSelect(box);
+  if(TAR.phase==='draw')return renderTarotDraw(box);
+  if(TAR.phase==='reveal')return renderTarotReveal(box);
+  return renderTarotSelect(box);
+}
+
+function renderTarotSelect(box){
+  const spreads=Object.values(TAROT_SPREADS);
+  let html=`<div class="tarot-page">
+    <div class="tarot-title">🎴 塔罗占卜</div>
+    <div class="tarot-sub">选一个牌阵，静心想好你的问题，再从牌堆里凭直觉为自己抽牌</div>
+    <div class="tarot-spreads">`;
+  spreads.forEach(s=>{
+    html+=`<button class="spread-card" onclick="tarotStart('${s.key}')">
+      <div class="spread-icon">${s.icon}</div>
+      <div class="spread-name">${s.name}</div>
+      <div class="spread-count">${s.count} 张牌</div>
+      <div class="spread-slots">${s.slots.join(' · ')}</div>
+    </button>`;
+  });
+  html+=`</div>
+    <div class="tarot-q-wrap"><textarea class="tarot-q" id="tarotQ" placeholder="想问点什么？（比如：这段感情该继续吗？可留空）" rows="2">${esc(TAR.question)}</textarea></div>
+    <button class="tarot-redraw" onclick="tarotDailyOne()">🌟 今日一抽（快捷）</button>
   </div>`;
-  if(tarotFlipped){
-    html+=`<div class="tarot-info">
-      <div class="tarot-section">
-        <h4>🌟 牌面解读</h4>
-        <p>${rev?card.down:card.up}</p>
-      </div>
-      <div class="tarot-section">
-        <h4>💕 爱情 · 关系</h4>
-        <p>${card.love}</p>
-      </div>
-      <div class="tarot-section">
-        <h4>💼 事业 · 学业</h4>
-        <p>${card.career}</p>
-      </div>
-      <div style="font-size:11px;color:var(--brown-light);text-align:center;margin-top:4px;">每天第一张由今日日期决定,点击下方可换一张</div>
-    </div>`;
-    html+=`<button class="tarot-redraw" onclick="redrawTarot()">🎴 再抽一张</button>`;
-  }else{
-    html+=`<div style="font-size:13px;color:var(--brown-light);text-align:center;margin-top:-4px;">轻触卡牌 · 揭晓今日</div>`;
-  }
-  html+=`</div>`;
   box.innerHTML=html;
 }
 
+function tarotStart(key){
+  const q=document.getElementById('tarotQ');
+  TAR.question=q?q.value.trim():'';
+  TAR.spread=TAROT_SPREADS[key];
+  TAR.drawn=[];TAR.flipped=[];TAR.aiText='';TAR.aiError='';TAR.aiLoading=false;
+  if(TAR.spread.count===1){
+    const r=pickTodayTarot();
+    TAR.drawn=[{card:r.card,reversed:r.reversed}];
+    TAR.flipped=[false];
+    TAR.phase='reveal';
+  }else{
+    TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]);
+    TAR.phase='draw';
+  }
+  renderTarot(tarotBox());
+}
+
+function tarotDailyOne(){ TAR.question=''; tarotStart('one'); }
+
+function renderTarotDraw(box){
+  const n=TAR.spread.count, got=TAR.drawn.length;
+  let html=`<div class="tarot-page">
+    <div class="tarot-backbar"><button class="tarot-link" onclick="tarotBackSelect()">‹ 重选牌阵</button><div class="tarot-counter">已抽 ${got}/${n}</div></div>
+    <div class="tarot-sub">轻触牌堆，凭直觉为自己抽 ${n} 张牌</div>
+    <div class="tarot-deck" onclick="tarotDrawOne()">
+      <div class="deck-card d3"></div>
+      <div class="deck-card d2"></div>
+      <div class="deck-card d1"></div>
+      <div class="deck-tap">抽一张</div>
+    </div>
+    <div class="tarot-slots">`;
+  for(let i=0;i<n;i++){
+    const d=TAR.drawn[i];
+    if(d){
+      html+=`<div class="tarot-stage sm"><div class="tarot-card back-only"><div class="tarot-face tarot-back"><span class="tb-tap">${TAR.spread.slots[i]}</span></div></div></div>`;
+    }else{
+      html+=`<div class="tarot-stage sm empty-slot"><div class="slot-ph"></div></div>`;
+    }
+  }
+  html+=`</div>
+    <button class="tarot-link ghost" onclick="tarotShuffle()">🔀 重新洗牌</button>
+  </div>`;
+  box.innerHTML=html;
+}
+
+function tarotDrawOne(){
+  if(TAR.drawn.length>=TAR.spread.count)return;
+  const idx=TAR.fan.pop();
+  TAR.drawn.push({card:TAROT_DECK[idx],reversed:Math.random()<0.4});
+  TAR.flipped.push(false);
+  if(TAR.drawn.length>=TAR.spread.count)TAR.phase='reveal';
+  renderTarot(tarotBox());
+}
+
+function tarotShuffle(){
+  TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]);
+  TAR.drawn=[];TAR.flipped=[];
+  renderTarot(tarotBox());
+}
+
+function tarotBackSelect(){ TAR.phase='select'; renderTarot(tarotBox()); }
+function tarotBackDraw(){ TAR.phase='draw'; TAR.drawn=[]; TAR.flipped=[]; TAR.aiText=''; TAR.aiError=''; TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]); renderTarot(tarotBox()); }
+
+function renderTarotReveal(box){
+  const n=TAR.drawn.length;
+  const allFlipped=TAR.flipped.every(Boolean);
+  let html=`<div class="tarot-page">
+    <div class="tarot-backbar"><button class="tarot-link" onclick="tarotBackDraw()">‹ 重新抽牌</button></div>
+    <div class="tarot-sub">${TAR.spread.name}${TAR.question?(' · 你的问题：'+esc(TAR.question)):''}</div>
+    <div class="tarot-slots mini">`;
+  for(let i=0;i<n;i++){
+    const d=TAR.drawn[i],f=TAR.flipped[i],c=d.card,rev=d.reversed;
+    html+=`<div class="tarot-stage sm">
+      <div class="tarot-card ${f?'flipped':''}" onclick="tarotFlip(${i})">
+        <div class="tarot-face tarot-back"><span class="tb-tap">${TAR.spread.slots[i]}</span></div>
+        <div class="tarot-face tarot-front">
+          <div class="tarot-symbol">${rev?reverseSymbol(c.sym):c.sym}</div>
+          <div class="tarot-name">${c.name}</div>
+          <div class="tarot-en">${c.en}</div>
+          <div class="tarot-pos ${rev?'reversed':'upright'}">${rev?'逆位':'正位'}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+  html+=`</div>`;
+  if(allFlipped){
+    html+=`<div class="tarot-info">`;
+    for(let i=0;i<n;i++){
+      const d=TAR.drawn[i],c=d.card,rev=d.reversed;
+      html+=`<div class="tarot-section">
+        <h4>${TAR.spread.slots[i]} · ${c.name}（${rev?'逆位':'正位'}）</h4>
+        <p><b>牌面：</b>${rev?c.down:c.up}</p>
+        <p><b>💕 爱情：</b>${c.love}</p>
+        <p><b>💼 事业：</b>${c.career}</p>
+      </div>`;
+    }
+    html+=`</div>`;
+    if(TAR.aiError)html+=`<div class="tarot-ai-err">${esc(TAR.aiError)}</div>`;
+    html+=`<div class="tarot-ai-box" id="tarotAIBox"></div>`;
+    if(!TAR.aiText && !TAR.aiLoading)html+=`<button class="tarot-redraw" onclick="tarotAIRead()">✨ 让 AI 解读</button>`;
+    html+=`<button class="tarot-link ghost" onclick="tarotReRead()">🔄 重新解读</button>`;
+  }else{
+    html+=`<div style="font-size:13px;color:var(--brown-light);text-align:center;">轻触卡牌逐一翻面</div>`;
+  }
+  html+=`<button class="tarot-link ghost" onclick="tarotBackSelect()">‹ 换个牌阵</button></div>`;
+  box.innerHTML=html;
+  if(TAR.aiText && !TAR.aiLoading){
+    const el=document.getElementById('tarotAIBox'); if(el)el.innerHTML=formatTarotAI(TAR.aiText);
+  }
+}
+
+function tarotFlip(i){
+  TAR.flipped[i]=!TAR.flipped[i];
+  renderTarot(tarotBox());
+  if(TAR.flipped.every(Boolean))setTimeout(()=>petalRain(20),400);
+}
+
+function tarotReRead(){ TAR.aiText=''; TAR.aiError=''; tarotAIRead(); }
+
+function formatTarotAI(t){ return '<div class="tarot-ai-in">'+esc(t).replace(/\n+/g,'<br>')+'</div>'; }
+
+function tarotSystemPrompt(){
+  const q=TAR.question.trim();
+  const cards=TAR.drawn.map((d,i)=>{
+    const c=d.card,pos=d.reversed?'逆位':'正位';
+    return `第${i+1}张【${TAR.spread.slots[i]}】：${c.name}（${pos}）。牌面关键词：${d.reversed?(c.down||''):(c.up||'')}；爱情：${c.love||''}；事业：${c.career||''}。`;
+  }).join('\n');
+  return `你是温柔而敏锐的塔罗解读师。用户做了一场「${TAR.spread.name}」牌阵${q?('，ta心里的问题是：“'+q+'”'):''}。\n抽到的牌如下：\n${cards}\n请结合用户的问题与每张牌所在的位置，给出一段约 150~250 字的中文整体解读，说明牌与牌之间的呼应或张力，最后用一句话给出今日的行动建议。语气温柔、鼓励、不绝对化，不要使用列表符号。`;
+}
+
+async function tarotAIRead(){
+  if(TAR.aiLoading)return;
+  TAR.aiLoading=true;TAR.aiError='';
+  renderTarot(tarotBox());
+  const box=document.getElementById('tarotAIBox');
+  if(box)box.innerHTML='<span class="typing">AI 正在解读…</span>';
+  const messages=[{role:'system',content:tarotSystemPrompt()}];
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({model:PET_CHAT_MODEL,messages})});
+    if(!res.ok){const e=await res.text().catch(()=>'');throw new Error('('+res.status+')'+e.slice(0,80));}
+    const reader=res.body.getReader();const dec=new TextDecoder();let buf='';let acc='';
+    while(true){
+      const {done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const raw of lines){
+        const t=raw.trim();if(!t.startsWith('data:'))continue;
+        const data=t.slice(5).trim();if(data==='[DONE]')continue;
+        try{const j=JSON.parse(data);const d=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(d){acc+=d;if(box)box.innerHTML=formatTarotAI(acc);}}catch(_){}
+      }
+    }
+    if(!acc)TAR.aiError='AI 暂时走神了，下面是内置解读～';
+    else TAR.aiText=acc;
+  }catch(e){
+    TAR.aiError='AI 连接出了点小问题～下面是内置解读：'+(e.message||'');
+  }
+  TAR.aiLoading=false;
+  if(TAR.aiError && !TAR.aiText){
+    TAR.aiText=TAR.drawn.map((d,i)=>`【${TAR.spread.slots[i]}】${d.card.name}（${d.reversed?'逆位':'正位'}）：${d.reversed?d.card.down:d.card.up}；爱情：${d.card.love}；事业：${d.card.career}`).join('\n');
+  }
+  const b2=document.getElementById('tarotAIBox');
+  if(b2)b2.innerHTML=formatTarotAI(TAR.aiText);
+  saveState();
+}
+
 function reverseSymbol(s){
-  // 简单的 emoji 旋转效果(部分 emoji 兼容,部分用 ↺ 提示)
   return s+' ↺';
-}
-
-function flipTarotCard(){
-  if(tarotFlipped)return;
-  tarotFlipped=true;
-  const c=document.getElementById('contentBox');
-  renderTarot(c);
-  // 撒花瓣庆祝
-  setTimeout(()=>petalRain(20),400);
-}
-
-function redrawTarot(){
-  tarotFlipped=false;
-  tarotOffset++;
-  // 用不同种子再抽
-  const r=seededRandom(seedHash(todayKey())+88+tarotOffset*7);
-  const idx=Math.floor(r()*TAROT_DECK.length);
-  tarotTodayCard=TAROT_DECK[idx];
-  tarotTodayReversed=r()<0.4;
-  const c=document.getElementById('contentBox');
-  renderTarot(c);
 }
 
 /* ================= v34 选择困难症 · 扁平风转盘 ================= */

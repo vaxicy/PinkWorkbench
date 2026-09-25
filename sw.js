@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pink-workbench-v120';
+const CACHE_NAME = 'pink-workbench-v121';
 
 self.addEventListener('install', event => self.skipWaiting());
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()));

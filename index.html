@@ -1325,7 +1325,7 @@
   .taro-plate i{display:block;font-size:8px;font-style:italic;color:#a2849b;letter-spacing:1px;margin-top:1px;}
 
   /* —— 圆弧牌堆（真实抽卡） —— */
-  .arc-stage{position:relative;width:100%;max-width:860px;height:384px;margin:2px auto 0;overflow:hidden;
+  .arc-stage{position:relative;width:100%;max-width:860px;height:384px;margin:2px auto 0;overflow:visible;
     touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;}
   .arc-stage.grabbing{cursor:grabbing;}
   .arc-track{position:absolute;left:50%;bottom:0;width:1px;height:1px;}
@@ -5713,7 +5713,7 @@ function layoutArc(){
   ARC.R=arcClamp(Math.min(st.clientWidth,window.innerWidth)*0.85,150,420);
   const maxAng=arcAngleOf(ARC.window+6)*Math.PI/180;
   const drop=ARC.R*(1-Math.cos(maxAng));
-  st.style.height=Math.round(drop+168)+'px';
+  st.style.height=Math.round(drop+190)+'px';
   track.style.bottom=(-(ARC.R-drop-84)).toFixed(0)+'px';
 }
 function bindArc(){

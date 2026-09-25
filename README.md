@@ -21,6 +21,7 @@
 | 📱 移动端适配 | 底部导航 + iPhone 安全区适配，手机上也能舒适使用 |
 | 🐱 个人头像 | 点击头像可切换 emoji 或用相机/上传自定义头像 |
 | 🧳 宠物出游 | 6 个 GPT 生成场景，空房间倒计时、保留装扮、回家领取爱心与出游见闻 |
+| 🎴 塔罗占卜 | 78 张 AI 手绘牌面，圆弧牌堆自己抽牌（1/3/5 张牌阵），抽完由 AI 流式解读 |
 
 所有内容都保存在浏览器 `localStorage`，**不会上传到任何服务器**。
 
@@ -125,6 +126,17 @@
 - `node --test tools/test-pet-outings.cjs`：核心规则测试。
 - `node tools/test-pet-outings-browser.cjs`：浏览器流程测试；需在 Node 模块搜索路径中提供 Playwright，默认使用本机 Edge，也可设置 `PLAYWRIGHT_CHANNEL`。
 - `screenshots/outings/`：桌面、手机、深色模式和回家领奖验证截图。
+
+### 塔罗占卜（v110）
+
+入口：**今日占卜 → 🎴 塔罗**。四种牌阵：每日指引（1 张）、时间之流与感情三张（各 3 张）、五芒星（5 张）。选定牌阵可填写想问的问题，然后进入牌堆页——78 张牌背沿圆弧扇形排布，**左右滑动浏览、点击自己感应到的那张牌**抽取；抽满后逐一翻牌，翻完可由 AI 流式生成整体解读（也可只用内置牌义）。
+
+78 张牌面为内置 image_gen 生成的新艺术风格插画，统一「纯插画、无文字」提示词（牌名由界面显示，不画进图里）。原图约 3 MB/张，构建脚本 `tools/tarot-build.py` 将其压缩为 512×768 WebP 存于 `tarot/`（共约 8 MB，大牌 `major-00.webp`，小牌 `<suit>-<rank>.webp`）。牌面底部有一层名牌遮罩，同时盖住生成器自带的右下角水印。
+
+- `tarot/*.webp`：78 张压缩牌面（大牌 22 + 小牌 56）。
+- `tools/tarot-build.py`：把 `tarot-sample/` 的中文原图按牌映射为规范文件名并转 WebP（原图目录已在 `.gitignore` 中忽略）。
+- `tools/tarot-preview-codegen.html`、`tools/tarot-deck-check.html`：牌面绘制方案对比与牌组映射校验页。
+- 开发态钩子：`index.html?tarotDemo=three|love|five|one` 直接进入抽牌页，附加 `&drawDemo=1` / `&revealDemo=1` 查看已抽/已翻状态。
 
 ---
 

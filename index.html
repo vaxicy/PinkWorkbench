@@ -1268,12 +1268,6 @@
   .tarot-link.ghost{color:var(--brown-light);}
   .tarot-backbar{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:480px;}
   .tarot-counter{font-size:13px;color:var(--brown-light);font-weight:700;}
-  .tarot-deck{position:relative;width:160px;height:230px;margin:10px auto;cursor:pointer;}
-  .deck-card{position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,#a78bfa,#ec4899);box-shadow:0 14px 32px rgba(167,139,250,.32),inset 0 0 0 2px rgba(255,255,255,.5);}
-  .deck-card.d1{transform:translate(0,0) rotate(0);}
-  .deck-card.d2{transform:translate(6px,-6px) rotate(-3deg);}
-  .deck-card.d3{transform:translate(-6px,-12px) rotate(3deg);}
-  .deck-tap{position:absolute;left:0;right:0;bottom:18px;text-align:center;color:#fff;font-size:13px;letter-spacing:3px;font-weight:700;background:rgba(255,255,255,.18);padding:6px 0;border-radius:999px;border:1px solid rgba(255,255,255,.4);}
   .tarot-slots{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:8px;}
   .tarot-stage.sm{width:120px;height:180px;margin:0;flex-shrink:0;}
   .tarot-stage.sm .tarot-card{width:120px;height:180px;}
@@ -1290,9 +1284,47 @@
   .tarot-ai-box{width:100%;max-width:480px;min-height:10px;}
   .tarot-ai-in{background:linear-gradient(135deg,#fff0f3,#fdf6ff);border:1px solid var(--pink-1);border-radius:14px;padding:12px 14px;font-size:13px;color:var(--brown);line-height:1.8;box-shadow:var(--shadow);}
   .tarot-ai-err{width:100%;max-width:480px;font-size:12px;color:#b45309;text-align:center;margin-bottom:6px;}
+
+  /* —— 牌面：AI 插画 + 底部名牌（遮住生成水印） —— */
+  .tarot-front.taro-art{padding:0;background:#241a33;}
+  .taro-art-wrap{position:relative;width:100%;height:100%;border-radius:16px;overflow:hidden;background:#241a33;
+    box-shadow:inset 0 0 0 3px rgba(232,200,95,.9),inset 0 0 0 5px rgba(255,255,255,.45);}
+  .taro-art-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .taro-art-wrap img.rev{transform:rotate(180deg);}
+  .taro-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:800;padding:3px 8px;border-radius:999px;letter-spacing:1px;z-index:2;}
+  .taro-badge.upright{background:rgba(134,239,172,.94);color:#14532d;}
+  .taro-badge.reversed{background:rgba(244,63,94,.94);color:#fff;}
+  .taro-plate{position:absolute;left:0;right:0;bottom:0;padding:26% 6% 6%;text-align:center;pointer-events:none;
+    background:linear-gradient(to top,rgba(255,253,251,.99) 0%,rgba(255,253,251,.98) 52%,rgba(255,253,251,0) 100%);}
+  .taro-plate b{display:block;font-size:13px;font-weight:900;color:#6b4b63;letter-spacing:3px;}
+  .taro-plate i{display:block;font-size:8px;font-style:italic;color:#a2849b;letter-spacing:1px;margin-top:1px;}
+
+  /* —— 圆弧牌堆（真实抽卡） —— */
+  .arc-stage{position:relative;width:100%;max-width:640px;height:384px;margin:2px auto 0;overflow:hidden;
+    touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab;}
+  .arc-stage.grabbing{cursor:grabbing;}
+  .arc-track{position:absolute;left:50%;bottom:0;width:1px;height:1px;}
+  .arc-card{position:absolute;left:0;top:0;width:86px;height:129px;margin-left:-43px;margin-top:-64px;border-radius:11px;
+    will-change:transform,opacity;transition:box-shadow .2s,filter .2s,opacity .18s;}
+  .arc-card .card-back-sm{width:100%;height:100%;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    color:rgba(255,255,255,.9);font-size:20px;
+    background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.3),transparent 44%),
+      repeating-linear-gradient(45deg,rgba(255,255,255,.09) 0 6px,transparent 6px 13px),
+      linear-gradient(150deg,#8b6cf0,#e86aa6 62%,#f8a1c4);
+    box-shadow:0 8px 18px rgba(28,10,40,.4),inset 0 0 0 2px rgba(255,255,255,.55),inset 0 0 0 7px rgba(255,255,255,.14);}
+  .arc-card.focus{box-shadow:0 18px 34px rgba(236,72,153,.55);filter:brightness(1.06);}
+  .arc-hint{font-size:12px;color:var(--brown-light);text-align:center;margin-top:2px;}
+  /* 抽入槽位的卡出现动画 */
+  @keyframes slotPop{from{transform:translateY(-16px) scale(.82);opacity:0;}to{transform:none;opacity:1;}}
+  .tarot-slots .tarot-stage.sm{animation:slotPop .32s cubic-bezier(.34,1.56,.64,1);}
+
   @media(max-width:480px){
     .tarot-slots.mini .tarot-stage{width:88px;height:132px;}
     .tarot-slots.mini .tarot-card{width:88px;height:132px;}
+    .tarot-slots.mini .taro-plate b{font-size:10px;letter-spacing:1px;}
+    .tarot-slots.mini .taro-plate i{font-size:6px;}
+    .arc-stage{height:326px;}
+    .arc-card{width:74px;height:111px;margin-left:-37px;margin-top:-56px;}
   }
 
   /* —— 转盘空状态 —— */
@@ -1998,7 +2030,7 @@ const pageIcons={plan:'📅',oracle:'🔮',english:'📚',sport:'🏃',money:'�
 const pageTitles={plan:'每日计划',english:'英语学习',sport:'运动打卡',money:'记账',period:'经期记录',tree:'治愈花园',oracle:'今日占卜'};
 let currentPage='plan';
 // 塔罗抽牌会话（选阵→抽牌→翻牌→AI 解读）
-const TAR={phase:'select',spread:null,question:'',fan:[],drawn:[],flipped:[],aiText:'',aiLoading:false,aiError:''};
+const TAR={phase:'select',spread:null,question:'',fan:[],drawn:[],flipped:[],arcCenter:0,aiText:'',aiLoading:false,aiError:''};
 let diceRolling=false;
 
 function switchPage(page){
@@ -5417,68 +5449,118 @@ function renderTarotSelect(box){
   box.innerHTML=html;
 }
 
-function tarotStart(key){
+// 牌面插画文件名：大牌 major-XX.webp，小牌 <suit>-<rank>.webp（顺序与 TAROT_DECK 构建一致）
+const TAROT_SUIT_ORDER=['wands','cups','swords','pentacles'];
+const TAROT_RANK_ORDER=['01','02','03','04','05','06','07','08','09','10','page','knight','queen','king'];
+function tarotArtFile(card){
+  if(card.id<22)return 'tarot/major-'+String(card.id).padStart(2,'0')+'.webp';
+  const i=card.id-22;
+  return 'tarot/'+TAROT_SUIT_ORDER[Math.floor(i/14)]+'-'+TAROT_RANK_ORDER[i%14]+'.webp';
+}
+function tarotArtHTML(card,rev){
+  return '<div class="taro-art-wrap"><img class="'+(rev?'rev':'')+'" src="'+tarotArtFile(card)+'" alt="'+esc(card.name)+'" loading="lazy">'
+    +'<span class="taro-badge '+(rev?'reversed':'upright')+'">'+(rev?'逆位':'正位')+'</span>'
+    +'<div class="taro-plate"><b>'+esc(card.name)+'</b><i>'+esc(card.en)+'</i></div></div>';
+}
+
+function tarotStart(key,daily){
   const q=document.getElementById('tarotQ');
   TAR.question=q?q.value.trim():'';
   TAR.spread=TAROT_SPREADS[key];
   TAR.drawn=[];TAR.flipped=[];TAR.aiText='';TAR.aiError='';TAR.aiLoading=false;
-  if(TAR.spread.count===1){
+  if(daily&&TAR.spread.count===1){
     const r=pickTodayTarot();
     TAR.drawn=[{card:r.card,reversed:r.reversed}];
     TAR.flipped=[false];
     TAR.phase='reveal';
   }else{
     TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]);
+    TAR.arcCenter=(TAR.fan.length-1)/2;
     TAR.phase='draw';
   }
   renderTarot(tarotBox());
 }
 
-function tarotDailyOne(){ TAR.question=''; tarotStart('one'); }
+function tarotDailyOne(){ TAR.question=''; tarotStart('one',true); }
+
+/* —— 圆弧牌堆：滑动浏览 + 点选抽牌 —— */
+const ARC={drag:null,moved:false,R:280,step:2.2,raf:0};
+function arcClamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
 function renderTarotDraw(box){
   const n=TAR.spread.count, got=TAR.drawn.length;
   let html=`<div class="tarot-page">
     <div class="tarot-backbar"><button class="tarot-link" onclick="tarotBackSelect()">‹ 重选牌阵</button><div class="tarot-counter">已抽 ${got}/${n}</div></div>
-    <div class="tarot-sub">轻触牌堆，凭直觉为自己抽 ${n} 张牌</div>
-    <div class="tarot-deck" onclick="tarotDrawOne()">
-      <div class="deck-card d3"></div>
-      <div class="deck-card d2"></div>
-      <div class="deck-card d1"></div>
-      <div class="deck-tap">抽一张</div>
-    </div>
+    <div class="tarot-sub">左右滑动浏览牌堆，点击你感应到的那张牌</div>
+    <div class="arc-stage" id="arcStage"><div class="arc-track" id="arcTrack">`;
+  TAR.fan.forEach((cid,pos)=>{
+    html+='<div class="arc-card" data-pos="'+pos+'" onclick="arcTap('+pos+')"><div class="card-back-sm">✶</div></div>';
+  });
+  html+=`</div></div>
+    <div class="arc-hint">← 滑动浏览 · 点击抽牌 →</div>
     <div class="tarot-slots">`;
   for(let i=0;i<n;i++){
     const d=TAR.drawn[i];
-    if(d){
-      html+=`<div class="tarot-stage sm"><div class="tarot-card back-only"><div class="tarot-face tarot-back"><span class="tb-tap">${TAR.spread.slots[i]}</span></div></div></div>`;
-    }else{
-      html+=`<div class="tarot-stage sm empty-slot"><div class="slot-ph"></div></div>`;
-    }
+    html+= d? `<div class="tarot-stage sm"><div class="tarot-card"><div class="tarot-face tarot-back"><span class="tb-tap">${TAR.spread.slots[i]}</span></div></div></div>`
+           : `<div class="tarot-stage sm empty-slot"><div class="slot-ph"></div></div>`;
   }
   html+=`</div>
     <button class="tarot-link ghost" onclick="tarotShuffle()">🔀 重新洗牌</button>
   </div>`;
   box.innerHTML=html;
+  bindArc();
+  updateArc();
 }
 
-function tarotDrawOne(){
+function bindArc(){
+  const st=document.getElementById('arcStage'); if(!st)return;
+  ARC.R=arcClamp(st.clientWidth*0.55,170,300);
+  const down=e=>{ ARC.drag={x:e.clientX,c:TAR.arcCenter}; ARC.moved=false; st.classList.add('grabbing');
+    try{st.setPointerCapture(e.pointerId);}catch(_){} };
+  const move=e=>{ if(!ARC.drag)return;
+    const dx=e.clientX-ARC.drag.x; if(Math.abs(dx)>8)ARC.moved=true;
+    TAR.arcCenter=arcClamp(ARC.drag.c-dx/26,0,TAR.fan.length-1);
+    arcSchedule(); };
+  const up=()=>{ ARC.drag=null; st.classList.remove('grabbing'); };
+  st.addEventListener('pointerdown',down);
+  st.addEventListener('pointermove',move);
+  st.addEventListener('pointerup',up);
+  st.addEventListener('pointercancel',up);
+}
+function arcSchedule(){ if(ARC.raf)return; ARC.raf=requestAnimationFrame(()=>{ARC.raf=0;updateArc();}); }
+function updateArc(){
+  const track=document.getElementById('arcTrack'); if(!track)return;
+  const c=TAR.arcCenter||0, R=ARC.R, step=ARC.step;
+  [...track.children].forEach((el,i)=>{
+    const dd=(i-c)*step, ad=Math.abs(dd);
+    if(ad>62){ el.style.opacity=0; el.style.pointerEvents='none'; return; }
+    el.style.transform='rotate('+dd.toFixed(2)+'deg) translateY(-'+R+'px)';
+    el.style.opacity=String(Math.max(0,1-ad/44).toFixed(2));
+    el.style.zIndex=String(900-Math.round(ad*10));
+    el.classList.toggle('focus',ad<1.2);
+  });
+}
+function arcTap(pos){
+  if(ARC.moved)return;
   if(TAR.drawn.length>=TAR.spread.count)return;
-  const idx=TAR.fan.pop();
-  TAR.drawn.push({card:TAROT_DECK[idx],reversed:Math.random()<0.4});
+  const cid=TAR.fan[pos]; if(cid==null)return;
+  TAR.fan.splice(pos,1);
+  TAR.drawn.push({card:TAROT_DECK[cid],reversed:Math.random()<0.4});
   TAR.flipped.push(false);
+  TAR.arcCenter=arcClamp(TAR.arcCenter,0,Math.max(0,TAR.fan.length-1));
   if(TAR.drawn.length>=TAR.spread.count)TAR.phase='reveal';
   renderTarot(tarotBox());
 }
 
 function tarotShuffle(){
   TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]);
+  TAR.arcCenter=(TAR.fan.length-1)/2;
   TAR.drawn=[];TAR.flipped=[];
   renderTarot(tarotBox());
 }
 
 function tarotBackSelect(){ TAR.phase='select'; renderTarot(tarotBox()); }
-function tarotBackDraw(){ TAR.phase='draw'; TAR.drawn=[]; TAR.flipped=[]; TAR.aiText=''; TAR.aiError=''; TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]); renderTarot(tarotBox()); }
+function tarotBackDraw(){ TAR.phase='draw'; TAR.drawn=[]; TAR.flipped=[]; TAR.aiText=''; TAR.aiError=''; TAR.fan=shuffle([...Array(TAROT_DECK.length).keys()]); TAR.arcCenter=(TAR.fan.length-1)/2; renderTarot(tarotBox()); }
 
 function renderTarotReveal(box){
   const n=TAR.drawn.length;
@@ -5492,12 +5574,7 @@ function renderTarotReveal(box){
     html+=`<div class="tarot-stage sm">
       <div class="tarot-card ${f?'flipped':''}" onclick="tarotFlip(${i})">
         <div class="tarot-face tarot-back"><span class="tb-tap">${TAR.spread.slots[i]}</span></div>
-        <div class="tarot-face tarot-front">
-          <div class="tarot-symbol">${rev?reverseSymbol(c.sym):c.sym}</div>
-          <div class="tarot-name">${c.name}</div>
-          <div class="tarot-en">${c.en}</div>
-          <div class="tarot-pos ${rev?'reversed':'upright'}">${rev?'逆位':'正位'}</div>
-        </div>
+        <div class="tarot-face tarot-front taro-art">${tarotArtHTML(c,rev)}</div>
       </div>
     </div>`;
   }
@@ -6349,6 +6426,24 @@ function playPetSpriteAction(id,action='idle',cls=''){
 if(_initPage)switchPage(_initPage);else render();
 // Preserve development auto-roll after applying the initial route.
 if(window._autoRoll&&currentPage==='oracle'&&state.oracleTab==='dice'){setTimeout(()=>{spinWheel();},500);}
+// 开发态塔罗演示钩子：?tarotDemo=three|love|five|one 直接进入抽牌页；再加 &revealDemo=1 自动抽满并翻牌
+if(location.search.includes('tarotDemo')){
+  const mk=(location.search.match(/tarotDemo=(\w+)/)||[])[1]||'three';
+  state.oracleTab='tarot';
+  switchPage('oracle');
+  setTimeout(()=>{
+    tarotStart(TAROT_SPREADS[mk]?mk:'three');
+    if(location.search.includes('revealDemo')){
+      const n=TAR.spread.count;
+      for(let i=0;i<n;i++){const cid=TAR.fan.pop();TAR.drawn.push({card:TAROT_DECK[cid],reversed:i%2===1});TAR.flipped.push(true);}
+      TAR.phase='reveal';renderTarot(tarotBox());
+    }else if(location.search.includes('drawDemo')){
+      const n=TAR.spread.count;
+      for(let i=0;i<n-1;i++){const cid=TAR.fan.pop();TAR.drawn.push({card:TAROT_DECK[cid],reversed:i%2===1});TAR.flipped.push(false);}
+      renderTarot(tarotBox());
+    }
+  },120);
+}
 if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
 </script>
 </body>

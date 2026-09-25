@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>塔罗 · 去文字前后对比</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#fbf7fb;font-family:"Nunito","PingFang SC","Microsoft YaHei",system-ui,sans-serif;color:#4a3b46;padding:24px 30px 30px;}
+  h1{font-size:20px;letter-spacing:2px;text-align:center;}
+  .sub{text-align:center;font-size:12px;color:#a08b9c;margin:8px 0 20px;}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;width:1140px;margin:0 auto;}
+  .col{display:flex;flex-direction:column;gap:10px;align-items:center;}
+  .pair{position:relative;width:100%;}
+  .pair img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:12px;display:block;box-shadow:0 8px 20px rgba(120,80,120,.18);}
+  .tag{position:absolute;top:8px;left:8px;font-size:11px;font-weight:800;color:#fff;padding:3px 9px;border-radius:999px;letter-spacing:1px;}
+  .tag.old{background:rgba(120,120,130,.85);}
+  .tag.new{background:rgba(236,72,153,.9);}
+  .cap{font-size:13px;font-weight:800;color:#8a6d84;letter-spacing:1px;}
+</style>
+</head>
+<body>
+  <h1>🎴 去文字前后对比（同一张牌 · 同 prompt 风格）</h1>
+  <div class="sub">上排 = 旧版（画面里烤进了中英文标题）／ 下排 = 新版（纯插画，零文字）</div>
+  <div class="grid" id="g"></div>
+<script>
+const items=[
+  {cap:'II 女祭司',old:'old-02-hp.png',neu:'new-02-hp.png'},
+  {cap:'III 皇后',old:'old-03-empress.png',neu:'new-03-empress.png'},
+  {cap:'XIII 死神',old:'old-13-death.png',neu:'new-13-death.png'},
+  {cap:'XIX 太阳',old:'old-19-sun.png',neu:'new-19-sun.png'}
+];
+document.getElementById('g').innerHTML=items.map(it=>
+  '<div class="col">'+
+    '<div class="pair"><img src="../tarot-sample/'+it.old+'"><span class="tag old">旧 · 有文字</span></div>'+
+    '<div class="pair"><img src="../tarot-sample/'+it.neu+'"><span class="tag new">新 · 无文字</span></div>'+
+    '<div class="cap">'+it.cap+'</div>'+
+  '</div>'
+).join('');
+</script>
+</body>
+</html>

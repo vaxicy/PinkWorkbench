@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>塔罗 · 代码生成牌面预览（78 张）</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#fbf7fb;font-family:"Nunito","PingFang SC","Microsoft YaHei",system-ui,sans-serif;padding:26px 0 40px;color:#4a3b46;}
+  h1{font-size:20px;text-align:center;letter-spacing:2px;}
+  h2{font-size:15px;text-align:center;color:#9b7f92;font-weight:700;margin:26px 0 14px;letter-spacing:1px;}
+  .wrap{width:1480px;margin:0 auto;}
+  .grid{display:grid;grid-template-columns:repeat(13,1fr);gap:10px;justify-items:center;}
+  .card{width:100%;max-width:104px;aspect-ratio:2/3;border-radius:10px;position:relative;overflow:hidden;
+    display:flex;flex-direction:column;align-items:center;justify-content:space-between;
+    padding:6px 5px 7px;border:2px solid #e8c85f;box-shadow:0 3px 8px rgba(120,80,120,.14);}
+  .card::after{content:'';position:absolute;inset:3px;border:1px solid rgba(255,255,255,.55);border-radius:7px;pointer-events:none;}
+  .s-major{background:linear-gradient(160deg,#b79bfb,#f27fb0);}
+  .s-wands{background:linear-gradient(160deg,#fca17d,#f2607d);}
+  .s-cups{background:linear-gradient(160deg,#7cb3f7,#8e8ff2);}
+  .s-swords{background:linear-gradient(160deg,#9fb0c4,#6b7d94);}
+  .s-pentacles{background:linear-gradient(160deg,#7fd6a8,#f0c14b);}
+  .cd-num{font-size:10px;font-weight:900;color:#fff;opacity:.92;letter-spacing:1px;align-self:flex-start;padding-left:3px;text-shadow:0 1px 2px rgba(0,0,0,.18);}
+  .cd-art{flex:1;width:100%;display:flex;align-items:center;justify-content:center;}
+  .medal{width:56%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.95),rgba(255,255,255,.55));
+    box-shadow:0 0 0 2px rgba(255,255,255,.75),0 4px 10px rgba(80,40,80,.18);font-size:26px;line-height:1;}
+  .pips{display:flex;flex-wrap:wrap;gap:2px;align-items:center;justify-content:center;width:82%;color:#fffdf5;}
+  .pips svg{width:14px;height:14px;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15));}
+  .pips.many svg{width:11px;height:11px;}
+  .court{display:flex;flex-direction:column;align-items:center;gap:2px;color:#fffdf5;}
+  .court .mark{font-size:20px;line-height:1;text-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .court svg{width:20px;height:20px;}
+  .cd-name{font-size:9px;font-weight:900;color:#fff;text-align:center;line-height:1.15;text-shadow:0 1px 2px rgba(0,0,0,.22);}
+  .cd-name i{display:block;font-size:6px;font-weight:600;opacity:.8;font-style:normal;letter-spacing:.4px;}
+  .arcwrap{position:relative;height:620px;margin-top:6px;}
+  .arcwrap .card{position:absolute;left:50%;bottom:0;transform-origin:50% 118%;max-width:none;width:104px;}
+  .note{text-align:center;font-size:12px;color:#a08b9c;margin-top:18px;line-height:1.7;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎴 塔罗牌面 · 代码生成预览</h1>
+  <h2>全部 78 张（13 × 6）</h2>
+  <div class="grid" id="grid"></div>
+  <h2>圆弧牌堆排布（78 张扇形）</h2>
+  <div class="arcwrap" id="arc"></div>
+  <div class="note">纯代码绘制：花色渐变底 + 金色描边 + 花色矢量图形 + 点数排列 / 宫廷标记 + 罗马数字。<br>零图片资源，1:1 矢量清晰度。</div>
+</div>
+<script>
+const TAROT_MAJOR=[
+  ['愚者','The Fool','🃏'],['魔术师','The Magician','🪄'],['女祭司','The High Priestess','🌙'],['皇后','The Empress','👑'],
+  ['皇帝','The Emperor','🏛'],['教皇','The Hierophant','⛪'],['恋人','The Lovers','💕'],['战车','The Chariot','🏇'],
+  ['力量','Strength','🦁'],['隐者','The Hermit','🕯'],['命运之轮','Wheel of Fortune','🎡'],['正义','Justice','⚖️'],
+  ['倒吊人','The Hanged Man','🙃'],['死神','Death','💀'],['节制','Temperance','🍵'],['恶魔','The Devil','😈'],
+  ['高塔','The Tower','🗼'],['星星','The Star','⭐'],['月亮','The Moon','🌙'],['太阳','The Sun','☀️'],
+  ['审判','Judgement','📯'],['世界','The World','🌍']
+];
+const ROMAN=['0','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX','XXI'];
+const SUITS=[
+  {key:'wands',cn:'权杖'},
+  {key:'cups',cn:'圣杯'},
+  {key:'swords',cn:'宝剑'},
+  {key:'pentacles',cn:'金币'}
+];
+const RANKS=[
+  ['A','首牌',1],['2','二',2],['3','三',3],['4','四',4],['5','五',5],['6','六',6],['7','七',7],
+  ['8','八',8],['9','九',9],['10','十',10],['P','侍从','P'],['N','骑士','N'],['Q','皇后','Q'],['K','国王','K']
+];
+const GLYPH={
+  wands:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 22V8"/><path d="M12 8.5c-3.2-1.4-3.8-5.8 0-7 3.8 1.2 3.2 5.6 0 7Z"/><path d="M12 14l3.4-2.4M12 17l-3.4-2.4"/></svg>',
+  cups:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v3.4a6 6 0 0 1-12 0Z"/><path d="M12 13.4V19"/><path d="M8 21h8"/></svg>',
+  swords:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v12"/><path d="M8.5 14h7"/><path d="M12 14v4"/><path d="M10 21h4"/></svg>',
+  pentacles:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 4.6l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 9.9l5-.7Z"/></svg>'
+};
+const COURT_MARK={P:'♟',N:'♞',Q:'♛',K:'♚'};
+
+const cards=[];
+TAROT_MAJOR.forEach((m,i)=>cards.push({suit:'major',num:ROMAN[i],name:m[0],en:m[1],art:'<div class="medal">'+m[2]+'</div>'}));
+SUITS.forEach(s=>RANKS.forEach(r=>{
+  const val=r[2];
+  let art;
+  if(typeof val==='number'){
+    const many=val>5?' many':'';
+    art='<div class="pips'+many+'">'+GLYPH[s.key].repeat(val)+'</div>';
+  }else{
+    art='<div class="court"><span class="mark">'+COURT_MARK[val]+'</span>'+GLYPH[s.key]+'</div>';
+  }
+  cards.push({suit:s.key,num:r[0],name:s.cn+r[1],en:r[0]+' of '+s.cn,art});
+}));
+
+function cardHTML(c){
+  return '<div class="card s-'+c.suit+'"><div class="cd-num">'+c.num+'</div><div class="cd-art">'+c.art+'</div><div class="cd-name">'+c.name+'<i>'+c.en+'</i></div></div>';
+}
+document.getElementById('grid').innerHTML=cards.map(cardHTML).join('');
+const arc=document.getElementById('arc');
+arc.innerHTML=cards.map(cardHTML).join('');
+const items=[...arc.children];
+const N=items.length,SPAN=132;
+items.forEach((el,i)=>{
+  const t=N>1?(i/(N-1)-0.5):0;
+  const deg=t*SPAN;
+  el.style.transform='translateX(-50%) rotate('+deg.toFixed(2)+'deg)';
+  el.style.zIndex=String(1000-Math.abs(Math.round(deg)));
+});
+</script>
+</body>
+</html>

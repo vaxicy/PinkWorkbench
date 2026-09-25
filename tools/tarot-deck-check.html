@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>塔罗牌组校验</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#1b1226;font-family:"Nunito","PingFang SC","Microsoft YaHei",system-ui,sans-serif;padding:20px 22px 30px;color:#f3e9f7;}
+  h1{font-size:18px;letter-spacing:2px;text-align:center;margin-bottom:16px;}
+  .grid{display:grid;grid-template-columns:repeat(13,1fr);gap:9px;width:1500px;margin:0 auto;}
+  .cell{display:flex;flex-direction:column;gap:4px;align-items:center;}
+  .cell img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:7px;background:#2c2140;box-shadow:0 3px 9px rgba(0,0,0,.45);}
+  .cell b{font-size:10px;font-weight:700;color:#d9c6ea;text-align:center;line-height:1.2;}
+</style>
+</head>
+<body>
+<h1>🎴 78 张 webp 牌组校验（含牌名对照）</h1>
+<div class="grid" id="g"></div>
+<script>
+const MAJORS=['愚者','魔术师','女祭司','皇后','皇帝','教皇','恋人','战车','力量','隐者','命运之轮','正义','倒吊人','死神','节制','恶魔','高塔','星星','月亮','太阳','审判','世界'];
+const SUITS=[['wands','权杖'],['cups','圣杯'],['swords','宝剑'],['pentacles','金币']];
+const RANKS=[['01','首牌'],['02','二'],['03','三'],['04','四'],['05','五'],['06','六'],['07','七'],['08','八'],['09','九'],['10','十'],['page','侍从'],['knight','骑士'],['queen','皇后'],['king','国王']];
+const items=[];
+MAJORS.forEach((n,i)=>items.push({f:'major-'+String(i).padStart(2,'0')+'.webp',l:(i+':')+n}));
+SUITS.forEach(([en,cn])=>RANKS.forEach(([re,rc])=>items.push({f:en+'-'+re+'.webp',l:cn+rc})));
+document.getElementById('g').innerHTML=items.map(it=>
+  '<div class="cell"><img src="../tarot/'+it.f+'" loading="eager"><b>'+it.l+'</b></div>').join('');
+</script>
+</body>
+</html>

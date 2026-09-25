@@ -1219,10 +1219,21 @@
   .fortune-page{padding:18px 18px 40px;display:flex;flex-direction:column;gap:14px;}
   .fortune-list{display:flex;flex-direction:column;gap:10px;}
   .fortune-extra{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-  .fe{background:var(--surface);border:1px solid var(--pink-1);border-radius:var(--radius);padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;box-shadow:var(--shadow);min-height:120px;justify-content:center;}
-  .fe-swatch{width:54px;height:54px;border-radius:50%;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.12),inset 0 0 0 1px rgba(255,255,255,.4);}
-  .fe-label{font-size:11px;color:var(--brown-light);letter-spacing:2px;font-weight:700;}
-  .fe-value{font-size:16px;color:var(--brown);font-weight:800;line-height:1.4;}
+  .fe{background:var(--surface);border:1px solid var(--pink-1);border-radius:var(--radius);padding:16px 12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;box-shadow:var(--shadow);min-height:112px;}
+  .fe-label{font-size:11px;color:var(--brown-light);letter-spacing:2px;font-weight:700;line-height:1;}
+  .fe-val{display:flex;align-items:center;justify-content:center;gap:8px;min-height:30px;}
+  .fe-swatch{width:26px;height:26px;border-radius:50%;flex:0 0 auto;border:2px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.14),inset 0 0 0 1px rgba(255,255,255,.5);}
+  .fe-value{font-size:16px;color:var(--brown);font-weight:800;line-height:1.3;}
+  .fe-value.big{font-size:24px;letter-spacing:1px;}
+  .fe-value.sm{font-size:13px;font-weight:700;line-height:1.5;}
+  @media(max-width:480px){
+    .fortune-extra{gap:8px;}
+    .fe{padding:12px 8px;min-height:96px;gap:8px;}
+    .fe-label{font-size:10px;letter-spacing:1px;}
+    .fe-value{font-size:14px;}
+    .fe-value.big{font-size:20px;}
+    .fe-value.sm{font-size:11px;}
+  }
   .fortune-tip{background:linear-gradient(135deg,#fff7e6,#fff0f3);border:1px dashed var(--pink-2);border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--brown);line-height:1.6;display:flex;gap:8px;align-items:flex-start;}
   /* —— 运势 · 命理能量 + AI 解读 —— */
   .fortune-energy{margin-top:10px;display:inline-block;padding:5px 14px;border-radius:999px;cursor:pointer;
@@ -5359,17 +5370,16 @@ function renderFortune(box){
   html+=`</div>`;
   html+=`<div class="fortune-extra">
     <div class="fe">
-      <div class="fe-swatch" style="background:${f.color.hex}"></div>
       <div class="fe-label">今日幸运色</div>
-      <div class="fe-value">${f.color.name}</div>
+      <div class="fe-val"><span class="fe-swatch" style="background:${f.color.hex}"></span><span class="fe-value">${f.color.name}</span></div>
     </div>
     <div class="fe">
-      <div class="fe-label" style="margin-top:24px">今日幸运数</div>
-      <div class="fe-value" style="font-size:24px">${f.num}</div>
+      <div class="fe-label">今日幸运数</div>
+      <div class="fe-val"><span class="fe-value big">${f.num}</span></div>
     </div>
     <div class="fe">
-      <div class="fe-label" style="margin-top:24px">宜 / 忌</div>
-      <div class="fe-value" style="font-size:13px">宜：${(ai&&ai.yi)||'随缘'} · 忌：${(ai&&ai.ji)||'急躁'}</div>
+      <div class="fe-label">宜 / 忌</div>
+      <div class="fe-val"><span class="fe-value sm">宜：${(ai&&ai.yi)||'随缘'} · 忌：${(ai&&ai.ji)||'急躁'}</span></div>
     </div>
   </div>`;
   html+=`<div class="fortune-tip">💫 <b>今日小贴士：</b>${(ai&&ai.tip)?esc(ai.tip):f.tip}</div>`;

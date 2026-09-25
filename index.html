@@ -3940,9 +3940,8 @@ function buildEnglishTutorPrompt(){
 1. 主要用简单、地道、口语化的英语回复（难度 A2~B1），句子要短。
 2. 用户用中文说话时，先用英语回应，并在结尾温柔鼓励他试着用英语再说一遍。
 3. 如果用户的英语有错误或不自然，在回复末尾另起一行，用中文温和纠正，格式：「💡 更自然：...」。
-4. 每条回复英语不超过 3 句，并在最后另起一行给整句中文翻译（格式：「🇨🇳 ...」）。
-5. 语气亲切、鼓励、有耐心，可以偶尔用一两个 emoji；话题围绕日常生活。
-6. 不要以 AI/助手/模型自称，不要 markdown 代码块，不要输出列表。`;
+4. 语气亲切、鼓励、有耐心，可以偶尔用一两个 emoji；话题围绕日常生活。
+5. 只输出对话本身：不要加「cn」「zh」「中文」这类语言前缀，不要逐句翻译，不要 markdown 代码块，不要输出列表，不要以 AI/助手/模型自称。`;
 }
 async function aiChatFetch(messages,onToken){
   try{
@@ -5335,7 +5334,7 @@ function renderFortune(box){
   </div>`;
   if(ai&&ai.summary){
     html+=`<div class="fortune-ai"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">${esc(ai.summary)}</div></div>`;
-  }else if((state.fortuneTried||{})[fortuneCacheKey()]){
+  }else if(FORTUNE_FAIL===fortuneCacheKey()){
     html+=`<div class="fortune-ai"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">这次没能连上 AI，先看看下面的本地解读吧～ 点底部「换个角度重新解读」可以再试一次。</div></div>`;
   }else{
     html+=`<div class="fortune-ai loading"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">正在根据${f.gz.gan}${f.gz.zhi}日 · ${f.dayElem} · ${f.st}的能量为你解读…</div></div>`;
@@ -5352,7 +5351,7 @@ function renderFortune(box){
         <div class="fr-stars">${starStr}</div>
         <div class="fr-text">${(ai&&ai.dims&&ai.dims[d.key])?esc(ai.dims[d.key]):d.text}</div>
       </div>
-      <div class="fr-bar"><i data-w="${d.level*10}" style="width:0"></i><b>${showScore}</b></div>
+      <div class="fr-bar"><i data-w="${d.level*10}" style="width:0"></i></div>
     </div>`;
   });
   html+=`</div>`;
@@ -5383,7 +5382,7 @@ function renderFortune(box){
     box.querySelectorAll('.fr-bar i').forEach(b=>{b.style.width=b.dataset.w+'%';});
   },80);
   // 当天首次进入：有缓存直接显示，没有则自动生成
-  if(!ai&&!FORTUNE_BUSY&&!(state.fortuneTried||{})[fortuneCacheKey()])setTimeout(()=>fortuneAIRead(false),80);
+  if(!ai&&!FORTUNE_BUSY&&FORTUNE_FAIL!==fortuneCacheKey())setTimeout(()=>fortuneAIRead(false),80);
 }
 
 /* ===== 今日运势 · 命理能量引擎（中式干支五行 + 西方星座月相） ===== */
@@ -5455,8 +5454,8 @@ function fortuneEnergy(date){
     life:lifePathOf(pro.birth),dims,total,score,color,num,tip};
 }
 /* ===== 今日运势 · AI 解读（自动生成 + 当天缓存 + 本地兜底） ===== */
-let FORTUNE_E=null, FORTUNE_BUSY=false;
-function fortuneCacheKey(){ return 'v2|'+todayKey()+'|'+((state.profile&&state.profile.birth)||'none'); }
+let FORTUNE_E=null, FORTUNE_BUSY=false, FORTUNE_FAIL='';
+function fortuneCacheKey(){ return todayKey()+'|'+((state.profile&&state.profile.birth)||'none')+'|v2'; }
 function fortuneEnergyLine(e){
   return e.gz.gan+e.gz.zhi+'日 · '+e.dayElem+' · '+e.st+' · '+e.mp+(e.zod?(' · '+e.zod):'');
 }
@@ -5472,9 +5471,15 @@ function fortuneAIPrompt(e){
     +'\n[宜]两个字\n[忌]两个字';
 }
 function parseFortuneAI(txt){
-  const grab=k=>{const m=txt.match(new RegExp('\\['+k+'\\]\\s*([^\\[]*)'));return m?m[1].replace(/[\r\n]+/g,' ').trim():'';};
-  const out={summary:grab('总评'),yi:grab('宜'),ji:grab('忌'),dims:{}};
-  FORTUNE_DIMS.forEach(d=>{const v=grab(d.name);if(v)out.dims[d.key]=v;});
+  const norm=String(txt||'').replace(/【/g,'[').replace(/】/g,']').replace(/（/g,'[').replace(/）/g,']');
+  const grab=k=>{const m=norm.match(new RegExp('\\[\\s*'+k+'\\s*\\]\\s*\\**\\s*([^\\[]*)'));return m?m[1].replace(/[\r\n]+/g,' ').replace(/^[:：\s]+/,'').trim():'';};
+  const short=d=>d.name.replace(/运势|走势|灵感|活力/g,'');
+  const out={summary:grab('总评')||grab('今日总评')||grab('整体'),yi:grab('宜'),ji:grab('忌'),dims:{}};
+  FORTUNE_DIMS.forEach(d=>{const v=grab(d.name)||grab(short(d));if(v)out.dims[d.key]=v;});
+  if(!out.summary){
+    const first=(norm.split(/\n+/).map(s=>s.trim()).filter(Boolean)[0]||'');
+    out.summary=first.slice(0,first.indexOf('[')>0?first.indexOf('['):first.length).trim();
+  }
   return out;
 }
 async function fortuneAIRead(force){
@@ -5484,7 +5489,7 @@ async function fortuneAIRead(force){
   state.fortuneCache=state.fortuneCache||{};
   if(!force&&state.fortuneCache[key])return;
   FORTUNE_BUSY=true;
-  state.fortuneTried=state.fortuneTried||{}; state.fortuneTried[key]=1; saveState();
+  FORTUNE_FAIL='';
   if(force){delete state.fortuneCache[key];render();}
   try{
     const res=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},
@@ -5507,7 +5512,7 @@ async function fortuneAIRead(force){
       Object.keys(state.fortuneCache).forEach(k=>{if(k.split('|')[0]!==todayKey())delete state.fortuneCache[k];});
       saveState();
     }
-  }catch(_){}
+  }catch(e){ FORTUNE_FAIL=key; console.warn('[fortune] AI 解读失败:',(e&&e.message)||e); }
   FORTUNE_BUSY=false;
   render();
 }

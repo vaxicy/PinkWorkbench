@@ -1224,6 +1224,24 @@
   .fe-label{font-size:11px;color:var(--brown-light);letter-spacing:2px;font-weight:700;}
   .fe-value{font-size:16px;color:var(--brown);font-weight:800;line-height:1.4;}
   .fortune-tip{background:linear-gradient(135deg,#fff7e6,#fff0f3);border:1px dashed var(--pink-2);border-radius:var(--radius);padding:12px 14px;font-size:13px;color:var(--brown);line-height:1.6;display:flex;gap:8px;align-items:flex-start;}
+  /* —— 运势 · 命理能量 + AI 解读 —— */
+  .fortune-energy{margin-top:10px;display:inline-block;padding:5px 14px;border-radius:999px;cursor:pointer;
+    background:rgba(255,255,255,.6);border:1px solid rgba(236,72,153,.28);font-size:12px;font-weight:800;
+    color:#a8437a;letter-spacing:1px;transition:.2s;}
+  .fortune-energy:hover{background:#fff;}
+  .fortune-ai{margin:0 0 4px;padding:14px 16px;border-radius:var(--radius);
+    background:linear-gradient(135deg,#fdf2ff,#fff0f6);border:1px solid var(--pink-1);box-shadow:var(--shadow);}
+  .fortune-ai .fai-head{font-size:13px;font-weight:900;color:var(--pink-4);letter-spacing:2px;margin-bottom:6px;}
+  .fortune-ai .fai-body{font-size:13.5px;color:var(--brown);line-height:1.85;}
+  .fortune-ai.loading{opacity:.75;}
+  .fortune-ai.loading .fai-body{color:var(--brown-light);animation:faiPulse 1.4s ease-in-out infinite;}
+  @keyframes faiPulse{0%,100%{opacity:.55}50%{opacity:1}}
+  .fortune-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0 4px;}
+  .fortune-act{border:none;border-radius:999px;padding:9px 20px;font-family:inherit;font-size:13px;font-weight:800;
+    cursor:pointer;letter-spacing:1px;background:linear-gradient(135deg,#a78bfa,#ec4899);color:#fff;
+    box-shadow:0 6px 16px rgba(236,72,153,.28);transition:.2s;}
+  .fortune-act.ghost{background:var(--surface);color:var(--pink-4);border:1.5px solid var(--pink-1);box-shadow:none;}
+  .fortune-act:hover{transform:translateY(-2px);}
   .fortune-tip b{color:var(--pink-4);}
 
   /* —— 塔罗页 —— */
@@ -5292,7 +5310,8 @@ function switchOracleTab(k){
 }
 
 function renderFortune(box){
-  const f=getTodayFortune();
+  const f=FORTUNE_E=fortuneEnergy();
+  const ai=(state.fortuneCache||{})[fortuneCacheKey()]||null;
   const now=new Date();
   const weekdays=['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
   const dateStr=`${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 · ${weekdays[now.getDay()]}`;
@@ -5308,8 +5327,18 @@ function renderFortune(box){
         <div class="fortune-total-unit">/ 100</div>
       </div>
       <div class="fortune-grade ${grade.c}">${grade.t}</div>
+      <div class="fortune-energy" onclick="openFortuneProfile()" title="点击填写生日，让解读更懂你">
+        🔮 ${fortuneEnergyLine(f)}
+      </div>
     </div>
   </div>`;
+  if(ai&&ai.summary){
+    html+=`<div class="fortune-ai"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">${esc(ai.summary)}</div></div>`;
+  }else if((state.fortuneTried||{})[fortuneCacheKey()]){
+    html+=`<div class="fortune-ai"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">这次没能连上 AI，先看看下面的本地解读吧～ 点底部「换个角度重新解读」可以再试一次。</div></div>`;
+  }else{
+    html+=`<div class="fortune-ai loading"><div class="fai-head">✨ AI 今日解读</div><div class="fai-body">正在根据${f.gz.gan}${f.gz.zhi}日 · ${f.dayElem} · ${f.st}的能量为你解读…</div></div>`;
+  }
   html+=`<div class="fortune-list">`;
   f.dims.forEach((d,i)=>{
     const dimScore=(d.level*20-10+Math.floor((seedHash(todayKey()+d.key+i)*9)))/1;
@@ -5320,7 +5349,7 @@ function renderFortune(box){
       <div>
         <div class="fr-name">${d.name} <span class="fr-score">${showScore} 分</span></div>
         <div class="fr-stars">${starStr}</div>
-        <div class="fr-text">${d.text}</div>
+        <div class="fr-text">${(ai&&ai.dims&&ai.dims[d.key])?esc(ai.dims[d.key]):d.text}</div>
       </div>
       <div class="fr-bar"><i data-w="${d.level*20}" style="width:0"></i><b>${showScore}</b></div>
     </div>`;
@@ -5337,17 +5366,158 @@ function renderFortune(box){
       <div class="fe-value" style="font-size:24px">${f.num}</div>
     </div>
     <div class="fe">
-      <div class="fe-label" style="margin-top:24px">开运建议</div>
-      <div class="fe-value" style="font-size:13px">宜：${{love:'告白',career:'提案',money:'理财',study:'阅读',health:'运动'}[f.dims[Math.floor(Math.random()*5)].key]||'微笑'}</div>
+      <div class="fe-label" style="margin-top:24px">宜 / 忌</div>
+      <div class="fe-value" style="font-size:13px">宜：${(ai&&ai.yi)||'随缘'} · 忌：${(ai&&ai.ji)||'急躁'}</div>
     </div>
   </div>`;
   html+=`<div class="fortune-tip">💫 <b>今日小贴士：</b>${f.tip}</div>`;
+  html+=`<div class="fortune-actions">
+    <button class="fortune-act" onclick="fortuneAIRead(true)">🔮 换个角度重新解读</button>
+    <button class="fortune-act ghost" onclick="openFortuneProfile()">${(state.profile&&state.profile.birth)?'修改生日':'填写生日'}</button>
+  </div>`;
   html+=`</div>`;
   box.innerHTML=html;
   // 进度条动画
   setTimeout(()=>{
     box.querySelectorAll('.fr-bar i').forEach(b=>{b.style.width=b.dataset.w+'%';});
   },80);
+  // 当天首次进入：有缓存直接显示，没有则自动生成
+  if(!ai&&!FORTUNE_BUSY&&!(state.fortuneTried||{})[fortuneCacheKey()])setTimeout(()=>fortuneAIRead(false),80);
+}
+
+/* ===== 今日运势 · 命理能量引擎（中式干支五行 + 西方星座月相） ===== */
+const GAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const ZHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const GAN_ELEM=['木','木','火','火','土','土','金','金','水','水'];
+const ZHI_ELEM=['水','土','木','木','土','火','火','土','金','金','土','水'];
+const SHENG={'木':'火','火':'土','土':'金','金':'水','水':'木'};
+const KE={'木':'土','土':'水','水':'火','火':'金','金':'木'};
+const ZODIAC_ELEM={'白羊':'火','狮子':'火','射手':'火','金牛':'土','处女':'土','摩羯':'土','双子':'风','天秤':'风','水瓶':'风','巨蟹':'水','天蝎':'水','双鱼':'水'};
+const MOON_PHASES=['新月','上弦月','满月','下弦月'];
+const SOLAR_TERMS=[[1,5,'小寒'],[1,20,'大寒'],[2,4,'立春'],[2,19,'雨水'],[3,5,'惊蛰'],[3,20,'春分'],[4,4,'清明'],[4,20,'谷雨'],[5,5,'立夏'],[5,21,'小满'],[6,5,'芒种'],[6,21,'夏至'],[7,6,'小暑'],[7,22,'大暑'],[8,7,'立秋'],[8,23,'处暑'],[9,7,'白露'],[9,23,'秋分'],[10,8,'寒露'],[10,23,'霜降'],[11,7,'立冬'],[11,22,'小雪'],[12,7,'大雪'],[12,21,'冬至']];
+
+function ganzhiDay(d){
+  const n=Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(2000,0,7))/86400000);
+  const i=((n%60)+60)%60;
+  return {gan:GAN[i%10],zhi:ZHI[i%12]};
+}
+function solarTermOf(d){
+  let out='小寒';
+  for(const t of SOLAR_TERMS){ if(d.getMonth()+1>t[0]||(d.getMonth()+1===t[0]&&d.getDate()>=t[1]))out=t[2]; }
+  return out;
+}
+function moonPhaseOf(d){
+  const days=(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(2000,0,6))/86400000;
+  const p=((days%29.530588)/29.530588+1)%1;
+  return MOON_PHASES[Math.round(p*4)%4];
+}
+function zodiacOf(birth){
+  if(!birth)return null;
+  const p=String(birth).split('-').map(Number); if(p.length<3||!p[1]||!p[2])return null;
+  const cuts=[20,19,21,20,21,22,23,23,23,24,23,22];
+  const names=['摩羯','水瓶','双鱼','白羊','金牛','双子','巨蟹','狮子','处女','天秤','天蝎','射手'];
+  return p[2]<cuts[p[1]-1]?names[p[1]-1]:names[p[1]%12];
+}
+function lifePathOf(birth){
+  if(!birth)return null;
+  let s=String(birth).replace(/\D/g,'').split('').reduce((a,b)=>a+ +b,0);
+  while(s>9&&s!==11&&s!==22&&s!==33)s=String(s).split('').reduce((a,b)=>a+ +b,0);
+  return s;
+}
+/* 同一天 + 同档案 = 同结果（纯函数，便于缓存 AI 解读） */
+function fortuneEnergy(date){
+  const d=date||new Date();
+  const gz=ganzhiDay(d);
+  const dayElem=ZHI_ELEM[ZHI.indexOf(gz.zhi)];
+  const pro=state.profile||{};
+  const zod=zodiacOf(pro.birth), zElem=zod?ZODIAC_ELEM[zod]:null;
+  let rel='—',delta=0;
+  if(zElem){
+    if(SHENG[dayElem]===zElem){rel='相生';delta=1;}
+    else if(SHENG[zElem]===dayElem)rel='我生';
+    else if(KE[dayElem]===zElem){rel='相克';delta=-1;}
+    else if(KE[zElem]===dayElem)rel='我克';
+  }
+  const r=seededRandom(seedHash(todayKey())+77);
+  const dims=FORTUNE_DIMS.map(dim=>{
+    const base=1+Math.floor(r()*5);
+    const lv=zElem?Math.max(1,Math.min(5,base+delta)):base;
+    return {...dim,level:lv,text:FORTUNE_TEXTS[dim.key][lv]};
+  });
+  const color=LUCKY_COLORS[Math.floor(r()*LUCKY_COLORS.length)];
+  const num=LUCKY_NUMS[Math.floor(r()*LUCKY_NUMS.length)];
+  const tip=FORTUNE_TIPS[Math.floor(r()*FORTUNE_TIPS.length)];
+  const total=dims.reduce((a,b)=>a+b.level,0);
+  return {date:todayKey(),gz,st:solarTermOf(d),mp:moonPhaseOf(d),dayElem,zod,zElem,rel,
+    life:lifePathOf(pro.birth),dims,total,score:Math.round(total/5*20),color,num,tip};
+}
+/* ===== 今日运势 · AI 解读（自动生成 + 当天缓存 + 本地兜底） ===== */
+let FORTUNE_E=null, FORTUNE_BUSY=false;
+function fortuneCacheKey(){ return todayKey()+'|'+((state.profile&&state.profile.birth)||'none'); }
+function fortuneEnergyLine(e){
+  return e.gz.gan+e.gz.zhi+'日 · '+e.dayElem+' · '+e.st+' · '+e.mp+(e.zod?(' · '+e.zod):'');
+}
+function fortuneAIPrompt(e){
+  const dims=e.dims.map(d=>d.name+d.level*20+'分').join('、');
+  return '你是温柔专业的运势解读师。根据以下命理数据写今日运势解读。\n'
+    +'日期：'+e.date+'；干支日：'+e.gz.gan+e.gz.zhi+'；节气：'+e.st+'；月相：'+e.mp+'；当日五行：'+e.dayElem
+    +(e.zod?('；用户星座：'+e.zod+'（'+e.zElem+'象）；与当日五行关系：'+e.rel+(e.life?('；生命灵数：'+e.life):'')):'；用户未填生日，请给通用建议')
+    +'。\n各维度分数(满分100)：'+dims+'；综合 '+e.score+' 分。\n'
+    +'严格按下面格式输出，不要多余文字、不要 markdown、不要标题符号：\n'
+    +'[总评]80~150字中文总评，结合五行能量与今日节气\n'
+    +FORTUNE_DIMS.map(d=>'['+d.name+']20~35字的具体建议').join('\n')
+    +'\n[宜]两个字\n[忌]两个字';
+}
+function parseFortuneAI(txt){
+  const grab=k=>{const m=txt.match(new RegExp('\\['+k+'\\]\\s*([^\\[]*)'));return m?m[1].replace(/[\r\n]+/g,' ').trim():'';};
+  const out={summary:grab('总评'),yi:grab('宜'),ji:grab('忌'),dims:{}};
+  FORTUNE_DIMS.forEach(d=>{const v=grab(d.name);if(v)out.dims[d.key]=v;});
+  return out;
+}
+async function fortuneAIRead(force){
+  if(FORTUNE_BUSY)return;
+  const e=FORTUNE_E||fortuneEnergy();
+  const key=fortuneCacheKey();
+  state.fortuneCache=state.fortuneCache||{};
+  if(!force&&state.fortuneCache[key])return;
+  FORTUNE_BUSY=true;
+  state.fortuneTried=state.fortuneTried||{}; state.fortuneTried[key]=1; saveState();
+  if(force){delete state.fortuneCache[key];render();}
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'content-type':'application/json'},
+      body:JSON.stringify({model:PET_CHAT_MODEL,messages:[{role:'system',content:fortuneAIPrompt(e)}]})});
+    if(!res.ok)throw new Error('('+res.status+')');
+    const reader=res.body.getReader(),dec=new TextDecoder();let buf='',acc='';
+    while(true){
+      const {done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
+      for(const raw of lines){
+        const t=raw.trim();if(!t.startsWith('data:'))continue;
+        const dd=t.slice(5).trim();if(dd==='[DONE]')continue;
+        try{const j=JSON.parse(dd);const c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(c)acc+=c;}catch(_){}
+      }
+    }
+    const parsed=parseFortuneAI(acc);
+    if(parsed.summary||parsed.dims.love){
+      state.fortuneCache[key]=parsed;
+      Object.keys(state.fortuneCache).forEach(k=>{if(k.split('|')[0]!==todayKey())delete state.fortuneCache[k];});
+      saveState();
+    }
+  }catch(_){}
+  FORTUNE_BUSY=false;
+  render();
+}
+/* ===== 命理档案 ===== */
+function openFortuneProfile(){
+  showModal({title:'🔮 命理档案',input:true,inputValue:(state.profile&&state.profile.birth)||'',placeholder:'出生日期，如 1998-03-14'}).then(v=>{
+    if(v===null)return;
+    const s=(v||'').trim();
+    if(s&&!/^\d{4}-\d{1,2}-\d{1,2}$/.test(s))return showModal({title:'格式不对',body:'请按 1998-03-14 这样的格式填写。',noCancel:true});
+    state.profile.birth=s;
+    state.fortuneCache={};
+    saveState();render();
+  });
 }
 
 /* ================= v31 今日塔罗 ================= */

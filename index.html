@@ -83,6 +83,13 @@
   .shop-amt:hover{background:rgba(236,72,153,.18);border-color:rgba(236,72,153,.4);}
   .shop-amt-input{width:82px;border:1.5px solid var(--pink-3);border-radius:8px;padding:4px 8px;font-family:inherit;
     font-size:13px;font-weight:800;color:var(--brown);text-align:right;background:#fff;}
+  .shop-actions{display:flex;gap:4px;align-items:center;}
+  .shop-act{width:28px;height:28px;border:none;border-radius:8px;background:rgba(236,72,153,.1);cursor:pointer;
+    font-size:13px;padding:0;display:grid;place-items:center;transition:.15s;line-height:1;}
+  .shop-act:hover{background:rgba(236,72,153,.24);}
+  .shop-item.editing{display:block;}
+  .shop-edit{display:flex;flex-direction:column;gap:10px;}
+  .shop-edit .shop-form-row .btn-pink,.shop-edit .shop-form-row .btn-ghost{flex:1;margin-top:0;height:40px;padding:0 14px;}
   .shop-total{display:flex;justify-content:space-between;align-items:center;margin:2px 0 2px;padding:9px 12px;
     border-radius:var(--radius-sm);background:linear-gradient(135deg,rgba(236,72,153,.1),rgba(167,139,250,.1));border:1px dashed var(--pink-2);}
   .shop-total b{font-size:15px;color:var(--pink-4);}
@@ -92,6 +99,17 @@
   .shop-form-row .form-row{flex:1;min-width:0;}
   .shop-form-row .form-row input{width:100%;}
   .shop-form-row .btn-pink{flex:0 0 auto;white-space:nowrap;}
+  /* 统一控件高度与宽度：输入框 / 自定义下拉 / 按钮 完全一致 */
+  .shop-form-row input{flex:1;min-width:0;height:42px;box-sizing:border-box;padding:0 14px;
+    border:1px solid var(--pink-1);border-radius:var(--radius-sm);background:var(--surface);
+    font-family:var(--font);font-size:13px;color:var(--brown);outline:none;}
+  .shop-form-row input:focus{border-color:var(--pink-3);}
+  .shop-form-row input#shopAmt{flex:0 0 108px;}
+  /* renderCustomSelect 会重写 className，所以要直接给 .custom-select 补 flex */
+  .shop-form-row .custom-select{flex:1;min-width:0;}
+  .shop-form-row .select-trigger{height:42px;box-sizing:border-box;padding:0 14px;font-size:13px;}
+  .shop-form-row .select-trigger span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .shop-form-row .btn-pink{height:42px;padding:0 22px;margin-top:0;}
   @media(max-width:480px){
     .shop-item{gap:8px;padding:8px 9px;}
     .shop-amt{min-width:52px;font-size:12px;padding:4px 6px;}
@@ -3108,19 +3126,35 @@ function renderMoneyShopping(){
     bar.innerHTML=`<span>待买 ${pending.length} 件</span><b>合计 ¥${total}</b>`;
     pend.appendChild(bar);
     pending.forEach(it=>{
-      const row=div('shop-item');
-      row.innerHTML=`<label class="shop-check"><input type="checkbox" onchange="buyItem(${it.id},event)"/></label>
-        <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')}</span></div>
-        <div class="shop-amt" id="samt-${it.id}" title="点击修改价格" onclick="editShopAmt(${it.id})">¥${it.amount||0}</div>
-        <button class="btn-small del" title="删除" onclick="delShop(${it.id},event)">🗑️</button>`;
-      pend.appendChild(row);
+      if(SHOP_EDIT_ID===it.id){
+        const row=div('shop-item editing');
+        row.innerHTML=`<div class="shop-edit">
+          <div class="shop-form-row"><input id="seditName" style="flex:1 1 0%;min-width:0" placeholder="名称"/><input id="seditAmt" type="number" step="0.01" min="0" style="flex:0 0 112px" placeholder="金额"/></div>
+          <div class="shop-form-row"><div id="seditCatBox" style="flex:1 1 0%;min-width:0"></div></div>
+          <div class="shop-form-row"><button class="btn-pink" style="flex:1;margin-top:0" onclick="saveShopEdit(${it.id})">💾 保存</button><button class="btn-ghost" style="flex:1" onclick="cancelShopEdit()">取消</button></div>
+        </div>`;
+        pend.appendChild(row);
+        row.querySelector('#seditName').value=it.name;
+        row.querySelector('#seditAmt').value=it.amount||0;
+        renderCustomSelect(row.querySelector('#seditCatBox'),moneyCats.map(c=>({value:c,label:c})),it.category||'其他');
+      }else{
+        const row=div('shop-item');
+        row.innerHTML=`<label class="shop-check" title="买完了，一键入账"><input type="checkbox" onchange="buyItem(${it.id})"/></label>
+          <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')}</span></div>
+          <div class="shop-amt" id="samt-${it.id}" title="点击改价格" onclick="editShopAmt(${it.id})">¥${it.amount||0}</div>
+          <div class="shop-actions">
+            <button class="shop-act" title="编辑" onclick="editShop(${it.id})">✏️</button>
+            <button class="shop-act" title="删除" onclick="delShop(${it.id},event)">🗑️</button>
+          </div>`;
+        pend.appendChild(row);
+      }
     });
   }
   card.appendChild(pend);
   const form=div('inline-form');form.style.marginTop='12px';
   form.innerHTML=`<div class="shop-form">
-    <div class="shop-form-row"><input id="shopName" placeholder="想买什么"/><input id="shopAmt" type="number" step="0.01" placeholder="预估金额"/></div>
-    <div class="shop-form-row"><div class="form-row" id="shopCatBox"></div><button class="btn-pink" onclick="addShop()">➕ 加入清单</button></div>
+    <div class="shop-form-row"><input id="shopName" style="flex:1 1 0%;min-width:0" placeholder="想买什么"/><input id="shopAmt" type="number" step="0.01" style="flex:0 0 112px" placeholder="预估金额"/></div>
+    <div class="shop-form-row"><div id="shopCatBox" style="flex:1 1 0%;min-width:0"></div><button class="btn-pink" style="flex:0 0 auto;width:auto;margin-top:0;white-space:nowrap" onclick="addShop()">➕ 加入清单</button></div>
   </div>`;
   card.appendChild(form);
   const shopCatBox=form.querySelector('#shopCatBox');
@@ -3133,11 +3167,12 @@ function renderMoneyShopping(){
     const row=div('shop-item bought');
     row.innerHTML=`<div class="shop-check done">✓</div>
       <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')} · ${it.boughtAt}</span></div>
-      <div class="shop-amt">¥${it.amount||0}</div>
-      <button class="btn-small del" onclick="undoBuy(${it.id},event)">↩️</button>`;
+      <div class="shop-amt" style="cursor:default">¥${it.amount||0}</div>
+      <div class="shop-actions"><button class="shop-act" title="撤销购买" onclick="undoBuy(${it.id},event)">↩️</button></div>`;
     bwrap.appendChild(row);
   });
   card.appendChild(bwrap);
+  if(SHOP_EDIT_ID!=null)setTimeout(()=>{const el=document.getElementById('seditName');if(el){el.focus();el.select();}},40);
   return card;
 }
 function renderShopCategorySelect(){const box=document.getElementById('shopCatBox');if(!box)return;renderCustomSelect(box,moneyCats.map(c=>({value:c,label:c})),moneyCats[0],'选择分类');}
@@ -3163,7 +3198,41 @@ function editShopAmt(id){
   el.replaceWith(inp);
   inp.focus(); inp.select();
 }
-function buyItem(id,e){const it=state.money.shopping.pending.find(x=>x.id===id);if(!it)return;showModal({title:'确认购买金额',input:true,placeholder:'实际金额',inputValue:String(it.amount||0)}).then(val=>{const amt=parseFloat(val);if(!amt||amt<=0)return;const recId=Date.now();state.money.records.push({id:recId,type:'expense',cat:it.category||'其他',amt,note:it.name,date:todayKey()});state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);state.money.shopping.bought.push({id:it.id,name:it.name,amount:amt,category:it.category,boughtAt:todayKey(),recordId:recId});state.money.tab='today';saveState();render();});}
+let SHOP_EDIT_ID=null, shopToastTimer=null;
+function shopToast(msg){
+  let el=document.getElementById('heartToast');
+  if(!el){el=document.createElement('div');el.id='heartToast';el.className='heart-toast';document.body.appendChild(el);}
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(shopToastTimer);
+  shopToastTimer=setTimeout(()=>el.classList.remove('show'),1800);
+}
+/* 勾选 = 直接入账（不再弹金额框，金额已在行内可改）；没填价格则引导去编辑 */
+function buyItem(id){
+  const it=state.money.shopping.pending.find(x=>x.id===id);if(!it)return;
+  const amt=+it.amount||0;
+  if(amt<=0){shopToast('先填个价格再入账～');editShop(id);return;}
+  const recId=Date.now();
+  state.money.records.push({id:recId,type:'expense',cat:it.category||'其他',amt,note:it.name,date:todayKey()});
+  state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);
+  state.money.shopping.bought.push({id:it.id,name:it.name,amount:amt,category:it.category,boughtAt:todayKey(),recordId:recId});
+  if(SHOP_EDIT_ID===id)SHOP_EDIT_ID=null;
+  saveState();render();
+  shopToast('✅ 已入账 ¥'+amt);
+}
+/* 行内编辑：点 ✏️ 才进入编辑态 */
+function editShop(id){SHOP_EDIT_ID=(SHOP_EDIT_ID===id?null:id);render();}
+function cancelShopEdit(){SHOP_EDIT_ID=null;render();}
+function saveShopEdit(id){
+  const it=state.money.shopping.pending.find(x=>x.id===id);if(!it)return;
+  const n=(document.getElementById('seditName').value||'').trim();
+  const a=parseFloat(document.getElementById('seditAmt').value);
+  const c=getCustomSelectValue(document.getElementById('seditCatBox'));
+  if(n)it.name=n;
+  if(!isNaN(a)&&a>=0)it.amount=Math.round(a*100)/100;
+  if(c)it.category=c;
+  SHOP_EDIT_ID=null;saveState();render();
+  shopToast('已保存');
+}
 function undoBuy(id,e){e.stopPropagation();const it=state.money.shopping.bought.find(x=>x.id===id);if(!it)return;showConfirm('撤销购买？将从支出记录移除，并移回待买清单').then(yes=>{if(yes){state.money.records=state.money.records.filter(r=>r.id!==it.recordId);state.money.shopping.pending.push({id:it.id,name:it.name,amount:it.amount,category:it.category});state.money.shopping.bought=state.money.shopping.bought.filter(x=>x.id!==id);saveState();render();}});}
 
 /* ================= 经期记录 ================= */

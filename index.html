@@ -69,17 +69,34 @@
   .memo-time{font-size:11px;color:var(--brown-light);}
   .memo-body{margin:6px 0;white-space:pre-wrap;word-break:break-word;color:var(--brown);font-size:13px;}
   .memo-textarea{width:100%;border:1px solid var(--pink-2);border-radius:var(--radius-sm);padding:8px 10px;font:inherit;resize:vertical;box-sizing:border-box;}
-  .shop-list,.shop-bought{display:flex;flex-direction:column;gap:6px;}
-  .shop-item{display:flex;align-items:center;gap:10px;background:var(--cream);border-radius:var(--radius-sm);padding:8px 10px;}
-  .shop-item.bought{opacity:.7;}
+  .shop-list,.shop-bought{display:flex;flex-direction:column;gap:8px;}
+  .shop-item{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:10px;background:var(--cream);border-radius:var(--radius-sm);padding:9px 11px;}
+  .shop-item.bought{opacity:.72;}
   .shop-check{flex:0 0 auto;display:flex;align-items:center;}
   .shop-check input{width:18px;height:18px;accent-color:var(--pink-3);cursor:pointer;}
   .shop-check.done{width:20px;height:20px;border-radius:6px;background:var(--green);color:var(--surface);align-items:center;justify-content:center;font-weight:800;font-size:12px;}
-  .shop-info{flex:1;min-width:0;}
-  .shop-info b{color:var(--pink-4);}
-  .shop-cat{display:block;font-size:11px;color:var(--brown-light);margin-top:2px;}
-  .shop-amt{font-weight:800;color:var(--pink-4);}
-  .shop-item button{margin-left:auto;}
+  .shop-info{min-width:0;}
+  .shop-info b{display:block;color:var(--pink-4);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .shop-cat{display:inline-block;font-size:10px;font-weight:700;color:var(--pink-4);background:rgba(236,72,153,.13);border-radius:999px;padding:1px 8px;margin-top:3px;}
+  .shop-amt{min-width:60px;text-align:right;font-weight:900;color:var(--pink-4);font-size:13px;cursor:pointer;
+    border:1px solid transparent;border-radius:8px;padding:4px 8px;background:rgba(236,72,153,.08);transition:.15s;}
+  .shop-amt:hover{background:rgba(236,72,153,.18);border-color:rgba(236,72,153,.4);}
+  .shop-amt-input{width:82px;border:1.5px solid var(--pink-3);border-radius:8px;padding:4px 8px;font-family:inherit;
+    font-size:13px;font-weight:800;color:var(--brown);text-align:right;background:#fff;}
+  .shop-total{display:flex;justify-content:space-between;align-items:center;margin:2px 0 2px;padding:9px 12px;
+    border-radius:var(--radius-sm);background:linear-gradient(135deg,rgba(236,72,153,.1),rgba(167,139,250,.1));border:1px dashed var(--pink-2);}
+  .shop-total b{font-size:15px;color:var(--pink-4);}
+  .shop-total span{font-size:12px;color:var(--brown-light);font-weight:700;}
+  .shop-form{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+  .shop-form-row{display:flex;gap:10px;align-items:center;}
+  .shop-form-row .form-row{flex:1;min-width:0;}
+  .shop-form-row .form-row input{width:100%;}
+  .shop-form-row .btn-pink{flex:0 0 auto;white-space:nowrap;}
+  @media(max-width:480px){
+    .shop-item{gap:8px;padding:8px 9px;}
+    .shop-amt{min-width:52px;font-size:12px;padding:4px 6px;}
+    .shop-amt-input{width:70px;}
+  }
 
   /* 主内容 */
   .main{flex:1;display:flex;flex-direction:column;min-width:0;background:var(--bg);}
@@ -3085,20 +3102,26 @@ function renderMoneyShopping(){
   const pend=div('shop-list');
   const pending=state.money.shopping.pending;
   if(!pending.length)pend.innerHTML='<div class="empty-tip">还没有待买的东西</div>';
-  else pending.forEach(it=>{
-    const row=div('shop-item');
-    row.innerHTML=`<label class="shop-check"><input type="checkbox" onchange="buyItem(${it.id},event)"/></label>
-      <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')}</span></div>
-      <div class="shop-amt">¥${it.amount||0}</div>
-      <button class="btn-small del" onclick="delShop(${it.id},event)">🗑️</button>`;
-    pend.appendChild(row);
-  });
+  else{
+    const total=Math.round(pending.reduce((a,b)=>a+(+b.amount||0),0)*100)/100;
+    const bar=div('shop-total');
+    bar.innerHTML=`<span>待买 ${pending.length} 件</span><b>合计 ¥${total}</b>`;
+    pend.appendChild(bar);
+    pending.forEach(it=>{
+      const row=div('shop-item');
+      row.innerHTML=`<label class="shop-check"><input type="checkbox" onchange="buyItem(${it.id},event)"/></label>
+        <div class="shop-info"><b>${esc(it.name)}</b><span class="shop-cat">${esc(it.category||'其他')}</span></div>
+        <div class="shop-amt" id="samt-${it.id}" title="点击修改价格" onclick="editShopAmt(${it.id})">¥${it.amount||0}</div>
+        <button class="btn-small del" title="删除" onclick="delShop(${it.id},event)">🗑️</button>`;
+      pend.appendChild(row);
+    });
+  }
   card.appendChild(pend);
   const form=div('inline-form');form.style.marginTop='12px';
-  form.innerHTML=`<div class="form-row"><input id="shopName" placeholder="想买什么"/></div>
-    <div class="form-row"><input id="shopAmt" type="number" placeholder="预估金额"/></div>
-    <div class="form-row" id="shopCatBox"></div>
-    <button class="btn-pink" onclick="addShop()">➕ 加入清单</button>`;
+  form.innerHTML=`<div class="shop-form">
+    <div class="shop-form-row"><input id="shopName" placeholder="想买什么"/><input id="shopAmt" type="number" step="0.01" placeholder="预估金额"/></div>
+    <div class="shop-form-row"><div class="form-row" id="shopCatBox"></div><button class="btn-pink" onclick="addShop()">➕ 加入清单</button></div>
+  </div>`;
   card.appendChild(form);
   const shopCatBox=form.querySelector('#shopCatBox');
   if(shopCatBox)renderCustomSelect(shopCatBox,moneyCats.map(c=>({value:c,label:c})),moneyCats[0],'选择分类');
@@ -3120,6 +3143,26 @@ function renderMoneyShopping(){
 function renderShopCategorySelect(){const box=document.getElementById('shopCatBox');if(!box)return;renderCustomSelect(box,moneyCats.map(c=>({value:c,label:c})),moneyCats[0],'选择分类');}
 function addShop(){const name=document.getElementById('shopName').value.trim();if(!name)return;const amt=parseFloat(document.getElementById('shopAmt').value)||0;const cat=getCustomSelectValue(document.getElementById('shopCatBox'))||'其他';state.money.shopping.pending.push({id:Date.now(),name,amount:amt,category:cat});saveState();render();}
 function delShop(id,e){e.stopPropagation();state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);saveState();render();}
+/* 点击价格 → 就地变成输入框，回车/失焦保存，Esc 取消 */
+function editShopAmt(id){
+  const el=document.getElementById('samt-'+id); if(!el)return;
+  const it=state.money.shopping.pending.find(x=>x.id===id); if(!it)return;
+  const inp=document.createElement('input');
+  inp.type='number'; inp.step='0.01'; inp.min='0'; inp.className='shop-amt-input'; inp.value=it.amount||0;
+  let done=false;
+  const commit=()=>{ if(done)return; done=true;
+    const v=parseFloat(inp.value);
+    if(!isNaN(v)&&v>=0)it.amount=Math.round(v*100)/100;
+    saveState();render();
+  };
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();commit();}
+    else if(e.key==='Escape'){e.preventDefault();done=true;render();}
+  });
+  inp.addEventListener('blur',commit);
+  el.replaceWith(inp);
+  inp.focus(); inp.select();
+}
 function buyItem(id,e){const it=state.money.shopping.pending.find(x=>x.id===id);if(!it)return;showModal({title:'确认购买金额',input:true,placeholder:'实际金额',inputValue:String(it.amount||0)}).then(val=>{const amt=parseFloat(val);if(!amt||amt<=0)return;const recId=Date.now();state.money.records.push({id:recId,type:'expense',cat:it.category||'其他',amt,note:it.name,date:todayKey()});state.money.shopping.pending=state.money.shopping.pending.filter(x=>x.id!==id);state.money.shopping.bought.push({id:it.id,name:it.name,amount:amt,category:it.category,boughtAt:todayKey(),recordId:recId});state.money.tab='today';saveState();render();});}
 function undoBuy(id,e){e.stopPropagation();const it=state.money.shopping.bought.find(x=>x.id===id);if(!it)return;showConfirm('撤销购买？将从支出记录移除，并移回待买清单').then(yes=>{if(yes){state.money.records=state.money.records.filter(r=>r.id!==it.recordId);state.money.shopping.pending.push({id:it.id,name:it.name,amount:it.amount,category:it.category});state.money.shopping.bought=state.money.shopping.bought.filter(x=>x.id!==id);saveState();render();}});}
 

@@ -4,7 +4,7 @@
 //  2) 只允许自家站点调用（Origin 白名单），第三方网站拿不到 CORS 放行；
 //  3) 每 IP 每分钟限流 + 输入长度/条数/输出长度上限，防止被拿去刷额度。
 
-const MODEL = 'deepseek-ai/DeepSeek-V4-Flash';
+const MODEL = 'Qwen/Qwen2.5-7B-Instruct';   // 免费模型（DeepSeek 那个是付费的，别用）
 const MAX_TOKENS = 800;        // 输出上限（防止一次刷爆）
 const MAX_MSGS = 16;           // 最多取最近 16 条
 const MAX_MSG_CHARS = 1500;    // 单条上限

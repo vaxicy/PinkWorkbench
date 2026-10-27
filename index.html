@@ -3827,7 +3827,7 @@ function petPet(id,e){
 function levelUpPet(p){const need=petNeedExp(p.level);while(p.exp>=need&&p.level<6){p.exp-=need;p.level++;}}
 /* ============ 宠物 AI 聊天（硅基流动免费模型，经 Pages Function /api/chat 代理） ============ */
 // 服务端已写死模型（前端这个值仅作标记，服务端会忽略）
-const PET_CHAT_MODEL='deepseek-ai/DeepSeek-V4-Flash';
+const PET_CHAT_MODEL='Qwen/Qwen2.5-7B-Instruct';
 const PET_CHAT_PERSONA={
   cat:{tone:'傲娇但心软，嘴上说不要身体很诚实，喜欢被夸'},
   dog:{tone:'热情黏人，永远开心，把主人当全世界'},

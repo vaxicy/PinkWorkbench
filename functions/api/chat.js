@@ -9,8 +9,8 @@ const MAX_TOKENS = 800;        // 输出上限（防止一次刷爆）
 const MAX_MSGS = 16;           // 最多取最近 16 条
 const MAX_MSG_CHARS = 1500;    // 单条上限
 const MAX_TOTAL_CHARS = 6000;  // 总输入上限
-const RATE_LIMIT = 30;         // 每窗口允许请求数
-const RATE_WINDOW = 60;        // 限流窗口（秒）
+const RATE_LIMIT = 10;         // 每 IP 每分钟
+const DAILY_LIMIT = 300;       // 每 IP 每天
 
 // 只放行自家站点：Pages 预览域/生产域 + 本地调试
 const ORIGIN_PATTERNS = [
@@ -33,20 +33,15 @@ function json(data, status = 200, origin = '') {
   return new Response(JSON.stringify(data), { status, headers });
 }
 
-// 基于 Cache API 的轻量限流（无需额外 KV 绑定；各节点独立计数，够用）
-async function rateLimited(ip) {
-  if (!ip) return false;
+// 基于 Cache API 的轻量计数限流（无需 KV 绑定；各节点独立计数，够用）
+async function overLimit(keyStr, limit, ttl) {
   try {
-    const bucket = Math.floor(Date.now() / 1000 / RATE_WINDOW);
-    const key = new Request('https://rate-limit.internal/chat/' + encodeURIComponent(ip) + '/' + bucket);
     const cache = caches.default;
-    const hit = await cache.match(key);
+    const req = new Request('https://rate-limit.internal/' + keyStr);
+    const hit = await cache.match(req);
     const used = hit ? parseInt(await hit.text(), 10) || 0 : 0;
-    if (used >= RATE_LIMIT) return true;
-    await cache.put(
-      key,
-      new Response(String(used + 1), { headers: { 'cache-control': 'max-age=' + RATE_WINDOW } })
-    );
+    if (used >= limit) return true;
+    await cache.put(req, new Response(String(used + 1), { headers: { 'cache-control': 'max-age=' + ttl } }));
     return false;
   } catch {
     return false; // 限流本身出错时不影响正常使用
@@ -59,12 +54,25 @@ export async function onRequestPost({ request, env }) {
   // 1) 来源校验：挡住第三方网站直接调这个接口
   if (!originAllowed(origin)) return json({ error: 'forbidden_origin' }, 403);
 
+  // 1.1) 浏览器跨站请求再拦一层（Origin 可伪造，加个双保险）
+  const site = request.headers.get('sec-fetch-site');
+  if (site && site !== 'same-origin' && site !== 'same-site') return json({ error: 'forbidden_site' }, 403);
+
   const apiKey = env.SILICONFLOW_API_KEY;
   if (!apiKey) return json({ error: 'not_configured' }, 500, origin);
 
-  // 2) 限流
+  // 2) 限流：每 IP 每分钟 10 次 + 每天 300 次
   const ip = request.headers.get('cf-connecting-ip') || '';
-  if (await rateLimited(ip)) return json({ error: 'rate_limited' }, 429, origin);
+  if (ip) {
+    const minute = Math.floor(Date.now() / 60000);
+    const day = new Date().toISOString().slice(0, 10);
+    if (await overLimit('chat/m/' + ip + '/' + minute, RATE_LIMIT, 60)) {
+      return json({ error: 'rate_limited' }, 429, origin);
+    }
+    if (await overLimit('chat/d/' + ip + '/' + day, DAILY_LIMIT, 86400)) {
+      return json({ error: 'daily_limit' }, 429, origin);
+    }
+  }
 
   let body;
   try { body = await request.json(); } catch { return json({ error: 'bad_json' }, 400, origin); }

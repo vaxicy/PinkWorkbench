@@ -58,7 +58,8 @@ export async function onRequestPost({ request, env }) {
   const site = request.headers.get('sec-fetch-site');
   if (site && site !== 'same-origin' && site !== 'same-site') return json({ error: 'forbidden_site' }, 403);
 
-  const apiKey = env.SILICONFLOW_API_KEY;
+  // 防御：Secret 有可能被写入时带上换行/空格，trim 掉（否则 Bearer 头非法 → 上游 401）
+  const apiKey = String(env.SILICONFLOW_API_KEY || '').trim();
   if (!apiKey) return json({ error: 'not_configured' }, 500, origin);
 
   // 2) 限流：每 IP 每分钟 10 次 + 每天 300 次
